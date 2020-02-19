@@ -1,0 +1,21 @@
+.reflist-header {
+  height: 2.5rem;
+  display: flex;
+  user-select: none;
+  align-items: center;
+  background-color: #343a40;
+  color: #f8f9fa;
+}
+
+.reflist-filter-row {
+  font-size: 150%;
+  background-color:lightgray;
+  display: flex;
+  align-items: center;
+}
+
+.sticky {
+  position: sticky !important;
+  position: -webkit-sticky !important;
+  z-index: 2;
+}
