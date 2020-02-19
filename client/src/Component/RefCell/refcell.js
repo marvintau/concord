@@ -2,14 +2,14 @@ import React, {useState, useContext} from 'react';
 import {RefListContext} from './reflist-context';
 import Autosuggest from 'react-autosuggest';
 
-import 'bootstrap/dist/css/bootstrap.min.css';
 import './react-autosuggest.css';
 import './refcell.css';
-
 
 export default ({index, disabled}) => {
 
   const {getCell, setCell, getSugg, getSuggValue, evaluate} = useContext(RefListContext);
+
+  console.log(index, getCell(index), 'cell');
 
   const {value:val, result, status} = getCell(index);
   

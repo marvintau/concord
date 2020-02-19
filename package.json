@@ -1,42 +1,23 @@
 {
   "name": "concord",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "bootstrap": "^4.4.1",
-    "react": "^16.12.0",
-    "react-autosuggest": "^9.4.3",
-    "react-dom": "^16.12.0",
-    "react-router": "^5.1.2",
-    "react-router-dom": "^5.1.2",
-    "react-scripts": "3.3.1",
-    "react-sidebar": "^3.0.2",
-    "react-virtualized-auto-sizer": "^1.0.2",
-    "react-window": "^1.6.0-alpha.1",
-    "reactstrap": "^8.4.1"
-  },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "HTTPS=true PORT=3001 node-dev ./bin/www",
+    "client": "node start-client.js",
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "deploy": "cross-env PORT=3000 NODE_ENV=production node-dev ./bin/www"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "del": "^5.1.0",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "morgan": "~1.9.1",
+    "node-dev": "^4.0.0",
+    "xlsx": "^0.15.5"
   }
 }

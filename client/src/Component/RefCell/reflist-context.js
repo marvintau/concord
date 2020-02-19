@@ -2,6 +2,9 @@ import React, {createContext, useState} from 'react';
 
 export const RefListContext = createContext({
   
+  // the original table
+  table: [],
+
   // update the value of whole table
   evaluate: () => {},
 
@@ -17,12 +20,6 @@ export const RefListContext = createContext({
   // get the actual value to be filled into the input, with
   // given input value and suggestion options.
   getSuggValue: () => {},
-
-  // finding refs according to their values.
-  filter: () => {},
-
-  // the final table after filtered.
-  filtered: []
 })
 
 // Not actually used.
@@ -37,19 +34,11 @@ const traverse = (table, func, order='POST') => {
 export const RefListProvider = ({table, referredTable, pathColumn, evalColumnDict, children}) => {
 
   const [vars, setVars] = useState({});
-  const [filtered, setFiltered] = useState([...table]);
-  console.log(table, filtered, 'context');
+
   const msg = {
     unsupp: '不支持的表达式，或者引用的数字并不存在',
     unrecog: '未识别',
     notfoundref: '未能按路径找到引用的记录'
-  }
-
-  const filter = (text) => {
-    const filtered = table.filter(({value}) => value.includes(text));
-    if (filtered.length > 0){
-      setFiltered(filtered);
-    }
   }
 
   const getRef = (path) => {
@@ -198,7 +187,7 @@ export const RefListProvider = ({table, referredTable, pathColumn, evalColumnDic
 
   evaluate();
 
-  return <RefListContext.Provider value={{evaluate, getCell, setCell, getSugg, getSuggValue, filter, filtered}}>
+  return <RefListContext.Provider value={{evaluate, getCell, setCell, getSugg, getSuggValue, table}}>
     {children}
   </RefListContext.Provider>
 }

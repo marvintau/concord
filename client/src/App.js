@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useContext } from "react";
 import {BrowserRouter as Router, Route} from 'react-router-dom';
 import {DepRouterContext, DepRouter} from './Component/DepRouter';
 
 import TreeListExamplePage from './Page/TreeListExample';
+import FlatListExamplePage from './Page/FlatListExample';
 import ReferredListExamplePage from './Page/ReferredListExample';
 
 import {genEntries, genRefTable} from './nameGenerate';
@@ -20,7 +21,7 @@ console.log(refTable, 'ref');
 const directories = {
   Home: {
     desc: 'Home',
-    children: ['TreeList', 'ReferredTreeList']
+    children: ['TreeList', 'FlatList', 'ReferredTreeList']
   },
   TreeList: {
     desc: 'Tree-like list',
@@ -28,6 +29,10 @@ const directories = {
   },
   ReferredTreeList: {
     desc: 'TreeList with referred table',
+    // children: []
+  },
+  FlatList: {
+    desc: 'Simple flat list',
     // children: []
   }
 }
@@ -59,6 +64,9 @@ const App = () => {
         </Route>
         <Route path="/Home/TreeList">
           <TreeListExamplePage data={entries} />
+        </Route>
+        <Route path="/Home/FlatList">
+          <FlatListExamplePage data={entries} />
         </Route>
         <Route path="/Home/ReferredTreeList">
           <ReferredListExamplePage table={refTable} referredTable={entries} />

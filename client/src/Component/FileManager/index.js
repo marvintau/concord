@@ -1,10 +1,9 @@
-import React, {useState, useRef} from 'react';
+import React, {useRef} from 'react';
 
 import './file-input.css';
 
 export default function({title="上传文件", upload, data}){
 
-    const [file, setFile] = useState(undefined);
     const fileRef = useRef(null);
 
     const uploadFile = (e) => {

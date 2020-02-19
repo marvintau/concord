@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import TreeList, {ColRenderer as TreeCol, HistColRenderer as TreeHistCol, HeaderColRenderer as TreeHeaderCol} from '../Component/TreeList';
-import RefList from '../Component/RefList';
+import FlatList, {HeaderColRenderer as FlatHeaderCol} from '../Component/FlatList';
+import {RefCell, RefListContext, RefListProvider} from '../Component/RefCell';
 import FileManager from '../Component/FileManager';
 
 const TreeCols = {
@@ -14,6 +15,12 @@ for (let key in TreeCols){
   Object.assign(TreeCols[key], {ColRenderer: TreeCol, HistColRenderer:TreeHistCol, HeaderColRenderer:TreeHeaderCol});
 }
 
+const RefCol = ({children: {index}}) => <RefCell index={index} />
+
+const RefCols = {
+  ref: {desc: '条目', width: 12, isSortable: false, isFilterable: true, ColRenderer:RefCol, HeaderColRenderer:FlatHeaderCol}
+}
+
 const evalDict = {
   借方: 'md',
   贷方: 'mc',
@@ -21,10 +28,17 @@ const evalDict = {
   期末: 'me'
 }
 
+const RefList = () => {
+  const {table} = useContext(RefListContext);
+  const wrappedTable = table.map((_e, i) => ({ref: {index:i}}));
+  return <FlatList data={wrappedTable} colSpecs={RefCols} />
+}
+
 export default ({table, referredTable}) => {
   
   const style={
     display:'flex',
+    justifyContent: 'space-between',
     height:'100%',
     width:'100%',
     padding:'5px',
@@ -33,7 +47,9 @@ export default ({table, referredTable}) => {
   return <div style={{height:'100%'}}>
     <FileManager title='一个又一个的' upload={() => {}} data={{}} />
     <div style={style}>
-      <RefList {...{table, referredTable, pathColumn:'desc', evalColumnDict: evalDict}} />
+      <RefListProvider {...{table, referredTable, pathColumn:'desc', evalColumnDict: evalDict}} >
+        <RefList />
+      </RefListProvider>
       <TreeList data={referredTable} colSpecs={TreeCols}/>
     </div>
   </div>

@@ -1,0 +1,41 @@
+.flatlist-header {
+  /* font-size: 80%; */
+  height: 2.5rem;
+  display: flex;
+  user-select: none;
+  align-items: center;
+  background-color: #343a40;
+  color: #f8f9fa;
+}
+
+.flatlist-row {
+  font-size: 80%;
+  display: flex;
+  user-select: none;
+  align-items: center;
+}
+
+.flatlist-history-row {
+  font-size: 80%;
+  background-color: #f8f9fa;
+  display: flex;
+  user-select: none;
+  align-items: center;
+}
+
+.flatlist-filter-row {
+  /* font-size: 80%; */
+  background-color:lightgray;
+  display: flex;
+  align-items: center;
+}
+
+.sticky {
+  position: sticky !important;
+  position: -webkit-sticky !important;
+  z-index: 2;
+}
+
+.hovered:hover{
+  background-color: lightsalmon;
+}
