@@ -2,18 +2,19 @@ import React, {createContext, useState, useContext, useEffect} from 'react';
 import {Breadcrumb, BreadcrumbItem, ListGroup, ListGroupItem} from 'reactstrap';
 import Sidebar from 'react-sidebar';
 
-import {Route, useHistory, useLocation} from 'react-router-dom';
+import {useHistory, useLocation} from 'react-router-dom';
 
 export const DepRouterContext = createContext({
   currPage: {},
   currPath: [],
   currSubs: [],
   forward: () => {},
-  goto: () => {}
+  goto: () => {},
+  fetchDir : () => {}
 })
 
-const SideNavigationBar = ({children}) => {
-  const {currPath, currSubs, forward} = useContext(DepRouterContext);
+const SideNavigationBar = ({directories, children}) => {
+  const {currPath, currSubs, forward, goto} = useContext(DepRouterContext);
 
   const style = {
     height:'100%',
@@ -25,17 +26,27 @@ const SideNavigationBar = ({children}) => {
   if(currSubs !== undefined){
     subElems = currSubs.map((e, i) => {
       return <ListGroupItem key={i} onClick={() => forward(e)} style={{cursor:'pointer'}}>
-        {e}
+        {directories[e].desc}
       </ListGroupItem>
     })
   }
 
-  const innerSidebar = <div>
-    <h2 style={{margin:'15px', fontWeight:'bold', letterSpacing:'-0.05rem'}}>{currPath[currPath.length-1]}</h2>
-    <ListGroup style={style}>
-      {subElems}
-    </ListGroup>
-  </div>
+  let innerSidebar = <></>;
+  if (currPath.length > 0){
+    const currPathEnd = currPath[currPath.length-1];
+    const {desc:currPathName, parent: currParent} = directories[currPathEnd];
+    innerSidebar = <div>
+      <h3 style={{margin:'15px', fontWeight:'bold', letterSpacing:'-0.05rem'}}>{currPathName}</h3>
+      <ListGroup style={style}>
+        {subElems}
+      </ListGroup>
+      <ListGroup style={style}>
+        {currParent && <ListGroupItem color="warning" style={{cursor:'pointer'}} onClick={() => goto(currParent)}>
+          返回至 {directories[currParent].desc}
+        </ListGroupItem>}
+      </ListGroup>
+    </div>
+  }
 
   return <Sidebar
     sidebar={innerSidebar}
@@ -45,12 +56,12 @@ const SideNavigationBar = ({children}) => {
   </Sidebar>
 }
 
-const NavigationBar = () => {
+const NavigationBar = ({directories}) => {
   const {currPath, goto} = useContext(DepRouterContext);
 
   const pathElems = currPath.map((e, i) => {
     return <BreadcrumbItem key={i}>
-      <a onClick={() => goto(e)} href="#">{e}</a>
+      <a onClick={() => goto(e)} href="#">{directories[e].desc}</a>
     </BreadcrumbItem>
   })
 
@@ -59,21 +70,54 @@ const NavigationBar = () => {
   return currPath.length > 1 ? bread : <></>
 }
 
-export function DepRouter({directories, children}) {
+export function DepRouter({home='Home', directories={}, fetchPath, children}) {
 
-  const location = useLocation();
   const history = useHistory();
-  const [currPage, setPage] = useState(directories['Home']);
-  const [currPath, setPath] = useState(['Home']);
-  const [currSubs, setSubs] = useState(directories['Home'].children);
 
-  console.log(location);
+  const [initPage, initPath, initSubs] = Object.keys(directories).length === 0
+    ? [{}, [], undefined]
+    : [directories['Home'], ['Home'], directories['Home'].children]
+
+  const [dirs, setDirs] = useState(directories);
+  const [currPage, setPage] = useState(initPage);
+  const [currPath, setPath] = useState(initPath);
+  const [currSubs, setSubs] = useState(initSubs);
+
+  useEffect(() => {
+    (async function(){
+      const dir = await fetchDir();
+      console.log(dir, 'yeah');
+      setDirs(dir);
+      setPage(dir['Home']);
+      setPath(['Home']);
+      setSubs(dir['Home'].children);  
+    })()
+  }, [])
+
+  const fetchDir = () => {
+
+    const options = {
+      method: 'POST',
+      cache: 'no-cache',
+      headers: {'Content-Type':'application/json;charset=UTF-8'},
+      referrer: 'no-referrer',
+    }
+
+    const body = JSON.stringify({fetchPath})
+
+    return fetch('/pages', options, {body})
+    .then(res => {
+      return res.json();
+    }).then(res => {
+      return res;
+    })
+  }
 
   const forward = (child) => {
     const pathList = [...currPath, child];
-    setPage(directories[child]);
+    setPage(dirs[child]);
     setPath(pathList);
-    setSubs(directories[child].children);
+    setSubs(dirs[child].children);
     history.push(`/${pathList.join('/')}`);
   }
 
@@ -81,16 +125,23 @@ export function DepRouter({directories, children}) {
     const index = currPath.findIndex(e => e === child);
     console.log('goto', child, index)
     const pathList = currPath.slice(0, index+1);
-    setPage(directories[child]);
+    setPage(dirs[child]);
     setPath(pathList);
-    setSubs(directories[child].children);
+    setSubs(dirs[child].children);
     history.push(`/${pathList.join('/')}`);
   }
 
-  return <DepRouterContext.Provider value={{currPage, currPath, currSubs, forward, goto}}>
-      <SideNavigationBar>
-        <NavigationBar />
-        {children}
-      </SideNavigationBar>
+  let content;
+  if(dirs && Object.keys(dirs).length > 0){
+    content = <SideNavigationBar directories={dirs}>
+      <NavigationBar directories={dirs} />
+      {children}
+    </SideNavigationBar>
+  } else {
+    content = 'loading ...';
+  }
+
+  return <DepRouterContext.Provider value={{currPage, currPath, currSubs, forward, goto, fetchDir}}>
+    {content}
   </DepRouterContext.Provider>
 }

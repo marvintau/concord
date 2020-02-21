@@ -17,58 +17,21 @@ console.log(refTable, 'ref');
 // however, it doesn't affected by scrolling, and is the place where we are going
 // to render sticky items.
 
-
-const directories = {
-  Home: {
-    desc: 'Home',
-    children: ['TreeList', 'FlatList', 'ReferredTreeList']
-  },
-  TreeList: {
-    desc: 'Tree-like list',
-    // children: []
-  },
-  ReferredTreeList: {
-    desc: 'TreeList with referred table',
-    // children: []
-  },
-  FlatList: {
-    desc: 'Simple flat list',
-    // children: []
-  }
-}
-
-const PageTitle = () => {
-
-  const titleStyle = {
-    marginLeft:'10px',
-    fontFamily: '"Avenir Next Condensed", "Helvetica Neue", sans-serif',
-    lineHeight:'4.5rem',
-    fontWeight:'700',
-    fontSize:'4rem',
-    letterSpacing:'-0.2rem'
-  }
-
-  const {currPage:{desc}} = useContext(DepRouterContext);
-  console.log(desc);
-  return <h1 style={titleStyle}>{desc}</h1>
-}
-
 const App = () => {
 
   return  <div style={{height:'100vh', width:'100vw'}}>
     <Router>
-      <DepRouter {...{directories}}>
-        <PageTitle />
+      <DepRouter {...{directories:undefined}}>
         <Route exact path="/Home"><></>
           {/* <List data={entries} colSpecs={colSpecs} /> */}
         </Route>
-        <Route path="/Home/TreeList">
+        <Route path="/Home/Preface/TreeList">
           <TreeListExamplePage data={entries} />
         </Route>
-        <Route path="/Home/FlatList">
+        <Route path="/Home/Preface/FlatList">
           <FlatListExamplePage data={entries} />
         </Route>
-        <Route path="/Home/ReferredTreeList">
+        <Route path="/Home/Preface/ReferredTreeList">
           <ReferredListExamplePage table={refTable} referredTable={entries} />
         </Route>
       </DepRouter>

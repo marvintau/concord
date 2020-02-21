@@ -3,13 +3,20 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "clean": "rimraf dist-server",
+    "transpile": "babel ./server --out-dir server-prod",
+    "build": "npm-run-all clean transpile",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "HTTPS=true PORT=3001 node-dev ./bin/www",
+    "server": "cross-env PORT=3001 node ./server-prod/www",
     "client": "node start-client.js",
     "start": "concurrently \"npm run server\" \"npm run client\"",
-    "deploy": "cross-env PORT=3000 NODE_ENV=production node-dev ./bin/www"
+    "deploy": "cross-env PORT=3000 NODE_ENV=production node ./server-prod/www"
   },
   "dependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.8.4",
+    "@babel/runtime": "^7.8.4",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "del": "^5.1.0",
@@ -17,7 +24,24 @@
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "morgan": "~1.9.1",
-    "node-dev": "^4.0.0",
+    "nedb": "^1.8.0",
+    "nedb-promise": "^2.0.1",
+    "nodemon": "^2.0.2",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2",
     "xlsx": "^0.15.5"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.8.3",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "concurrently": "^5.1.0"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ],
+    "plugins": [
+      "@babel/transform-runtime"
+    ]
   }
 }
