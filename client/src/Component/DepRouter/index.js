@@ -70,9 +70,10 @@ const NavigationBar = ({directories}) => {
   return currPath.length > 1 ? bread : <></>
 }
 
-export function DepRouter({home='Home', directories={}, fetchPath, children}) {
+export function DepRouter({home='Home', directories={}, children}) {
 
   const history = useHistory();
+  const location = useLocation();
 
   const [initPage, initPath, initSubs] = Object.keys(directories).length === 0
     ? [{}, [], undefined]
@@ -83,29 +84,36 @@ export function DepRouter({home='Home', directories={}, fetchPath, children}) {
   const [currPath, setPath] = useState(initPath);
   const [currSubs, setSubs] = useState(initSubs);
 
+  // performs initialization
   useEffect(() => {
     (async function(){
-      const dir = await fetchDir();
-      console.log(dir, 'yeah');
+      const dir = await fetchDir('/');
       setDirs(dir);
-      setPage(dir['Home']);
-      setPath(['Home']);
-      setSubs(dir['Home'].children);  
+
+      let pathArray = location.pathname.split('/').slice(1);
+      let last = pathArray.slice(-1)[0];
+      if (!(last in dir)){
+        last = 'Home';
+        pathArray = ['Home']
+      }
+      console.log(pathArray, last);
+      setPath(pathArray);
+      setPage(dir[last]);
+      setSubs(dir[last].children);  
     })()
   }, [])
 
-  const fetchDir = () => {
+  const fetchDir = (fetchPath) => {
 
     const options = {
       method: 'POST',
       cache: 'no-cache',
       headers: {'Content-Type':'application/json;charset=UTF-8'},
       referrer: 'no-referrer',
+      body : JSON.stringify({fetchPath})
     }
 
-    const body = JSON.stringify({fetchPath})
-
-    return fetch('/pages', options, {body})
+    return fetch('/pages', options)
     .then(res => {
       return res.json();
     }).then(res => {

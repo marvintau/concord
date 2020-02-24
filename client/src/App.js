@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import React from "react";
 import {BrowserRouter as Router, Route} from 'react-router-dom';
-import {DepRouterContext, DepRouter} from './Component/DepRouter';
+import {DepRouter} from './Component/DepRouter';
 
 import TreeListExamplePage from './Page/TreeListExample';
 import FlatListExamplePage from './Page/FlatListExample';
@@ -9,10 +9,10 @@ import ReferredListExamplePage from './Page/ReferredListExample';
 import {genEntries, genRefTable} from './nameGenerate';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
 
 const entries = genEntries(20000);
 const refTable = genRefTable(entries, 200);
-console.log(refTable, 'ref');
 // HistoryHodler is passed into as the innerElementType, which is div by normal.
 // however, it doesn't affected by scrolling, and is the place where we are going
 // to render sticky items.
@@ -22,8 +22,10 @@ const App = () => {
   return  <div style={{height:'100vh', width:'100vw'}}>
     <Router>
       <DepRouter {...{directories:undefined}}>
-        <Route exact path="/Home"><></>
+        <Route exact path="/Admin"><></>
           {/* <List data={entries} colSpecs={colSpecs} /> */}
+        </Route>
+        <Route exact path="/Home"><></>
         </Route>
         <Route path="/Home/Preface/TreeList">
           <TreeListExamplePage data={entries} />

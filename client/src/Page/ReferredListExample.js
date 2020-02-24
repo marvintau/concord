@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
-import TreeList, {ColRenderer as TreeCol, HistColRenderer as TreeHistCol, HeaderColRenderer as TreeHeaderCol} from '../Component/TreeList';
-import FlatList, {HeaderColRenderer as FlatHeaderCol} from '../Component/FlatList';
+import TreeList from '../Component/TreeList';
+import FlatList from '../Component/FlatList';
 import {RefCell, RefListContext, RefListProvider} from '../Component/RefCell';
 import FileManager from '../Component/FileManager';
 
@@ -11,14 +11,11 @@ const TreeCols = {
   md:   {desc: '借方', width: 2, isSortable: true, isFilterable: false,},
   me:   {desc: '期末', width: 2, isSortable: true, isFilterable: false,},
 }
-for (let key in TreeCols){
-  Object.assign(TreeCols[key], {ColRenderer: TreeCol, HistColRenderer:TreeHistCol, HeaderColRenderer:TreeHeaderCol});
-}
 
 const RefCol = ({children: {index}}) => <RefCell index={index} />
 
-const RefCols = {
-  ref: {desc: '条目', width: 12, isSortable: false, isFilterable: true, ColRenderer:RefCol, HeaderColRenderer:FlatHeaderCol}
+const refCols = {
+  ref: {desc: '条目', width: 12, isSortable: false, isFilterable: true}
 }
 
 const evalDict = {
@@ -28,27 +25,26 @@ const evalDict = {
   期末: 'me'
 }
 
-const RefList = () => {
+const RefList = ({colSpecs}) => {
   const {table} = useContext(RefListContext);
   const wrappedTable = table.map((_e, i) => ({ref: {index:i}}));
-  return <FlatList data={wrappedTable} colSpecs={RefCols} />
+
+  for (let key in colSpecs){
+    colSpecs[key].ColRenderer = RefCol;
+  }
+
+  return <FlatList data={wrappedTable} colSpecs={colSpecs} />
 }
 
 export default ({table, referredTable}) => {
-  
-  const style={
-    display:'flex',
-    justifyContent: 'space-between',
-    height:'100%',
-    width:'100%',
-    padding:'5px',
-  }
 
   return <div style={{height:'100%'}}>
-    <FileManager title='一个又一个的' upload={() => {}} data={{}} />
-    <div style={style}>
+    <div className="bar">
+      <FileManager title="上传现金流表模版" uploadURL='/upload/ref-list/cashflow-statement' />
+    </div>
+    <div className="sideby">
       <RefListProvider {...{table, referredTable, pathColumn:'desc', evalColumnDict: evalDict}} >
-        <RefList />
+        <RefList colSpecs={refCols}/>
       </RefListProvider>
       <TreeList data={referredTable} colSpecs={TreeCols}/>
     </div>

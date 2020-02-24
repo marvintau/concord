@@ -9,8 +9,6 @@ export default ({index, disabled}) => {
 
   const {getCell, setCell, getSugg, getSuggValue, evaluate} = useContext(RefListContext);
 
-  console.log(index, getCell(index), 'cell');
-
   const {value:val, result, status} = getCell(index);
   
   const [editing, setEditing] = useState()

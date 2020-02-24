@@ -228,13 +228,21 @@ const HistoryContainer = (HistRowRenderer, FilterRowRenderer, historyRowHeight, 
 
 const HIST_LINE_HEIGHT = 30;
 
+export const Column = ({children}) => {
+  return typeof children === 'number'
+  ? <div style={{textAlign:'right', fontFamily:'Arial Narrow', fontWeight:'700'}}>
+      {parseFloat(children.toFixed(2)).toLocaleString('en-us')}
+    </div>
+  : <div style={{margin:'0.5rem'}}>{children}</div>;
+}
+
 const Row = (colSpecs) => {
 
   return forwardRef(({ data, style, select}, ref) => {
   
     const cols = [];
     for (let key in colSpecs){
-      const {width, ColRenderer} = colSpecs[key];
+      const {width, ColRenderer=Column} = colSpecs[key];
       cols.push(<Col md={width} key={key}><ColRenderer>{data[key]}</ColRenderer></Col>)
     }
     
@@ -244,13 +252,21 @@ const Row = (colSpecs) => {
   });
 }
 
+export const HistCol = ({children}) => {
+  return typeof children === 'number'
+  ? <div style={{textAlign:'right', fontFamily:'Arial Narrow', fontWeight:'700'}}>
+      {parseFloat(children.toFixed(2)).toLocaleString('en-us')}
+    </div>
+  : <div style={{margin:'0.5rem'}}>{children}</div>;
+}
+
 const HistoryRow = (colSpecs) => {
 
   return ({ data, style, pop}) => {
       
     const cols = [];
     for (let key in colSpecs){
-      const {width, HistColRenderer} = colSpecs[key];
+      const {width, HistColRenderer=HistCol} = colSpecs[key];
       cols.push(<Col md={width} key={key}><HistColRenderer>{data[key]}</HistColRenderer></Col>)
     }
 
@@ -314,11 +330,14 @@ const FilterRow = (colSpecs) => {
     </FilterContainer>
 }
 
+export const HeaderCol = ({children}) =>
+  <div style={{margin:'0.5rem'}}>{children}</div>;
+
 const Header = (colSpecs) => {
 
   const cols = [];
   for (let key in colSpecs){
-    const {width, desc, HeaderColRenderer} = colSpecs[key];
+    const {width, desc, HeaderColRenderer=HeaderCol} = colSpecs[key];
     cols.push(<Col md={width} key={key}><HeaderColRenderer>{desc}</HeaderColRenderer></Col>)
   }
 
@@ -327,27 +346,9 @@ const Header = (colSpecs) => {
   </div>
 }
 
-export const ColRenderer = ({children}) => {
-  return typeof children === 'number'
-  ? <div style={{textAlign:'right', fontFamily:'Arial Narrow', fontWeight:'700'}}>
-      {parseFloat(children.toFixed(2)).toLocaleString('en-us')}
-    </div>
-  : <div style={{margin:'0.5rem'}}>{children}</div>;
-}
-export const HistColRenderer = ({children}) => {
-  return typeof children === 'number'
-  ? <div style={{textAlign:'right', fontFamily:'Arial Narrow', fontWeight:'700'}}>
-      {parseFloat(children.toFixed(2)).toLocaleString('en-us')}
-    </div>
-  : <div style={{margin:'0.5rem'}}>{children}</div>;
-}
-
-export const HeaderColRenderer = ({children}) =>
-  <div style={{margin:'0.5rem'}}>{children}</div>;
-
 export default ({data, colSpecs, style}) => {
 
-  return <div style={{display:'flex', flexDirection:"column", height:'100%', width:800, ...style}}>
+  return <div style={{display:'flex', flexDirection:"column", height:'100%', width:'100%', ...style}}>
     {Header(colSpecs)}
     <div style={{flex:1, width:'100%'}}>
       <AutoSizer>

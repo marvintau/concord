@@ -1,30 +1,15 @@
-'use strict';
 
-const Hapi = require('@hapi/hapi');
 const Path = require('path');
-const Inert = require('inert');
+const Koa = require('koa');
+const BodyParser = require('koa-bodyparser');
+const Serve = require('koa-static');
+const Router = require('@koa/router');
+const Multer = require('@koa/multer');
 
-const dir = {
-  Home: {
-    desc: '首页',
-    children: ['Preface']
-  },
-  Preface: {
-    desc: '次页',
-    children: ['TreeList', 'FlatList', 'ReferredTreeList']
-  },
-  TreeList: {
-    desc: '树形表'
-  },
-  FlatList: {
-    desc: '普通表'
-  },
-  ReferredTreeList: {
-    desc: '引用表'
-  }
-}
+const app = new Koa();
+const router = new Router();
+const upload = new Multer();
 
-// Simple way of handling port number given from environment variables.
 var {PORT: port, MODE: mode} = process.env;
 port = parseInt(port);
 !port && (port = 3000);
@@ -37,51 +22,40 @@ if (mode !== 'production') {
   publicPath = Path.join(__dirname, '../client/build')
 }
 
-
-const init = async () => {
-
-  const server = Hapi.server({
-    port,
-    host: 'localhost',
-    routes:{
-      files: { relativeTo: publicPath }
+const dirs = {
+  "/":{
+    Home: {
+      desc: '首页',
+      children: ['Preface']
+    },
+    Preface: {
+      desc: '次页',
+      children: ['TreeList', 'FlatList', 'ReferredTreeList']
+    },
+    TreeList: {
+      desc: '树形表'
+    },
+    FlatList: {
+      desc: '普通表'
+    },
+    ReferredTreeList: {
+      desc: '引用表'
     }
-  });
+  }
+}
 
-  await server.register(Inert);
+router.post('/upload', upload.array('files', 10), ctx => {
+  console.log('file', ctx.request.files);
+  ctx.body = ctx.request.body;
+})
 
-  server.route({
-    method: 'POST',
-    path: '/pages',
-    handler: (req, h) => {
-      return dir;
-    }
-  });
+router.post('/pages', ctx => {
+  const {fetchPath} = ctx.request.body;
+  ctx.body = dirs[fetchPath];
+})
 
-  server.route({
-    method: 'GET',
-    path: '/{any*}',
-    handler: {directory: {path: '.', redirectToSlash: true}}
-  });
+app.use(BodyParser());
+app.use(router.routes());
 
-  server.route({
-    method: '*',
-    path: '/{any*}',
-    handler: function (request, h) {
-
-        h.response`没有找到${request.param.any}对应的请求，可能是您输入了错误的地址`
-        .code(404);
-    }
-  });
-
-  await server.start();
-  console.log('Server running on %s', server.info.uri);
-};
-
-process.on('unhandledRejection', (err) => {
-
-    console.log(err);
-    process.exit(1);
-});
-
-init();
+app.use(Serve(publicPath));
+app.listen(port);

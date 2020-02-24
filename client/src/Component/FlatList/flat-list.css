@@ -37,5 +37,16 @@
 }
 
 .hovered:hover{
-  background-color: lightsalmon;
+  background-color: whitesmoke;
+}
+
+.nodata-indicator {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  height: 100%;
+  width: 100%;
+  background-color: whitesmoke;
 }
