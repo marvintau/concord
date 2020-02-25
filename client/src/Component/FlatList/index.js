@@ -259,7 +259,7 @@ const ErrorIndicator = ({status}) => {
     {Header({none:{width:12}})}
     <div className="nodata-indicator">
       <div className="bad-icon" />
-      <div style={{marginTop:'20px'}}>{status[text]}</div>
+      <div style={{marginTop:'20px'}}>{text}</div>
     </div>
   </>
 }

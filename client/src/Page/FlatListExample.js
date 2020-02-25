@@ -10,7 +10,7 @@ const colSpecs = {
 }
 
 export default ({data}) => <div style={{margin: '0px 10px', height:'100%'}}>
-  <DataFetch initData={data}>
+  <DataFetch >
     <FlatList name="好哇" colSpecs={colSpecs} />
   </DataFetch>
 </div>
