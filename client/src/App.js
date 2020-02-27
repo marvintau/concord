@@ -3,7 +3,7 @@ import {BrowserRouter as Router, Route} from 'react-router-dom';
 import {DepRouter} from './Component/DepRouter';
 
 import TreeListExamplePage from './Page/TreeListExample';
-import FlatListExamplePage from './Page/FlatListExample';
+import BalancePage from './Page/Balance';
 import ReferredListExamplePage from './Page/ReferredListExample';
 
 import {genEntries, genRefTable} from './nameGenerate';
@@ -30,11 +30,11 @@ const App = () => {
         <Route path="/Home/Preface/TreeList">
           <TreeListExamplePage data={entries} />
         </Route>
-        <Route path="/Home/Preface/FlatList">
-          <FlatListExamplePage data={entries} />
+        <Route path="/Home/Preface/Balance">
+          <BalancePage data={entries} name="BALANCE" desc="余额表" />
         </Route>
         <Route path="/Home/Preface/ReferredTreeList">
-          <ReferredListExamplePage table={refTable} referredTable={entries} />
+          <ReferredListExamplePage name="CASHFLOW_WORKSHEET" referredTableName="BALANCE" desc="现流表" />
         </Route>
       </DepRouter>
     </Router>

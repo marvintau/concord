@@ -20,7 +20,7 @@
 }
 
 .hidden {
-  opacity: 0.05 !important;
+  opacity: 0 !important;
 }
 
 .button:hover {
@@ -38,6 +38,10 @@
   background-color: #a02732;
 }
 
+.blank {
+  background-color: white !important;
+}
+
 .sideby {
   display: flex;
   justify-content: space-evenly;
@@ -50,6 +54,15 @@
 
 .bar {
   margin: 5px;
+}
+
+.upload-file-bar {
+  display: flex;
+  flex-direction: row;
+}
+
+.upload-file-bar > * {
+  margin: 5px 5px 5px 0px;
 }
 
 .bad-icon {

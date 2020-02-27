@@ -1,8 +1,10 @@
 import React, {useContext} from 'react';
-import TreeList from '../Component/TreeList';
+// import TreeList from '../Component/TreeList';
+import RefCell from '../Component/RefCell';
 import FlatList from '../Component/FlatList';
-import {RefCell, RefListContext, RefListProvider} from '../Component/RefCell';
-import FileManager from '../Component/FileManager';
+import {RefDataContext, RefData} from '../Component/RefData';
+import UploadManager from '../Component/UploadManager';
+import TreeList from '../Component/TreeList';
 
 const TreeCols = {
   desc: {desc: '描述', width: 4, isSortable: true, isFilterable: true, },
@@ -12,21 +14,15 @@ const TreeCols = {
   me:   {desc: '期末', width: 2, isSortable: true, isFilterable: false,},
 }
 
-const RefCol = ({children: {index}}) => <RefCell index={index} />
+const RefCol = ({children: {index}}) =>
+  <RefCell index={index} />
 
 const refCols = {
-  ref: {desc: '条目', width: 12, isSortable: false, isFilterable: true}
-}
-
-const evalDict = {
-  借方: 'md',
-  贷方: 'mc',
-  期初: 'mb',
-  期末: 'me'
+  ref: {desc: '条目', width: 12, isSortable: false, isFilterable: true, }
 }
 
 const RefList = ({colSpecs}) => {
-  const {table} = useContext(RefListContext);
+  const {table} = useContext(RefDataContext);
   const wrappedTable = table.map((_e, i) => ({ref: {index:i}}));
 
   for (let key in colSpecs){
@@ -36,17 +32,37 @@ const RefList = ({colSpecs}) => {
   return <FlatList data={wrappedTable} colSpecs={colSpecs} />
 }
 
-export default ({table, referredTable}) => {
+const evalColumnDict = {
+  借方: 'md',
+  贷方: 'mc',
+  期初: 'mb',
+  期末: 'me'
+}
 
-  return <div style={{height:'100%'}}>
-    <div className="bar">
-      <FileManager title="上传现金流表模版" uploadURL='/upload/ref-list/cashflow-statement' />
+const TableContent = ({name, desc}) => {
+  const {data, refs, status, refresh, setStatus} = useContext(RefDataContext);
+
+  return <>
+    <div className="upload-file-bar">
+      {/* <ExportManager name={name} cols={cols}/> */}
+      <UploadManager title={`上传${desc}Excel文件`} {...{name, data, refresh, setStatus}} />
     </div>
-    <div className="sideby">
-      <RefListProvider {...{table, referredTable, pathColumn:'desc', evalColumnDict: evalDict}} >
-        <RefList colSpecs={refCols}/>
-      </RefListProvider>
-      <TreeList data={referredTable} colSpecs={TreeCols}/>
-    </div>
+    <TreeList {...{data, status, colSpecs:TreeCols}} />
+  </>
+}
+
+export default ({name, referredTableName, desc}) => {
+
+  const props = {
+    dataName: referredTableName,
+    refsName: name,
+    pathColumn: 'ccode_name',
+    evalColumnDict,
+  }
+  
+  return <div style={{margin:'0px 10px', height:'100%'}}>
+    <RefData {...props}>
+      <TableContent {...{name, desc}} />
+    </RefData>
   </div>
 }

@@ -1,11 +1,16 @@
-import React, {createContext, useState} from 'react';
+import React, {createContext, useState, useEffect} from 'react';
+import Agnt from 'superagent';
 
-export const RefListContext = createContext({
+export const RefDataContext = createContext({
   
-  // the original table
-  table: [],
+  // data refss
+  refs: [],
+  data: [],
 
-  // update the value of whole table
+  push: () => {},
+  pull: () => {},
+
+  // update the value of whole refs
   evaluate: () => {},
 
   // get the cell data through cell path
@@ -20,20 +25,25 @@ export const RefListContext = createContext({
   // get the actual value to be filled into the input, with
   // given input value and suggestion options.
   getSuggValue: () => {},
+
+  setStatus: () => {}
 })
 
 // Not actually used.
-const traverse = (table, func, order='POST') => {
-  for (let record of table){
+const traverse = (refs, func, order='POST') => {
+  for (let record of refs){
     order === 'PREV' && func(record);
     record.children  && traverse(record.children, func);
     order === 'POST' && func(record);
   }
-}
+}  
 
-export const RefListProvider = ({table, referredTable, pathColumn, evalColumnDict, children}) => {
+export const RefData = ({dataName, refsName, pathColumn, evalColumnDict, children}) => {
 
   const [vars, setVars] = useState({});
+  const [refs, setRefs] = useState([]);
+  const [data, setData] = useState([]);
+  const [status, setStatus] = useState('INIT');
 
   const msg = {
     unsupp: '不支持的表达式，或者引用的数字并不存在',
@@ -41,8 +51,61 @@ export const RefListProvider = ({table, referredTable, pathColumn, evalColumnDic
     notfoundref: '未能按路径找到引用的记录'
   }
 
+  useEffect(() => {
+    console.log(status, 'effect');
+    (async() => {
+      if (status === 'INIT'){
+        await pull();
+      }
+      if (status === 'DONE_PULL'){
+        evaluate();
+      }
+    })()
+  }, [status])
+
+  const pull = async () => {
+    setStatus('PULL');
+    try{
+      const {body:remoteData} = await Agnt.get(`/pull/${dataName}`);
+      if (remoteData.error === 'DEAD_NOT_FOUND') {
+        setStatus('DEAD_DATA_NOT_FOUND');
+        return;
+      }
+      const {body:remoteRefs} = await Agnt.get(`/pull/${refsName}`);
+      if (remoteRefs.error === 'DEAD_NOT_FOUND'){
+        setStatus('DEAD_REFS_NOT_FOUND');
+        return;
+      }
+      setData(remoteData);
+      setRefs(remoteRefs);
+      setStatus('DONE_PULL');
+    } catch(e){
+      console.error(e);
+      setStatus('DEAD_LOAD');
+    }
+  }
+
+  const push = async () => {
+    setStatus('PUSH');
+    try{
+      const response = await Agnt.post(`/push/${dataName}`).send(data);
+      if (response.error){
+        throw Error(response.error.message);
+      }
+      setStatus('DONE');
+
+    } catch(e){
+      console.error(e);
+      setStatus('DEAD_LOAD');
+    }
+  }
+
+  const refresh = (data) => {
+    setData(data);
+  }
+
   const getRef = (path) => {
-    let list = referredTable, ref;
+    let list = data, ref;
     for (let seg of path) {
       ref = list.find(({[pathColumn]: pathCol}) => pathCol === seg);
       if (ref === undefined) break;
@@ -137,7 +200,7 @@ export const RefListProvider = ({table, referredTable, pathColumn, evalColumnDic
     const splitted = path.split('/').slice(1);
     
     if (splitted.length === 0){
-      return referredTable.map(({[pathColumn]:col}) => `${col}`);
+      return data.map(({[pathColumn]:col}) => `${col}`);
     }
     
     const ref = getRef(splitted);
@@ -174,20 +237,23 @@ export const RefListProvider = ({table, referredTable, pathColumn, evalColumnDic
   }
 
   const getCell = (index) => {
-    return table[index];
+    return refs[index];
   }
 
   const setCell = (index, value) => {
-    table[index].value = value;
+    refs[index].value = value;
   }
 
   const evaluate = () => {
-    traverse(table, evalSingle);
+    traverse(refs, evalSingle);
   };
 
-  evaluate();
+  const values = {
+    data, refs, status,
+    evaluate, getCell, setCell, getSugg, getSuggValue, refresh, setStatus
+  }
 
-  return <RefListContext.Provider value={{evaluate, getCell, setCell, getSugg, getSuggValue, table}}>
+  return <RefDataContext.Provider value={values}>
     {children}
-  </RefListContext.Provider>
+  </RefDataContext.Provider>
 }

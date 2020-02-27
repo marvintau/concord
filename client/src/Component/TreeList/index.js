@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, forwardRef, useEffect} from "react";
-import {Col, Input, Button} from 'reactstrap';
+import {Spinner,Col, Input, Button} from 'reactstrap';
 import {DynamicSizeList as List} from 'react-window'
 import AutoSizer from "react-virtualized-auto-sizer";
 
@@ -346,29 +346,71 @@ const Header = (colSpecs) => {
   </div>
 }
 
-export default ({data, colSpecs, style}) => {
+const TableContent = ({data, colSpecs}) => <>
+  {Header(colSpecs)}
+  <div style={{flex:1, width:'100%'}}>
+    <AutoSizer>
+    {({height, width}) => {
+      return <TreeList
+        height={height}
+        width={width}
+        data={data}
+        itemCount={data.length}
+        historyRowRenderer={HistoryRow(colSpecs)}
+        historyRowHeight={HIST_LINE_HEIGHT}
+        filterRowRenderer={FilterRow(colSpecs)}
+      >
+        {Row(colSpecs)}
+      </TreeList>
+    }}
+    </AutoSizer>
+  </div>
+</>
 
-  return <div style={{display:'flex', flexDirection:"column", height:'100%', width:'100%', ...style}}>
-    {Header(colSpecs)}
-    <div style={{flex:1, width:'100%'}}>
-      <AutoSizer>
-      {({height, width}) => {
-
-        return <TreeList
-          height={height}
-          width={width}
-
-          data={data}
-          itemCount={data.length}
-          
-          historyRowRenderer={HistoryRow(colSpecs)}
-          historyRowHeight={HIST_LINE_HEIGHT}
-          filterRowRenderer={FilterRow(colSpecs)}
-        >
-          {Row(colSpecs)}
-        </TreeList>
-      }}
-      </AutoSizer>
+const LoadIndicator = ({status}) => {
+  const text = {
+    'PUSH': '更新',
+    'PULL': '载入'
+  }[status];
+  return <>
+    {Header({none:{width:12}})}
+    <div className="nodata-indicator">
+      <Spinner color="info" />
+      <div style={{marginTop:'20px'}}>正在{text}数据...</div>
     </div>
+  </>
+};
+
+const ErrorIndicator = ({status}) => {
+  const text = {
+    'DEAD_LOAD' : '网络错误，请刷新重试，或联系开发人员',
+    'DEAD_INFO' : '未指定数据和远程地址。请联系开发人员',
+    'DEAD_REFS_NOT_FOUND' : '没有找到引用表的数据，可能是您还没上传',
+    'DEAD_DATA_NOT_FOUND' : '没有找到数据表的数据，可能是您还没上传',
+    'DEAD_NOT_IMPL' : '服务器上没有对应数据的处理方法，请联系开发人员',
+    'DEAD_PROC_ERROR' : '处理数据时发生了错误，请联系开发人员'
+  }[status];
+  return <>
+    {Header({none:{width:12}})}
+    <div className="nodata-indicator">
+      <div className="bad-icon" />
+      <div style={{marginTop:'20px'}}>{text}</div>
+    </div>
+  </>
+}
+
+export default ({data, status, colSpecs}) => {
+
+  let content;
+  if (status.startsWith('DEAD')){
+    content = <ErrorIndicator {...{status}} />
+  } else if (['PUSH', 'PULL'].includes(status)){
+    content = <LoadIndicator {...{status}} />
+  } else if (status === 'DONE'){
+    content = <TableContent {...{colSpecs, data}} />;
+  }
+
+  return <div style={{display:'flex', flexDirection:"column", height:'100%', width:'100%'}}>
+    {content}
   </div>
 }

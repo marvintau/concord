@@ -31,7 +31,7 @@ const nop = e => e;
 // then apply the pullProc of the fetched data. Or you wanted to create some custom saving
 // format on the server, then apply the pushProc.
 
-export const DataFetch = ({initData=[], api='', pushProc=nop, pullProc=nop, children}) => {
+export const DataFetch = ({initData=[], name='', pushProc=nop, pullProc=nop, children}) => {
 
   const [status, setStatus] = useState('INIT');
   const [data, setData] = useState(initData);
@@ -44,12 +44,12 @@ export const DataFetch = ({initData=[], api='', pushProc=nop, pullProc=nop, chil
   // Thus, even if the initData contains the full and ready data, The inner
   // component should wait for the status set to 'done'.
 
-  if(initData.length === 0 && api === '' && status === 'INIT'){
+  if(initData.length === 0 && name === '' && status === 'INIT'){
     setStatus('DEAD_INFO');
   }
 
   useEffect(() => {
-    if (status !== 'DEAD_INFO')
+    if (status === 'INIT')
       if (data.length > 0){
         setStatus('DONE');
       } else {
@@ -63,7 +63,7 @@ export const DataFetch = ({initData=[], api='', pushProc=nop, pullProc=nop, chil
   const pull = async () => {
     setStatus('PULL');
     try{
-      const remoteData = await Agnt.get(`/pull/${api}`);
+      const {body:remoteData} = await Agnt.get(`/pull/${name}`);
       const procData = pullProc(remoteData);
       setData(procData);
       setStatus('DONE');
@@ -76,8 +76,7 @@ export const DataFetch = ({initData=[], api='', pushProc=nop, pullProc=nop, chil
   const push = async () => {
     setStatus('PUSH');
     try{
-      const localData = pushProc(data);
-      const response = await Agnt.post(`/push/${api}`).send(localData);
+      const response = await Agnt.post(`/push/${name}`).send(pushProc(data));
       if (response.error){
         throw Error(response.error.message);
       }
@@ -89,7 +88,27 @@ export const DataFetch = ({initData=[], api='', pushProc=nop, pullProc=nop, chil
     }
   }
 
-  return <DataFetchContext.Provider value={{data, status, push, pull}}>
+  const insert = (index, rec) => {
+    data.splice(index, 0, rec);
+    setData([...data]);
+  }
+
+  const remove = (index) => {
+    data.splice(index, 1);
+    setData([...data]);
+  }
+
+  const modify = (index, rec) => {
+    data.splice(index, 1, rec);
+    setData([...data]);
+  }
+
+  const refresh = (newData) => {
+    console.log('refresh!');
+    setData(newData)
+  }
+
+  return <DataFetchContext.Provider value={{data, status, push, pull, insert, remove, modify, refresh}}>
     {children}
   </DataFetchContext.Provider>
 }

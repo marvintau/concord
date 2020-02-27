@@ -157,8 +157,10 @@ const Row = (colSpecs) => {
   
     const cols = [];
     for (let key in colSpecs){
-      const {width, ColRenderer=Column} = colSpecs[key];
-      cols.push(<Col md={width} key={key}><ColRenderer index={index-1}>{data[key]}</ColRenderer></Col>)
+      const {width, ColRenderer=Column, noBackground} = colSpecs[key];
+      cols.push(<Col className={noBackground ? 'clear-back' : ''} md={width} key={key}>
+        <ColRenderer index={index-1}>{data[key]}</ColRenderer>
+      </Col>)
     }
     
     return <div ref={ref} className='flatlist-row hovered' style={style} onClick={select}>
@@ -177,15 +179,11 @@ const FilterContainer = ({children}) => {
   return <div className="flatlist-filter-row sticky" style={style}>{children}</div>
 }
 
-const FilterCol = ({colKey, isFilterable, isSortable, ...colProps}) => {
+const FilterCol = ({colKey, isHidden, isFilterable, isSortable, ...colProps}) => {
 
   const [inputVal, setInputVal] = useState('');
 
   const {sort, filter} = useContext(FlatListContext);
-
-  const colStyle = {
-    display:'flex',
-  }
 
   const FilterComp = <div style={{display:'flex'}}>
     <Input bsSize="sm" value={inputVal} onChange={(e) => setInputVal(e.target.value)} />
@@ -194,11 +192,15 @@ const FilterCol = ({colKey, isFilterable, isSortable, ...colProps}) => {
     </Button>
   </div>
 
-  return <Col style={colStyle} {...colProps} >
+  const ManageComp = <div>
     {isFilterable && FilterComp}
     {isSortable && <Button color="warning" size="sm" onClick={() => {sort(colKey)}} style={{marginLeft:'0.5rem'}}>
         <img alt="sort-button" style={{height:'1rem'}} src={SortIcon} />
       </Button>}
+  </div>
+
+  return <Col className={`flatlist-filter-col ${ isHidden ? 'blank' : ''}`} style={{height: 40}} {...colProps} >
+    {!isHidden && ManageComp}
   </Col>
 }
 
@@ -211,24 +213,28 @@ const FilterRow = (colSpecs) => {
 
   const cols = [];
   for (let key in colSpecs){
-    const {width, isSortable, isFilterable} = colSpecs[key];
-    cols.push(<FilterCol md={width} key={key} colKey={key} isSortable={isSortable} isFilterable={isFilterable} />)
+    const {width, isSortable, isFilterable, noBackground} = colSpecs[key];
+    cols.push(<FilterCol md={width} key={key} colKey={key} {...{isSortable, isFilterable, isHidden:noBackground}}/>)
   }
 
   return () => <FilterContainer>{cols}</FilterContainer>
 }
 
 
-export const HeaderCol = ({children}) =>
-  <div style={{margin:'0.5rem'}}>{children}</div>;
+export const HeaderCol = ({width, noBack, children}) =>
+  <div className={`flatlist-header-col col-md-${width} ${noBack ? 'clear-back' : ''}`}>{children}</div>;
 
 const Header = (colSpecs) => {
 
   const cols = [];
   for (let key in colSpecs){
-    const {width, desc, HeaderColRenderer=HeaderCol} = colSpecs[key];
+    const {width, desc, HeaderColRenderer=HeaderCol, noBackground} = colSpecs[key];
 
-    cols.push(<Col md={width} key={key}><HeaderColRenderer>{desc}</HeaderColRenderer></Col>)
+    cols.push(<HeaderColRenderer
+      key={key}
+      width={width}
+      noBack={noBackground}
+    >{desc}</HeaderColRenderer>)
   }
 
   return <div className="flatlist-header">
