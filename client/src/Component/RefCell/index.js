@@ -16,19 +16,67 @@ const rem = (header) => {
   return header.replace(/#/g, '');
 }
 
-export default ({data}) => {
 
-  const {setCell, getSugg, getSuggValue, evaluate} = useContext(RefDataContext);
+const getSuggValue = (inputPath, sugg) => {
+  return inputPath.replace(/(?<=[$/])([^$/]*)$/, sugg);
+}
 
-  const {item, expr, result, status} = data;
+const getRef = (path, pathColumn, data) => {
+  let list = data, ref;
+  for (let seg of path) {
+    ref = list.find(({[pathColumn]: pathCol}) => pathCol === seg);
+    if (ref === undefined) break;
+    list = ref.children;
+  }
+  return ref;
+}
 
-  // const {} = getCell(index);
+// This handles auto-completing path
+const getPathSugg = (path, pathColumn, data) => {
+  const splitted = path.split('/').slice(1);
+  
+  if (splitted.length === 0){
+    return data.map(({[pathColumn]:col}) => `${col}`);
+  }
+  
+  const ref = getRef(splitted, pathColumn, data);
+  if (ref !== undefined){
+    return ref.children.map(({[pathColumn]:pathCol}) => `${pathCol}`);
+  }
+
+  return [];
+}
+
+
+export default ({data: cellData}) => {
+
+  const {data, pathColumn, colAlias, evaluate} = useContext(RefDataContext);
+
+  const {item, expr, result, status} = cellData;
   
   const [editing, setEditing] = useState()
   const [desc, setDesc] = useState(item);
   const [value, setValue] = useState(expr);
   const [suggestions, setSugg] = useState([]);
-  
+
+  const getSugg = (input) => {
+    // if the input matches the non-slash-non-semicolon substring in the end,
+    // this is an incomplete path, so we remove the last incomplete segment
+    // of path, and get the possible candidates.
+    if (input.match(/[/][^$/]*$/)) {
+      const lastSeg = input.split('/').slice(-1)[0];
+      const mostPart = input.replace(/[/][^$/]*$/, '');
+      return getPathSugg(mostPart, pathColumn, data).filter(cand => cand.includes(lastSeg));
+
+    // in this case we are matching an incomplete identifier.
+    } else if (input.match(/[$][^$*/+-]*$/)) {
+      return Object.keys(colAlias);
+    }
+
+    return [];
+  }
+
+
   // the method below will be directly used by Autosuggest
   // check: https://github.com/moroshko/react-autosuggest
   const funcs = {

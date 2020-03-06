@@ -22,7 +22,7 @@ const refCols = {
   ref: {desc: '条目', width: 12, isSortable: false, isFilterable: true, ColRenderer:RefCol, HistColRenderer: RefCol}
 }
 
-const evalColumnDict = {
+const colAlias = {
   借方: 'md',
   贷方: 'mc',
   期初: 'mb',
@@ -47,7 +47,7 @@ export default ({name, referredTableName, desc}) => {
     dataName: referredTableName,
     refsName: name,
     pathColumn: 'ccode_name',
-    evalColumnDict,
+    colAlias,
   }
   
   return <div style={{margin:'0px 10px', height:'100%'}}>

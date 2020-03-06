@@ -12,14 +12,14 @@ const traverse = (refs, func, order='POST', ...args) => {
   }
 }  
 
-export default (refTable, pathColumn, evalDict, dataTable, varTable, funcTable) => {
-  traverse(refTable, evalSingle, 'POST', pathColumn, evalDict, dataTable, varTable, funcTable)
+export default (refTable, pathColumn, colAlias, dataTable, varTable, funcTable) => {
+  traverse(refTable, evalSingle, 'POST', pathColumn, colAlias, dataTable, varTable, funcTable)
   return [...refTable];
 }
 
 // For every refRecord, we need the record itself, and
 // the two tables, variable table, and function table.
-const evalSingle = (rec, pathColumn, evalDict, dataTable, varTable, funcTable) => {
+const evalSingle = (rec, pathColumn, colAlias, dataTable, varTable, funcTable) => {
   let {item, expr} = rec.ref;
   let varName;
 
@@ -34,7 +34,7 @@ const evalSingle = (rec, pathColumn, evalDict, dataTable, varTable, funcTable) =
   // that writes the result into rec.
   // console.log('before eval expr', expr, rec);
   // console.log(expr, 'original');
-  evalExpr(expr, rec, pathColumn, evalDict, dataTable, varTable, funcTable);
+  evalExpr(expr, rec, pathColumn, colAlias, dataTable, varTable, funcTable);
 
   // if a binding is detected, then insert it into varTable.
   // if the result is problematic, then the binded variable
@@ -44,7 +44,7 @@ const evalSingle = (rec, pathColumn, evalDict, dataTable, varTable, funcTable) =
   }
 }
 
-const evalExpr = (expr, rec, pathColumn, evalDict, dataTable, varTable, funcTable) => {
+const evalExpr = (expr, rec, pathColumn, colAlias, dataTable, varTable, funcTable) => {
   
   // if found expr a function name, then pass the rec and varTable
   // into it. It doesn't support complex operation with dataTable
@@ -57,11 +57,11 @@ const evalExpr = (expr, rec, pathColumn, evalDict, dataTable, varTable, funcTabl
     let path;
     [path, expr] = expr.split(':');
     let dataRecs = evalPath(path, pathColumn, dataTable);
-    evalArithExpr(expr, rec, evalDict, varTable, dataRecs);
+    evalArithExpr(expr, rec, colAlias, varTable, dataRecs);
 
   // otherwise, it falls back to a general arithmetic expression.
   } else {
-    evalArithExpr(expr, rec, evalDict, varTable);
+    evalArithExpr(expr, rec, colAlias, varTable);
     // console.log(rec.ref)
   }
 }
@@ -110,11 +110,11 @@ const evalPath = (pathString, pathColumn, dataTable) => {
     }))
 }
 
-const evalArithExpr = (expr, rec, evalDict, table, dataRecs) => {
+const evalArithExpr = (expr, rec, colAlias, table, dataRecs) => {
   
   // remove all whitespace chars;
   expr = expr.replace(/[\s$]*/g, '');
-  // console.log(expr, evalDict)
+  // console.log(expr, colAlias)
 
   // handle if there is a equal operator
   if(expr.includes('===') && expr.split('===').length === 2){
@@ -123,7 +123,7 @@ const evalArithExpr = (expr, rec, evalDict, table, dataRecs) => {
   // in this case we are handling a plain expression without
   // reference
   } else if (dataRecs === undefined){
-    Object.assign(rec.ref, evalSingleArithExpr(expr, evalDict, table));
+    Object.assign(rec.ref, evalSingleArithExpr(expr, colAlias, table));
 
   // otherwise, we are handling a set of path which refers to the
   // data table, and we will process them respectively. Finally,
@@ -131,7 +131,7 @@ const evalArithExpr = (expr, rec, evalDict, table, dataRecs) => {
   } else {
     const summedResult = dataRecs
       .map(({dataRec, path}) => {
-        const evalResult = evalSingleArithExpr(expr, evalDict, table, dataRec)
+        const evalResult = evalSingleArithExpr(expr, colAlias, table, dataRec)
         return {...evalResult, undefPath: dataRec === undefined ? [path] : []}
       })
       .reduce(({result:resultAcc, status:statusAcc, undefPath:undefPathAcc}, {result, status, undefVar, undefPath}) => ({
@@ -145,12 +145,12 @@ const evalArithExpr = (expr, rec, evalDict, table, dataRecs) => {
   }
 }
 
-const evalSingleArithExpr = (expr, evalDict, varTable, dataRec={}) => {
-  const {expr: newExpr, undefVar} = prepareExpr(expr, evalDict, varTable, dataRec);
+const evalSingleArithExpr = (expr, colAlias, varTable, dataRec={}) => {
+  const {expr: newExpr, undefVar} = prepareExpr(expr, colAlias, varTable, dataRec);
   return evalSingleArithExprResult(newExpr, undefVar);
 }
 
-const prepareExpr = (expr, evalDict, varTable, dataRec) => {
+const prepareExpr = (expr, colAlias, varTable, dataRec) => {
   let varList = expr.split(/[()*/+-]+/).filter(e => e.length > 0);
   const undefVar = [];
   for (let variable of varList){
@@ -159,8 +159,8 @@ const prepareExpr = (expr, evalDict, varTable, dataRec) => {
     }
     if(variable in varTable){
       expr = expr.replace(variable, `(${varTable[variable]})`);
-    } else if (evalDict[variable] in dataRec){
-      expr = expr.replace(variable, `(${dataRec[evalDict[variable]]})`);
+    } else if (colAlias[variable] in dataRec){
+      expr = expr.replace(variable, `(${dataRec[colAlias[variable]]})`);
     } else {
       expr = expr.replace(variable, '(0)');
       undefVar.push(variable);

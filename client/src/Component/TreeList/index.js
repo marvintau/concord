@@ -79,7 +79,12 @@ const ItemWrapper = forwardRef(({ data, index, style }, ref) => {
     return <div ref={ref}><div style={{height:30}} /></div>;
   }
 
-  return <ItemRenderer ref={ref} data={entries[index]} style={style} select={() => select(entries[index].listIndex)}/>;
+  return <ItemRenderer
+    ref={ref}
+    style={style}
+    data={entries[index]}
+    select={() => select(entries[index].listIndex)}
+  />;
 });
 
 
@@ -241,6 +246,8 @@ const Row = (colSpecs) => {
 
   return forwardRef(({ data, style, select}, ref) => {
   
+    console.log(data, 'row');
+
     const cols = [];
     for (let key in colSpecs){
       const {width, ColRenderer=Column} = colSpecs[key];
