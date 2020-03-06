@@ -180,6 +180,7 @@ const TreeList = function({data, children, historyRowHeight, historyRowRenderer,
   return <TreeListContext.Provider value={{history, sublist, select, pop, sort, filter}}>
     <List
       itemData={{ ItemRenderer: children, entries}}
+      itemCount={entries.length}
       innerElementType={HistoryContainer(historyRowRenderer, filterRowRenderer, historyRowHeight, history, pop)}
       {...rest}
     >
@@ -355,7 +356,6 @@ const TableContent = ({data, colSpecs}) => <>
         height={height}
         width={width}
         data={data}
-        itemCount={data.length}
         historyRowRenderer={HistoryRow(colSpecs)}
         historyRowHeight={HIST_LINE_HEIGHT}
         filterRowRenderer={FilterRow(colSpecs)}
@@ -406,7 +406,7 @@ export default ({data, status, colSpecs}) => {
     content = <ErrorIndicator {...{status}} />
   } else if (['PUSH', 'PULL'].includes(status)){
     content = <LoadIndicator {...{status}} />
-  } else if (status === 'DONE'){
+  } else if (status.startsWith('DONE')){
     content = <TableContent {...{colSpecs, data}} />;
   }
 

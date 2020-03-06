@@ -1,18 +1,32 @@
 import React, {useState, useContext} from 'react';
+
 import {RefDataContext} from '../RefData';
+
 import Autosuggest from 'react-autosuggest';
+import {Input} from 'reactstrap';
 
 import './react-autosuggest.css';
 import './refcell.css';
 
-export default ({index, disabled}) => {
+const level = (header) => {
+  return header.split('#').length - 1;
+}
 
-  const {getCell, setCell, getSugg, getSuggValue, evaluate} = useContext(RefDataContext);
+const rem = (header) => {
+  return header.replace(/#/g, '');
+}
 
-  const {value:val, result, status} = getCell(index);
+export default ({data}) => {
+
+  const {setCell, getSugg, getSuggValue, evaluate} = useContext(RefDataContext);
+
+  const {item, expr, result, status} = data;
+
+  // const {} = getCell(index);
   
   const [editing, setEditing] = useState()
-  const [value, setValue] = useState(val);
+  const [desc, setDesc] = useState(item);
+  const [value, setValue] = useState(expr);
   const [suggestions, setSugg] = useState([]);
   
   // the method below will be directly used by Autosuggest
@@ -24,7 +38,7 @@ export default ({index, disabled}) => {
     onSuggestionsClearRequested : () => setSugg([]),
     onSuggestionSelected : (e, {suggestionValue}) => {
       setValue(suggestionValue);
-      setCell(index, suggestionValue);
+      // setCell(index, suggestionValue);
     },
   }
 
@@ -34,24 +48,41 @@ export default ({index, disabled}) => {
     autoFocus: true,
     onChange:(e, {newValue}) => {
       setValue(newValue);
-    },
-    onBlur:(e) => {
-      setCell(index, value)
-      setEditing(false);
-      evaluate();
     }
+  }
+
+  const saveEdit = (e) => {
+    // setCell(path, desc, value)
+    setEditing(false);
+    evaluate();
   }
 
   const displayed = typeof result === 'number'
   ? parseFloat(result.toFixed(2)).toLocaleString('en-us')
   : result
 
+  const id = `ID${Math.random().toString(36).substring(2)}`
+
+  const displayedResult = result !== undefined
+  ? <div className={`refcell-badge ${status.toLowerCase()}`}>
+      {displayed}
+    </div>
+  : <></>
+
+  const displayedContent = !item.startsWith('#')
+  ? <span className='expr'>{expr}</span>
+  : <span className={`header-${level(item)}`}>{rem(item)}</span>;
+
   return editing
   ? <div className="refcell-line">
+      <Input placeholder="在这里修改描述" style={{height: '28.5px', marginRight: '5px'}} value={desc} onChange={(e) => setDesc(e.target.value)} />
       <Autosuggest {...{...funcs, suggestions, inputProps}} ref={() => { document.getElementById('sugg-input').focus(); }} />
+      <button className="button" onClick={saveEdit}>好</button>
     </div>
-  : <div className={`refcell-line ${editing ? "refcell-line-editing" : ''}`} onClick={() => !disabled && setEditing(true)}>
-      <div className="react-autosuggest__input refcell-text" style={{width:'auto'}}>{val}</div>
-      {result && <div className={`refcell-badge ${status.toLowerCase()}`}>{displayed}</div>}
+  : <div className={`refcell-line ${editing ? "refcell-line-editing" : ''}`}>
+      <div className="react-autosuggest__input refcell-text"
+        onClick={() => setEditing(true)}
+      >{displayedContent}</div>
+      {displayedResult}
     </div>
 }

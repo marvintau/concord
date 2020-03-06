@@ -69,12 +69,12 @@ let BALANCE = [
 
 let CASHFLOW_WORKSHEET = [
   ['项目', 'item'],
-  ['值', 'value']
+  ['值', 'expr']
 ]
 
 let FINANCIAL_WORKSHEET = [
   ['项目', 'item'],
-  ['值', 'value']
+  ['值', 'expr']
 ]
 
 module.exports = {

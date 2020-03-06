@@ -2,16 +2,23 @@
   width: 100%;
   height: 35px;
   display: flex; 
+  
   justify-content: space-between;
   align-items: center;
   line-height: normal;
 }
 
 .refcell-text {
+  height: 85%;
+  width: 80%;
   word-wrap: unset;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+
+.refcell-text:hover {
+  background-color: lightgray;
 }
 
 .refcell-line-editing {
@@ -28,6 +35,10 @@
   font-weight: 700;
 }
 
+.none {
+  background-color: var(--light);  
+}
+
 .norm {
   background-color: var(--light);
 }
@@ -42,4 +53,31 @@
 
 .fail {
   background-color: var(--red);
+}
+
+.tooltip {
+  background-color: var(--yellow) !important;
+  opacity: 1;
+}
+
+.header-1 {
+  font-weight: 900;
+  font-size: 130%;
+  letter-spacing: -0.01rem;
+  border-bottom: 1px solid black;
+}
+
+.header-2 {
+  font-weight: 700;
+  font-size: 110%;
+  margin-left: 5px;
+}
+
+.header-3{
+  font-weight: 700;
+  margin-left: 10px;
+}
+
+.expr{
+  margin-left: 20px;
 }

@@ -1,6 +1,10 @@
 import React, {createContext, useState, useEffect} from 'react';
 import Agnt from 'superagent';
 
+import evalTable from './evaluate';
+import evalFuncs from './eval-funcs';
+import parseTable from './parse';
+
 export const RefDataContext = createContext({
   
   // data refss
@@ -16,7 +20,6 @@ export const RefDataContext = createContext({
   // get the cell data through cell path
   // the path should be an array of array index (integers);
   // if the path is empty or containing invalid index, return undefined.
-  getCell: () => {},
   setCell: () => {},
   
   // get all suggestions with given input string
@@ -29,14 +32,6 @@ export const RefDataContext = createContext({
   setStatus: () => {}
 })
 
-// Not actually used.
-const traverse = (refs, func, order='POST') => {
-  for (let record of refs){
-    order === 'PREV' && func(record);
-    record.children  && traverse(record.children, func);
-    order === 'POST' && func(record);
-  }
-}  
 
 export const RefData = ({dataName, refsName, pathColumn, evalColumnDict, children}) => {
 
@@ -76,8 +71,11 @@ export const RefData = ({dataName, refsName, pathColumn, evalColumnDict, childre
         setStatus('DEAD_REFS_NOT_FOUND');
         return;
       }
+
+      const parsedRefs = parseTable(remoteRefs);
+      console.log(parsedRefs);
       setData(remoteData);
-      setRefs(remoteRefs);
+      setRefs(parsedRefs);
       setStatus('DONE_PULL');
     } catch(e){
       console.error(e);
@@ -236,21 +234,18 @@ export const RefData = ({dataName, refsName, pathColumn, evalColumnDict, childre
     return inputPath.replace(/(?<=[$/])([^$/]*)$/, sugg);
   }
 
-  const getCell = (index) => {
-    return refs[index];
-  }
-
   const setCell = (index, value) => {
     refs[index].value = value;
   }
 
   const evaluate = () => {
-    traverse(refs, evalSingle);
+    evalTable(refs, pathColumn, evalColumnDict, data, vars, evalFuncs);
   };
 
   const values = {
     data, refs, status,
-    evaluate, getCell, setCell, getSugg, getSuggValue, refresh, setStatus
+    evaluate, setCell,
+    getSugg, getSuggValue, refresh, setStatus
   }
 
   return <RefDataContext.Provider value={values}>

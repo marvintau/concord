@@ -14,22 +14,12 @@ const TreeCols = {
   me:   {desc: '期末', width: 2, isSortable: true, isFilterable: false,},
 }
 
-const RefCol = ({children: {index}}) =>
-  <RefCell index={index} />
-
-const refCols = {
-  ref: {desc: '条目', width: 12, isSortable: false, isFilterable: true, }
+const RefCol = ({children}) =>{
+  return <RefCell data={children} />
 }
 
-const RefList = ({colSpecs}) => {
-  const {table} = useContext(RefDataContext);
-  const wrappedTable = table.map((_e, i) => ({ref: {index:i}}));
-
-  for (let key in colSpecs){
-    colSpecs[key].ColRenderer = RefCol;
-  }
-
-  return <FlatList data={wrappedTable} colSpecs={colSpecs} />
+const refCols = {
+  ref: {desc: '条目', width: 12, isSortable: false, isFilterable: true, ColRenderer:RefCol, HistColRenderer: RefCol}
 }
 
 const evalColumnDict = {
@@ -47,7 +37,7 @@ const TableContent = ({name, desc}) => {
       {/* <ExportManager name={name} cols={cols}/> */}
       <UploadManager title={`上传${desc}Excel文件`} {...{name, data, refresh, setStatus}} />
     </div>
-    <TreeList {...{data, status, colSpecs:TreeCols}} />
+    <TreeList {...{data:refs, status, colSpecs:refCols}} />
   </>
 }
 
