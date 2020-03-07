@@ -50,7 +50,7 @@ const getPathSugg = (path, pathColumn, data) => {
 
 export default ({data: cellData}) => {
 
-  const {data, pathColumn, colAlias, evaluate} = useContext(RefDataContext);
+  const {data, pathColumn, colAlias} = useContext(RefDataContext);
 
   const {item, expr, result, status} = cellData;
   
@@ -102,7 +102,6 @@ export default ({data: cellData}) => {
   const saveEdit = (e) => {
     // setCell(path, desc, value)
     setEditing(false);
-    evaluate();
   }
 
   const displayed = typeof result === 'number'

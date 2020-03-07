@@ -2,8 +2,13 @@ import React, {createContext, useState, useEffect} from 'react';
 import Agnt from 'superagent';
 
 import evalTable from './evaluate';
-import evalFuncs from './eval-funcs';
 import parseTable from './parse';
+
+const msg = {
+  unsupp: '不支持的表达式，或者引用的数字并不存在',
+  unrecog: '未识别',
+  notfoundref: '未能按路径找到引用的记录'
+}
 
 export const RefDataContext = createContext({
   
@@ -16,8 +21,8 @@ export const RefDataContext = createContext({
   push: () => {},
   pull: () => {},
 
-  // update the value of whole refs
-  evaluate: () => {},
+  // // update the value of whole refs
+  // evaluate: () => {},
 
   // get the cell data through cell path
   // the path should be an array of array index (integers);
@@ -34,12 +39,6 @@ export const RefData = ({dataName, refsName, pathColumn, colAlias, children}) =>
   const [refs, setRefs] = useState([]);
   const [data, setData] = useState([]);
   const [status, setStatus] = useState('INIT');
-
-  const msg = {
-    unsupp: '不支持的表达式，或者引用的数字并不存在',
-    unrecog: '未识别',
-    notfoundref: '未能按路径找到引用的记录'
-  }
 
   useEffect(() => {
     console.log(status, 'effect');
@@ -99,16 +98,17 @@ export const RefData = ({dataName, refsName, pathColumn, colAlias, children}) =>
   
   const setCell = (index, value) => {
     refs[index].value = value;
+    evaluate();
   }
 
   const evaluate = () => {
-    evalTable(refs, pathColumn, colAlias, data, vars, evalFuncs);
+    evalTable(refs, pathColumn, colAlias, data, vars);
   };
 
   const values = {
     data, refs, status,
     pathColumn, colAlias,
-    evaluate, setCell,
+    setCell,
   }
 
   return <RefDataContext.Provider value={values}>

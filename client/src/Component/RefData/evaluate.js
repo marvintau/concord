@@ -1,3 +1,5 @@
+import Funcs from './funcs';
+
 const msg = {
   unsupp: '不支持的表达式，或者引用的数字并不存在',
   unrecog: '未识别',
@@ -12,14 +14,14 @@ const traverse = (refs, func, order='POST', ...args) => {
   }
 }  
 
-export default (refTable, pathColumn, colAlias, dataTable, varTable, funcTable) => {
-  traverse(refTable, evalSingle, 'POST', pathColumn, colAlias, dataTable, varTable, funcTable)
+export default (refTable, pathColumn, colAlias, dataTable, varTable) => {
+  traverse(refTable, evalSingle, 'POST', pathColumn, colAlias, dataTable, varTable)
   return [...refTable];
 }
 
 // For every refRecord, we need the record itself, and
 // the two tables, variable table, and function table.
-const evalSingle = (rec, pathColumn, colAlias, dataTable, varTable, funcTable) => {
+const evalSingle = (rec, pathColumn, colAlias, dataTable, varTable) => {
   let {item, expr} = rec.ref;
   let varName;
 
@@ -34,7 +36,7 @@ const evalSingle = (rec, pathColumn, colAlias, dataTable, varTable, funcTable) =
   // that writes the result into rec.
   // console.log('before eval expr', expr, rec);
   // console.log(expr, 'original');
-  evalExpr(expr, rec, pathColumn, colAlias, dataTable, varTable, funcTable);
+  evalExpr(expr, rec, pathColumn, colAlias, dataTable, varTable);
 
   // if a binding is detected, then insert it into varTable.
   // if the result is problematic, then the binded variable
@@ -44,13 +46,13 @@ const evalSingle = (rec, pathColumn, colAlias, dataTable, varTable, funcTable) =
   }
 }
 
-const evalExpr = (expr, rec, pathColumn, colAlias, dataTable, varTable, funcTable) => {
+const evalExpr = (expr, rec, pathColumn, colAlias, dataTable, varTable) => {
   
   // if found expr a function name, then pass the rec and varTable
   // into it. It doesn't support complex operation with dataTable
   // yet. 
-  if (expr in funcTable){
-    funcTable[expr](rec)
+  if (expr in Funcs){
+    Funcs[expr](rec)
 
   // or, check if the expression conforms to a reference
   } else if (expr.startsWith('/') && expr.includes(':') && expr.split(':').length === 2){
