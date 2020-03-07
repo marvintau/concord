@@ -16,7 +16,6 @@ export const RefDataContext = createContext({
   refs: [],
   data: [],
   pathColumn: '',
-  colAlias: {},
 
   push: () => {},
   pull: () => {},
@@ -33,9 +32,8 @@ export const RefDataContext = createContext({
 })
 
 
-export const RefData = ({dataName, refsName, pathColumn, colAlias, children}) => {
+export const RefData = ({dataName, refsName, pathColumn, children}) => {
 
-  const [vars, setVars] = useState({});
   const [refs, setRefs] = useState([]);
   const [data, setData] = useState([]);
   const [status, setStatus] = useState('INIT');
@@ -47,7 +45,7 @@ export const RefData = ({dataName, refsName, pathColumn, colAlias, children}) =>
         await pull();
       }
       if (status === 'DONE_PULL'){
-        evaluate();
+        evalTable(refs, pathColumn, data);
       }
     })()
   }, [status])
@@ -92,23 +90,14 @@ export const RefData = ({dataName, refsName, pathColumn, colAlias, children}) =>
     }
   }
 
-  const refresh = (data) => {
-    setData(data);
-  }
-  
   const setCell = (index, value) => {
     refs[index].value = value;
-    evaluate();
+    evalTable(refs, pathColumn, data);
   }
-
-  const evaluate = () => {
-    evalTable(refs, pathColumn, colAlias, data, vars);
-  };
 
   const values = {
     data, refs, status,
-    pathColumn, colAlias,
-    setCell,
+    pathColumn, setCell,
   }
 
   return <RefDataContext.Provider value={values}>

@@ -22,13 +22,6 @@ const refCols = {
   ref: {desc: '条目', width: 12, isSortable: false, isFilterable: true, ColRenderer:RefCol, HistColRenderer: RefCol}
 }
 
-const colAlias = {
-  借方: 'md',
-  贷方: 'mc',
-  期初: 'mb',
-  期末: 'me'
-}
-
 const TableContent = ({name, desc}) => {
   const {data, refs, status, refresh, setStatus} = useContext(RefDataContext);
 
@@ -47,7 +40,6 @@ export default ({name, referredTableName, desc}) => {
     dataName: referredTableName,
     refsName: name,
     pathColumn: 'ccode_name',
-    colAlias,
   }
   
   return <div style={{margin:'0px 10px', height:'100%'}}>

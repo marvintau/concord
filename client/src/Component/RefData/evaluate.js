@@ -1,4 +1,7 @@
 import Funcs from './funcs';
+import ColumnAlias from './column-alias';
+
+let vars = {};
 
 const msg = {
   unsupp: '不支持的表达式，或者引用的数字并不存在',
@@ -6,22 +9,21 @@ const msg = {
   notfoundref: '未能按路径找到引用的记录'
 }
 
-const traverse = (refs, func, order='POST', ...args) => {
-  for (let record of refs){
-    order === 'PREV' && func(record, ...args);
-    record.children  && traverse(record.children, func, order, ...args);
-    order === 'POST' && func(record, ...args);
-  }
-}  
-
-export default (refTable, pathColumn, colAlias, dataTable, varTable) => {
-  traverse(refTable, evalSingle, 'POST', pathColumn, colAlias, dataTable, varTable)
+export default (refTable, pathColumn, dataTable) => {
+  evalRecursive(refTable, pathColumn, dataTable)
   return [...refTable];
 }
 
+const evalRecursive = (refs, pathColumn, dataTable) => {
+  for (let record of refs){
+    record.children && evalRecursive(record.children, pathColumn, dataTable);
+    evalSingle(record, pathColumn, dataTable);
+  }
+}  
+
 // For every refRecord, we need the record itself, and
 // the two tables, variable table, and function table.
-const evalSingle = (rec, pathColumn, colAlias, dataTable, varTable) => {
+const evalSingle = (rec, pathColumn, dataTable) => {
   let {item, expr} = rec.ref;
   let varName;
 
@@ -36,17 +38,17 @@ const evalSingle = (rec, pathColumn, colAlias, dataTable, varTable) => {
   // that writes the result into rec.
   // console.log('before eval expr', expr, rec);
   // console.log(expr, 'original');
-  evalExpr(expr, rec, pathColumn, colAlias, dataTable, varTable);
+  evalExpr(expr, rec, pathColumn, dataTable);
 
   // if a binding is detected, then insert it into varTable.
   // if the result is problematic, then the binded variable
   // will be set 0.
   if (varName){
-    varTable[varName] = rec.status === 'NORM' ? rec.result : 0;
+    vars[varName] = rec.status === 'NORM' ? rec.result : 0;
   }
 }
 
-const evalExpr = (expr, rec, pathColumn, colAlias, dataTable, varTable) => {
+const evalExpr = (expr, rec, pathColumn, dataTable) => {
   
   // if found expr a function name, then pass the rec and varTable
   // into it. It doesn't support complex operation with dataTable
@@ -59,11 +61,11 @@ const evalExpr = (expr, rec, pathColumn, colAlias, dataTable, varTable) => {
     let path;
     [path, expr] = expr.split(':');
     let dataRecs = evalPath(path, pathColumn, dataTable);
-    evalArithExpr(expr, rec, colAlias, varTable, dataRecs);
+    evalArithExpr(expr, rec, dataRecs);
 
   // otherwise, it falls back to a general arithmetic expression.
   } else {
-    evalArithExpr(expr, rec, colAlias, varTable);
+    evalArithExpr(expr, rec);
     // console.log(rec.ref)
   }
 }
@@ -112,7 +114,7 @@ const evalPath = (pathString, pathColumn, dataTable) => {
     }))
 }
 
-const evalArithExpr = (expr, rec, colAlias, table, dataRecs) => {
+const evalArithExpr = (expr, rec, dataRecs) => {
   
   // remove all whitespace chars;
   expr = expr.replace(/[\s$]*/g, '');
@@ -125,7 +127,7 @@ const evalArithExpr = (expr, rec, colAlias, table, dataRecs) => {
   // in this case we are handling a plain expression without
   // reference
   } else if (dataRecs === undefined){
-    Object.assign(rec.ref, evalSingleArithExpr(expr, colAlias, table));
+    Object.assign(rec.ref, evalSingleArithExpr(expr));
 
   // otherwise, we are handling a set of path which refers to the
   // data table, and we will process them respectively. Finally,
@@ -133,7 +135,7 @@ const evalArithExpr = (expr, rec, colAlias, table, dataRecs) => {
   } else {
     const summedResult = dataRecs
       .map(({dataRec, path}) => {
-        const evalResult = evalSingleArithExpr(expr, colAlias, table, dataRec)
+        const evalResult = evalSingleArithExpr(expr, dataRec)
         return {...evalResult, undefPath: dataRec === undefined ? [path] : []}
       })
       .reduce(({result:resultAcc, status:statusAcc, undefPath:undefPathAcc}, {result, status, undefVar, undefPath}) => ({
@@ -147,22 +149,22 @@ const evalArithExpr = (expr, rec, colAlias, table, dataRecs) => {
   }
 }
 
-const evalSingleArithExpr = (expr, colAlias, varTable, dataRec={}) => {
-  const {expr: newExpr, undefVar} = prepareExpr(expr, colAlias, varTable, dataRec);
+const evalSingleArithExpr = (expr, dataRec={}) => {
+  const {expr: newExpr, undefVar} = prepareExpr(expr, dataRec);
   return evalSingleArithExprResult(newExpr, undefVar);
 }
 
-const prepareExpr = (expr, colAlias, varTable, dataRec) => {
+const prepareExpr = (expr, dataRec) => {
   let varList = expr.split(/[()*/+-]+/).filter(e => e.length > 0);
   const undefVar = [];
   for (let variable of varList){
     if(!isNaN(variable)){
       continue;
     }
-    if(variable in varTable){
-      expr = expr.replace(variable, `(${varTable[variable]})`);
-    } else if (colAlias[variable] in dataRec){
-      expr = expr.replace(variable, `(${dataRec[colAlias[variable]]})`);
+    if(variable in vars){
+      expr = expr.replace(variable, `(${vars[variable]})`);
+    } else if (ColumnAlias[variable] in dataRec){
+      expr = expr.replace(variable, `(${dataRec[ColumnAlias[variable]]})`);
     } else {
       expr = expr.replace(variable, '(0)');
       undefVar.push(variable);
