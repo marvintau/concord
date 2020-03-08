@@ -105,7 +105,7 @@ export default ({disabled, children: cellData}) => {
   }
 
   const displayed = typeof result === 'number'
-  ? parseFloat(result.toFixed(2)).toLocaleString('en-us')
+  ? parseFloat(result.toFixed(2)).toLocaleString('en-us', {minimumFractionDigits: 2})
   : result
 
   const id = `ID${Math.random().toString(36).substring(2)}`

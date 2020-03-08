@@ -47,7 +47,9 @@ export const RefData = ({dataName, refsName, pathColumn, children}) => {
       }
       if (status === 'DONE_PULL'){
         evalTable(refs, pathColumn, data);
-        setFlat(flatten(refs))
+        const flattened = flatten(refs);
+        console.log(flattened.map(({ref:{result}}) => result));
+        setFlat(flattened);
       }
     })()
   }, [status])
