@@ -3,6 +3,8 @@ import {Spinner,Col, Input, Button} from 'reactstrap';
 import {DynamicSizeList as List} from 'react-window'
 import AutoSizer from "react-virtualized-auto-sizer";
 
+import Cell from '../Cell';
+
 import './tree-list.css';
 import FilterIcon from './filter.svg';
 import SortIcon from './sort-ascending.svg';
@@ -234,23 +236,14 @@ const HistoryContainer = (HistRowRenderer, FilterRowRenderer, historyRowHeight, 
 
 const HIST_LINE_HEIGHT = 30;
 
-export const Column = ({children}) => {
-  return typeof children === 'number'
-  ? <div style={{textAlign:'right', fontFamily:'Arial Narrow', fontWeight:'700'}}>
-      {parseFloat(children.toFixed(2)).toLocaleString('en-us')}
-    </div>
-  : <div style={{margin:'0.5rem'}}>{children}</div>;
-}
-
 const Row = (colSpecs) => {
 
   return forwardRef(({ data, style, select}, ref) => {
   
-    console.log(data, 'row');
-
     const cols = [];
     for (let key in colSpecs){
-      const {width, ColRenderer=Column} = colSpecs[key];
+      const {width, cellType:type} = colSpecs[key];
+      const ColRenderer = Cell[type];
       cols.push(<Col md={width} key={key}><ColRenderer>{data[key]}</ColRenderer></Col>)
     }
     
@@ -260,22 +253,15 @@ const Row = (colSpecs) => {
   });
 }
 
-export const HistCol = ({children}) => {
-  return typeof children === 'number'
-  ? <div style={{textAlign:'right', fontFamily:'Arial Narrow', fontWeight:'700'}}>
-      {parseFloat(children.toFixed(2)).toLocaleString('en-us')}
-    </div>
-  : <div style={{margin:'0.5rem'}}>{children}</div>;
-}
-
 const HistoryRow = (colSpecs) => {
 
   return ({ data, style, pop}) => {
       
     const cols = [];
     for (let key in colSpecs){
-      const {width, HistColRenderer=HistCol} = colSpecs[key];
-      cols.push(<Col md={width} key={key}><HistColRenderer>{data[key]}</HistColRenderer></Col>)
+      const {width, cellType:type} = colSpecs[key];
+      const ColRenderer = Cell[type];
+      cols.push(<Col md={width} key={key}><ColRenderer disabled={true}>{data[key]}</ColRenderer></Col>)
     }
 
     return <div className="treelist-history-row sticky hovered" style={style} onClick={pop}>
@@ -320,7 +306,7 @@ const FilterCol = ({colKey, isFilterable, isSortable, ...colProps}) => {
 }
 
 const FilterRow = (colSpecs) => {
-
+  console.log(colSpecs, 'filter')
   let isNothing = Object.values(colSpecs).every(({isSortable, isFilterable}) => !(isSortable || isFilterable));
   if(isNothing){
     return undefined;

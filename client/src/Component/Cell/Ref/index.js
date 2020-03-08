@@ -1,6 +1,6 @@
 import React, {useState, useContext} from 'react';
 
-import {RefDataContext} from '../RefData';
+import {RefDataContext} from '../../RefData';
 
 import Autosuggest from 'react-autosuggest';
 import {Input} from 'reactstrap';
@@ -48,7 +48,7 @@ const getPathSugg = (path, pathColumn, data) => {
 }
 
 
-export default ({data: cellData}) => {
+export default ({disabled, children: cellData}) => {
 
   const {data, pathColumn, colAlias} = useContext(RefDataContext);
 
@@ -128,7 +128,7 @@ export default ({data: cellData}) => {
     </div>
   : <div className={`refcell-line ${editing ? "refcell-line-editing" : ''}`}>
       <div className="react-autosuggest__input refcell-text"
-        onClick={() => setEditing(true)}
+        onClick={() => {(!disabled) && setEditing(true)}}
       >{displayedContent}</div>
       {displayedResult}
     </div>

@@ -3,7 +3,7 @@ import {Spinner, Col, Input, Button} from 'reactstrap';
 import {DynamicSizeList as List} from 'react-window'
 import AutoSizer from "react-virtualized-auto-sizer";
 
-import {DataFetchContext} from '../DataFetch'
+import Cell from '../Cell';
 
 import './flat-list.css';
 import FilterIcon from './filter.svg';
@@ -157,7 +157,8 @@ const Row = (colSpecs) => {
   
     const cols = [];
     for (let key in colSpecs){
-      const {width, ColRenderer=Column, noBackground} = colSpecs[key];
+      const {width, cellType:type, noBackground} = colSpecs[key];
+      const ColRenderer = Cell[type];
       cols.push(<Col className={noBackground ? 'clear-back' : ''} md={width} key={key}>
         <ColRenderer index={index-1}>{data[key]}</ColRenderer>
       </Col>)
@@ -289,21 +290,18 @@ const TableContent = ({colSpecs, data}) => <>
   </div>
 </>
 
-export default ({colSpecs, style}) => {
-
-  const {status, data} = useContext(DataFetchContext);
-  console.log(status, data);
+export default ({data, status, colSpecs}) => {
 
   let content;
   if (status.startsWith('DEAD')){
     content = <ErrorIndicator {...{status}} />
   } else if (['PUSH', 'PULL'].includes(status)){
     content = <LoadIndicator {...{status}} />
-  } else if (status === 'DONE'){
+  } else if (status.startsWith('DONE')){
     content = <TableContent {...{colSpecs, data}} />;
   }
 
-  return <div style={{display:'flex', flexDirection:"column", height:'100%', width:'100%', ...style}}>
+  return <div style={{display:'flex', flexDirection:"column", height:'100%', width:'100%'}}>
     {content}
   </div>
 }

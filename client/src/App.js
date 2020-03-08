@@ -11,11 +11,9 @@ import {genEntries, genRefTable} from './nameGenerate';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
-const entries = genEntries(20000);
-const refTable = genRefTable(entries, 200);
-// HistoryHodler is passed into as the innerElementType, which is div by normal.
-// however, it doesn't affected by scrolling, and is the place where we are going
-// to render sticky items.
+const refCols = {
+  ref: {desc: '条目', width: 12, isSortable: false, isFilterable: true, cellType:'Ref'}
+}
 
 const App = () => {
 
@@ -28,13 +26,13 @@ const App = () => {
         <Route exact path="/Home"><></>
         </Route>
         <Route path="/Home/Preface/TreeList">
-          <TreeListExamplePage data={entries} />
+          {/* <TreeListExamplePage data={entries} /> */}
         </Route>
         <Route path="/Home/Preface/Balance">
-          <BalancePage data={entries} name="BALANCE" desc="余额表" />
+          {/* <BalancePage data={entries} name="BALANCE" desc="余额表" /> */}
         </Route>
         <Route path="/Home/Preface/ReferredTreeList">
-          <ReferredListExamplePage name="CASHFLOW_WORKSHEET" referredTableName="BALANCE" desc="现流表" />
+          <ReferredListExamplePage tableName="CASHFLOW_WORKSHEET" referredName="BALANCE" desc="现流表" colSpecs={refCols}/>
         </Route>
       </DepRouter>
     </Router>
