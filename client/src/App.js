@@ -1,12 +1,7 @@
 import React from "react";
 import {BrowserRouter as Router, Route} from 'react-router-dom';
 import {DepRouter} from './Component/DepRouter';
-
-import TreeListExamplePage from './Page/TreeListExample';
-import BalancePage from './Page/Balance';
-import ReferredListExamplePage from './Page/ReferredListExample';
-
-import {genEntries, genRefTable} from './nameGenerate';
+import ReferredListExamplePage from './Component/List';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';

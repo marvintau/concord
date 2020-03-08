@@ -1,5 +1,5 @@
 import React from 'react';
-import TreeList from '../Component/TreeList';
+import TreeList from '../Component/List/TreeList';
 import ExportManager from '../Component/ExportManager';
 import UploadManager from '../Component/UploadManager';
 import {DataFetch} from '../Component/DataFetch';

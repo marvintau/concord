@@ -1,13 +1,12 @@
 import React, { createContext, useContext, useState, forwardRef, useEffect} from "react";
-import {Spinner,Col, Input, Button} from 'reactstrap';
 import {DynamicSizeList as List} from 'react-window'
 import AutoSizer from "react-virtualized-auto-sizer";
 
+import FilterRow from '../FilterRow';
 import Cell from '../Cell';
 
+import {Col} from 'reactstrap';
 import './tree-list.css';
-import FilterIcon from './filter.svg';
-import SortIcon from './sort-ascending.svg';
 
 const DEFAULT_FILTER_HEIGHT = 3;
 
@@ -270,78 +269,7 @@ const HistoryRow = (colSpecs) => {
   }
 };
 
-const FilterContainer = ({children, topLength}) => {
-  
-  const style = {
-    top: topLength * HIST_LINE_HEIGHT,
-    height: 40,
-  }
-  
-  return <div className="treelist-filter-row sticky" style={style}>{children}</div>
-}
-
-const FilterCol = ({colKey, isFilterable, isSortable, ...colProps}) => {
-
-  const [inputVal, setInputVal] = useState('');
-
-  const {sort, filter} = useContext(TreeListContext);
-
-  const colStyle = {
-    display:'flex',
-  }
-
-  const FilterComp = <div style={{display:'flex'}}>
-    <Input bsSize="sm" value={inputVal} onChange={(e) => setInputVal(e.target.value)} />
-    <Button color="warning" size="sm" style={{marginLeft:'0.5rem'}} onClick={() => filter(colKey, inputVal)}>
-      <img alt="filter-button" style={{height:'1rem'}} src={FilterIcon} />
-    </Button>
-  </div>
-
-  return <Col style={colStyle} {...colProps} >
-    {isFilterable && FilterComp}
-    {isSortable && <Button color="warning" size="sm" onClick={() => {sort(colKey)}} style={{marginLeft:'0.5rem'}}>
-        <img alt="sort-button" style={{height:'1rem'}} src={SortIcon} />
-      </Button>}
-  </Col>
-}
-
-const FilterRow = (colSpecs) => {
-  console.log(colSpecs, 'filter')
-  let isNothing = Object.values(colSpecs).every(({isSortable, isFilterable}) => !(isSortable || isFilterable));
-  if(isNothing){
-    return undefined;
-  }
-
-  const cols = [];
-  for (let key in colSpecs){
-    const {width, isSortable, isFilterable} = colSpecs[key];
-    cols.push(<FilterCol md={width} key={key} colKey={key} isSortable={isSortable} isFilterable={isFilterable} />)
-  }
-
-  return ({topLength}) => 
-    <FilterContainer topLength={topLength}>
-      {cols}
-    </FilterContainer>
-}
-
-export const HeaderCol = ({children}) =>
-  <div style={{margin:'0.5rem'}}>{children}</div>;
-
-const Header = (colSpecs) => {
-
-  const cols = [];
-  for (let key in colSpecs){
-    const {width, desc, HeaderColRenderer=HeaderCol} = colSpecs[key];
-    cols.push(<Col md={width} key={key}><HeaderColRenderer>{desc}</HeaderColRenderer></Col>)
-  }
-
-  return <div className="treelist-header">
-    {cols}
-  </div>
-}
-
-const TableContent = ({data, colSpecs}) => <>
-  {Header(colSpecs)}
+export default ({data, colSpecs}) => 
   <div style={{flex:1, width:'100%'}}>
     <AutoSizer>
     {({height, width}) => {
@@ -358,52 +286,3 @@ const TableContent = ({data, colSpecs}) => <>
     }}
     </AutoSizer>
   </div>
-</>
-
-const LoadIndicator = ({status}) => {
-  const text = {
-    'PUSH': '更新',
-    'PULL': '载入'
-  }[status];
-  return <>
-    {Header({none:{width:12}})}
-    <div className="nodata-indicator">
-      <Spinner color="info" />
-      <div style={{marginTop:'20px'}}>正在{text}数据...</div>
-    </div>
-  </>
-};
-
-const ErrorIndicator = ({status}) => {
-  const text = {
-    'DEAD_LOAD' : '网络错误，请刷新重试，或联系开发人员',
-    'DEAD_INFO' : '未指定数据和远程地址。请联系开发人员',
-    'DEAD_REFS_NOT_FOUND' : '没有找到引用表的数据，可能是您还没上传',
-    'DEAD_DATA_NOT_FOUND' : '没有找到数据表的数据，可能是您还没上传',
-    'DEAD_NOT_IMPL' : '服务器上没有对应数据的处理方法，请联系开发人员',
-    'DEAD_PROC_ERROR' : '处理数据时发生了错误，请联系开发人员'
-  }[status];
-  return <>
-    {Header({none:{width:12}})}
-    <div className="nodata-indicator">
-      <div className="bad-icon" />
-      <div style={{marginTop:'20px'}}>{text}</div>
-    </div>
-  </>
-}
-
-export default ({data, status, colSpecs}) => {
-
-  let content;
-  if (status.startsWith('DEAD')){
-    content = <ErrorIndicator {...{status}} />
-  } else if (['PUSH', 'PULL'].includes(status)){
-    content = <LoadIndicator {...{status}} />
-  } else if (status.startsWith('DONE')){
-    content = <TableContent {...{colSpecs, data}} />;
-  }
-
-  return <div style={{display:'flex', flexDirection:"column", height:'100%', width:'100%'}}>
-    {content}
-  </div>
-}

@@ -24,13 +24,6 @@
   align-items: center;
 }
 
-.treelist-filter-row {
-  /* font-size: 80%; */
-  background-color:lightgray;
-  display: flex;
-  align-items: center;
-}
-
 .sticky {
   position: sticky !important;
   position: -webkit-sticky !important;

@@ -1,6 +1,6 @@
 import React, {useState, useContext} from 'react';
 
-import {RefDataContext} from '../../RefData';
+import {RefDataContext} from '../../../RefData';
 
 import Autosuggest from 'react-autosuggest';
 import {Input} from 'reactstrap';

@@ -27,26 +27,6 @@
   align-items: center;
 }
 
-.flatlist-filter-row {
-  /* font-size: 80%; */
-  display: flex;
-  align-items: center;
-}
-
-.flatlist-filter-row > * {
-  width: 100%;
-}
-
-.flatlist-filter-col {
-  background-color:lightgray;
-  display: flex;
-  align-items: center;
-}
-
-.flatlist-filter-col > * {
-  display: flex;
-}
-
 .sticky {
   position: sticky !important;
   position: -webkit-sticky !important;

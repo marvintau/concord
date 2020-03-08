@@ -1,5 +1,5 @@
 import React from 'react';
-import List from '../Component/TreeList';
+import List from '../Component/List/TreeList';
 
 const colSpecs = {
   name: {desc: '名称', width: 2, isSortable: false, isFilterable: false},

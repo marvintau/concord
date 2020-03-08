@@ -1,0 +1,19 @@
+.filter-row {
+  /* font-size: 80%; */
+  display: flex;
+  align-items: center;
+}
+
+.filter-row > * {
+  width: 100%;
+}
+
+.filter-col {
+  background-color:lightgray;
+  display: flex;
+  align-items: center;
+}
+
+.filter-col > * {
+  display: flex;
+}
