@@ -22,6 +22,8 @@ export const RefDataContext = createContext({
   push: () => {},
   pull: () => {},
 
+  insert: () => {},
+  remove: () => {},
   // get the cell data through cell path
   // the path should be an array of array index (integers);
   // if the path is empty or containing invalid index, return undefined.
@@ -113,19 +115,56 @@ export const RefData = ({dataName, dataType="FILE", refsType="FILE", refsName, p
 
   const getCell = (path) => {
     let list = refs, rec;
-    for (let index of path){
+    for (let i = 0; i < path.length; i++){
+      const index = path[i];
       rec = list[index];
+      if (i === path.length - 1) break;
       list = rec.children;
     }
-    return rec;
+    return {rec, list};
   }
 
   const setCell = (path, desc, expr) => {
-    const rec = getCell(path);
+    const {rec} = getCell(path);
     rec.ref.expr = expr;
     rec.ref.desc = desc;
     const newRefs = evalTable(refs, pathColumn, data);
     setRefs(newRefs);
+  }
+
+  const insert = (path) => {
+    const {list} = getCell(path);
+    
+    let mostPath = [...path];
+    let lastPath = mostPath.pop();
+
+    list.splice(lastPath, 0, {
+      ref: {item: '新项目', expr: '1'},
+      children: []
+    });
+
+    for (let i = 0; i < list.length; i++){
+      list[i].path = [...mostPath, i];
+    }
+
+    setRefs([...refs]);
+    setFlat(flatten(refs));
+  }
+
+  const remove = (path) => {
+    const {list} = getCell(path);
+    
+    let mostPath = [...path];
+    let lastPath = mostPath.pop();
+
+    list.splice(lastPath, 1);
+
+    for (let i = 0; i < list.length; i++){
+      list[i].path = [...mostPath, i];
+    }
+
+    setRefs([...refs]);
+    setFlat(flatten(refs));
   }
 
   const refresh = (newData) => {
@@ -135,7 +174,7 @@ export const RefData = ({dataName, dataType="FILE", refsType="FILE", refsName, p
 
   const values = {
     data, refs, flat, status,
-    pathColumn, setCell, refresh
+    pathColumn, setCell, refresh, insert, remove
   }
 
   return <RefDataContext.Provider value={values}>

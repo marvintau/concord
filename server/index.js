@@ -42,9 +42,9 @@ const dirs = {
       dataType: 'DATA',
       tableName: 'PROJECT',
       colSpecs: {
-        year: {desc: '年度', width: 1, isSortable: false, isFilterable: true},
-        companyName: {desc: '项目（企业）名称', width: 10, isSortable: false, isFilterable: true},
-        link: {desc: '--', width: 1, isSortable: false, isFilterable: false, cellType:'Link'},
+        year: {desc: '年度', width: 1, isFilterable: true},
+        companyName: {desc: '项目（企业）名称', width: 10, isFilterable: true},
+        link: {desc: '--', width: 1, isFilterable: false, cellType:'Link'},
       },
       children: ['Project'],
     },
@@ -62,12 +62,12 @@ const dirs = {
       dataType: 'FILE',
       tableName: 'BALANCE',
       colSpecs: {
-        ccode: {desc: '编码', width: 1, isSortable: false, isFilterable: true},
-        ccode_name: {desc: '科目名称', width: 3, isSortable: false, isFilterable: true},
-        mb: {desc: '期初', width: 2, isSortable: false, isFilterable: true, cellType:'Number'},
-        md: {desc: '借方', width: 2, isSortable: false, isFilterable: true, cellType:'Number'},
-        mc: {desc: '贷方', width: 2, isSortable: false, isFilterable: true, cellType:'Number'},
-        me: {desc: '期末', width: 2, isSortable: false, isFilterable: true, cellType:'Number'},
+        ccode: {desc: '编码', width: 1, isFilterable: true},
+        ccode_name: {desc: '科目名称', width: 3, isFilterable: true},
+        mb: {desc: '期初', width: 2, isFilterable: true, cellType:'Number'},
+        md: {desc: '借方', width: 2, isFilterable: true, cellType:'Number'},
+        mc: {desc: '贷方', width: 2, isFilterable: true, cellType:'Number'},
+        me: {desc: '期末', width: 2, isFilterable: true, cellType:'Number'},
       }
     },
     ReferredTreeList: {
@@ -78,7 +78,8 @@ const dirs = {
       tableName: 'CASHFLOW_WORKSHEET',
       referredName: 'BALANCE',
       colSpecs: {
-        ref: {desc: '条目', width: 12, isSortable: false, isFilterable: true, cellType:'Ref'},
+        ref: {desc: '条目', width: 11, isFilterable: true, cellType:'Ref'},
+        edit: {desc: '编辑', width: 1, isFilterable: false, cellType:'Edit'},
       }      
     }
   }
