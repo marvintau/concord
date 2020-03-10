@@ -31,10 +31,12 @@ const ident = e => e;
 // then apply the pullProc of the fetched data. Or you wanted to create some custom saving
 // format on the server, then apply the pushProc.
 
-export const Data = ({initData=[], name='', dataType="file", pushProc=ident, pullProc=ident, children}) => {
+export const Data = ({initData=[], tableName='', dataType="file", pushProc=ident, pullProc=ident, children}) => {
 
   const [status, setStatus] = useState('INIT');
+  
   const [data, setData] = useState(initData);
+  const [flat, setFlat] = useState([]);
 
   // If there is not enough information to infer the data, then will be
   // set error immediately. However, displaying or retrieving the data,
@@ -44,29 +46,47 @@ export const Data = ({initData=[], name='', dataType="file", pushProc=ident, pul
   // Thus, even if the initData contains the full and ready data, The inner
   // component should wait for the status set to 'done'.
 
-  if(initData.length === 0 && name === '' && status === 'INIT'){
+  if(initData.length === 0 && tableName === '' && status === 'INIT'){
+    console.log(tableName, status);
     setStatus('DEAD_INFO');
   }
 
+  const flatten = (list) => {
+    const stack = [...list];
+    const res = [];
+    while(stack.length) {
+      const next = stack.shift();
+      next.children && stack.unshift(...next.children);
+      res.push(next);
+    }
+    return res;
+  }
+
   useEffect(() => {
-    if (status === 'INIT')
-      if (data.length > 0){
-        setStatus('DONE');
-      } else {
-        (async () => {
-          setStatus('LOAD');
-          pull();
-        })();
+    (async () => {
+      if (status === 'INIT') {
+        if (data.length > 0){
+          setStatus('DONE');
+        } else {
+          await pull();
+        }
       }
+
+      if (status === 'DONE_PULL'){
+        const flattened = flatten(data);
+        setFlat(flattened);  
+        setStatus('DONE');
+      }
+    })()
   }, [status])
 
   const pull = async () => {
     setStatus('PULL');
     try{
-      const {body:remoteData} = await Agnt.get(`/pull/${dataType}/${name}`);
+      const {body:remoteData} = await Agnt.get(`/pull/${dataType}/${tableName}`);
       const procData = pullProc(remoteData);
       setData(procData);
-      setStatus('DONE');
+      setStatus('DONE_PULL');
     } catch(e){
       console.error(e);
       setStatus('DEAD_LOAD');
@@ -76,7 +96,7 @@ export const Data = ({initData=[], name='', dataType="file", pushProc=ident, pul
   const push = async () => {
     setStatus('PUSH');
     try{
-      const response = await Agnt.post(`/push/${dataType}/${name}`).send(pushProc(data));
+      const response = await Agnt.post(`/push/${dataType}/${tableName}`).send(pushProc(data));
       if (response.error){
         throw Error(response.error.message);
       }
@@ -111,7 +131,7 @@ export const Data = ({initData=[], name='', dataType="file", pushProc=ident, pul
     setData(newData)
   }
 
-  return <DataContext.Provider value={{data, status, push, pull, insert, remove, modify, refresh}}>
+  return <DataContext.Provider value={{data, flat, status, push, pull, insert, remove, modify, refresh}}>
     {children}
   </DataContext.Provider>
 }

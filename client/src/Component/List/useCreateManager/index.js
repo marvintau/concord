@@ -18,7 +18,7 @@ export default (colSpecs) => {
 
   for (let key in colSpecs) {
     const {cellType, desc} = colSpecs[key];
-    if (!(cellType && cellType !== 'Default')){
+    if (!(cellType && cellType !== 'Text' && cellType !== 'Number')){
       elems.push(<div key={key}>
         <input className="form-control form-control-sm" name={key} placeholder={`输入${desc}`} required/>
         <div className="invalid-feedback">

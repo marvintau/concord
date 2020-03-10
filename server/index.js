@@ -40,20 +40,28 @@ const dirs = {
       tableName: 'Project',
       children: ['Project'],
       colSpecs: {
-        year: {desc: '年度', width: 1, isSortable: false, isFilterable: true, cellType: 'Year'},
+        year: {desc: '年度', width: 1, isSortable: false, isFilterable: true},
         name: {desc: '项目（企业）名称', width: 8, isSortable: false, isFilterable: true},
-        link: {desc: '导航', width: 2, isSortable: false, isFilterable: false, cellType:'Link'},
+        link: {desc: '--', width: 2, isSortable: false, isFilterable: false, cellType:'Link'},
       }
     },
     Project: {
       desc: '项目页',
-      children: ['TreeList', 'Balance', 'ReferredTreeList'],
-    },
-    TreeList: {
-      desc: '树形表'
+      children: ['Balance', 'ReferredTreeList'],
     },
     Balance: {
-      desc: '余额表'
+      desc: '余额表',
+      type: 'DATA',
+      dataType: 'FILE',
+      tableName: 'BALANCE',
+      colSpecs: {
+        ccode: {desc: '编码', width: 1, isSortable: false, isFilterable: true},
+        ccode_name: {desc: '科目名称', width: 3, isSortable: false, isFilterable: true},
+        mb: {desc: '期初', width: 2, isSortable: false, isFilterable: true, cellType:'Number'},
+        md: {desc: '借方', width: 2, isSortable: false, isFilterable: true, cellType:'Number'},
+        mc: {desc: '贷方', width: 2, isSortable: false, isFilterable: true, cellType:'Number'},
+        me: {desc: '期末', width: 2, isSortable: false, isFilterable: true, cellType:'Number'},
+      }
     },
     ReferredTreeList: {
       desc: '现金流量表',

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import './default.css'
+import './number.css'
 
 export default ({children}) => {
   return typeof children === 'number'

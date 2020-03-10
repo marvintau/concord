@@ -1,11 +1,11 @@
-import Default from './Default';
+import Number from './Number';
+import Text from './Text';
 import Ref from './Ref';
 import Link from './Link';
-import Year from './Year';
 
 export default {
-  Default,
+  Number,
+  Text,
   Ref,
   Link,
-  Year
 }

@@ -220,12 +220,16 @@ const HistoryContainer = (HistRowRenderer, FilterRowRenderer, historyRowHeight, 
           width: "100%", height: historyRowHeight
         }
 
-        return <HistRowRenderer
+        console.log(HistRowRenderer, 'hist');
+
+        const Hist = <HistRowRenderer
           data={history[index]}
           key={index}
           style={style}
           pop={() => pop(history[index].histIndex)}
         />
+
+        return Hist;
       })}
       <FilterRowRenderer topLength={history.length} />
       {children}
@@ -241,7 +245,7 @@ const Row = (colSpecs) => {
   
     const cols = [];
     for (let key in colSpecs){
-      const {width, cellType:type='Default'} = colSpecs[key];
+      const {width, cellType:type='Text'} = colSpecs[key];
       const ColRenderer = Cell[type];
       cols.push(<Col md={width} key={key}><ColRenderer>{data[key]}</ColRenderer></Col>)
     }
@@ -258,7 +262,7 @@ const HistoryRow = (colSpecs) => {
       
     const cols = [];
     for (let key in colSpecs){
-      const {width, cellType:type} = colSpecs[key];
+      const {width, cellType:type="Text"} = colSpecs[key];
       const ColRenderer = Cell[type];
       cols.push(<Col md={width} key={key}><ColRenderer disabled={true}>{data[key]}</ColRenderer></Col>)
     }

@@ -57,9 +57,9 @@ const RefTableComp = ({name, desc, colSpecs}) => {
 
   return <div style={{display:'flex', flexDirection:"column", height:'100%', width:'100%'}}>
     <div className="upload-file-bar">
+      <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>
       {/* <ExportManager name={name} cols={cols}/> */}
       <UploadManager title={`上传${desc}Excel文件`} {...{name, refresh, setStatus}} />
-      <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>
     </div>
     <Header {...{colSpecs, hidden: !status.startsWith('DONE')}} />
     {content}
@@ -67,8 +67,10 @@ const RefTableComp = ({name, desc, colSpecs}) => {
 }
 
 const DataTableComp = ({name, desc, colSpecs}) => {
-  const {data, status, refresh, setStatus, push} = useContext(DataContext);
+  const {data, flat, status, refresh, setStatus, push} = useContext(DataContext);
   console.log(status, 'status');
+
+  const [folded, setFold] = useState(true);
 
   const {toggleCreate, isCreating, createManager} = useCreateManager(colSpecs);
 
@@ -78,11 +80,16 @@ const DataTableComp = ({name, desc, colSpecs}) => {
   } else if (['PUSH', 'PULL'].includes(status)){
     content = <LoadIndicator {...{status}} />
   } else if (status.startsWith('DONE')){
-    content = <FlatList {...{data, status, colSpecs}} />;
+    if (folded){
+      content = <TreeList {...{data, status, colSpecs}} />;
+    } else {
+      content = <FlatList {...{data:flat, status, colSpecs}} />;
+    }
   }
 
   return <div style={{display:'flex', flexDirection:"column", height:'100%', width:'100%'}}>
     <div className="upload-file-bar">
+      <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>
       {/* <ExportManager name={name} cols={cols}/> */}
       <UploadManager title={`上传${desc}Excel文件`} {...{name, refresh, setStatus}} />
       {/* <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button> */}
@@ -117,10 +124,10 @@ export default ({type, ...restProps}) => {
     </div>
   } else if (type === 'DATA') {
 
-    const {tableName, dataType, desc, colSpecs} = restProps;
+    const {tableName, desc, colSpecs} = restProps;
 
     return <div style={{margin:'0px 10px', height:'100%'}}>
-      <Data {...{name:tableName, dataType}}>
+      <Data {...restProps}>
         <DataTableComp {...{name:tableName, desc, colSpecs}} />
       </Data>
     </div>
