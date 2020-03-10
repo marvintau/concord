@@ -8,7 +8,7 @@ const Multer = require('@koa/multer');
 
 const exportExcel = require('./xlsx-export');
 const dataProc = require('./data-proc');
-
+const postProc = require('./post-proc');
 const {retrieve} = require('./database');
 
 const app = new Koa();
@@ -40,8 +40,8 @@ const dirs = {
       tableName: 'Project',
       children: ['Project'],
       colSpecs: {
-        name: {desc: '项目名称', width: 5, isSortable: false, isFilterable: true},
-        volume: {desc: '总资产', width: 5, isSortable: false, isFilterable: true},
+        year: {desc: '年度', width: 1, isSortable: false, isFilterable: true, cellType: 'Year'},
+        name: {desc: '项目（企业）名称', width: 8, isSortable: false, isFilterable: true},
         link: {desc: '导航', width: 2, isSortable: false, isFilterable: false, cellType:'Link'},
       }
     },
@@ -95,8 +95,10 @@ router.get('/pull/DATA/:data_name', async ctx => {
   }
 })
 
-router.get('/push/:data_name', ctx => {
-  data.example_table = ctx.request.body;
+router.post('/push/DATA/:data_name', async ctx => {
+  const {data_name} = ctx.params;
+  await postProc[data_name](ctx.request.body);
+  ctx.body = {result: 'DONE'};
 })
 
 router.post('/export', ctx => {

@@ -26,8 +26,8 @@ function retrieve (critCol, critVal) {
 }
 
 (async () => {
-  for (let i = 0; i < 20; i++){
-    await insert({table:'Project', name: `${genName()} Inc.`, type:'company', volume: Math.random() * 10e6});
+  for (let i = 0; i < 10; i++){
+    await insert({table:'Project', name: `${genName()} Inc.`, year:1990+Math.floor(Math.random()*30), volume: Math.random() * 10e6});
   }
 
   // let result = await retrieve('type', 'company');

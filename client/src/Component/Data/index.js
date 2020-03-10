@@ -76,7 +76,7 @@ export const Data = ({initData=[], name='', dataType="file", pushProc=ident, pul
   const push = async () => {
     setStatus('PUSH');
     try{
-      const response = await Agnt.post(`/push/${name}`).send(pushProc(data));
+      const response = await Agnt.post(`/push/${dataType}/${name}`).send(pushProc(data));
       if (response.error){
         throw Error(response.error.message);
       }
@@ -91,16 +91,19 @@ export const Data = ({initData=[], name='', dataType="file", pushProc=ident, pul
   const insert = (rec, index=0) => {
     data.splice(index, 0, rec);
     setData([...data]);
+    setStatus('DONE_MODIFIED');
   }
 
   const remove = (index) => {
     data.splice(index, 1);
     setData([...data]);
+    setStatus('DONE_MODIFIED');
   }
 
   const modify = (index, rec) => {
     data.splice(index, 1, rec);
     setData([...data]);
+    setStatus('DONE_MODIFIED');
   }
 
   const refresh = (newData) => {

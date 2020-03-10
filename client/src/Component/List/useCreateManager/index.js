@@ -36,11 +36,11 @@ export default (colSpecs) => {
       const formData = new FormData(formElem.current)
       const rec = Object.fromEntries(formData.entries());
   
-      insert({...rec, tableName});  
+      insert({...rec, table:tableName});  
+      setCreating(false);
     } else {
       formElem.current.classList.add('was-validated');
     }
-
   }
 
   elems.push(<button className="button" key="submit!" onClick={submit}>创建</button>)

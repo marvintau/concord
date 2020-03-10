@@ -67,7 +67,8 @@ const RefTableComp = ({name, desc, colSpecs}) => {
 }
 
 const DataTableComp = ({name, desc, colSpecs}) => {
-  const {data, status, refresh, setStatus} = useContext(DataContext);
+  const {data, status, refresh, setStatus, push} = useContext(DataContext);
+  console.log(status, 'status');
 
   const {toggleCreate, isCreating, createManager} = useCreateManager(colSpecs);
 
@@ -86,6 +87,7 @@ const DataTableComp = ({name, desc, colSpecs}) => {
       <UploadManager title={`上传${desc}Excel文件`} {...{name, refresh, setStatus}} />
       {/* <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button> */}
       <button className='button' onClick={() => toggleCreate()}>{!isCreating ? '创建新条目' : '取消创建'}</button>
+      <button className={status === 'DONE_MODIFIED' ? 'button warning' : 'button'} onClick={() => push()}>更新</button>
     </div>
     <div>
       {createManager}
