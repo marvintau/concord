@@ -1,5 +1,6 @@
-import React, {createContext, useState, useEffect} from 'react';
+import React, {createContext, useState, useEffect, useContext} from 'react';
 import Agnt from 'superagent';
+import { DepRouterContext } from '../DepRouter';
 
 export const DataContext = createContext({
   
@@ -32,6 +33,8 @@ const ident = e => e;
 // format on the server, then apply the pushProc.
 
 export const Data = ({initData=[], tableName='', dataType="file", pushProc=ident, pullProc=ident, children}) => {
+
+  const {currPage} = useContext(DepRouterContext);
 
   const [status, setStatus] = useState('INIT');
   
@@ -83,7 +86,14 @@ export const Data = ({initData=[], tableName='', dataType="file", pushProc=ident
   const pull = async () => {
     setStatus('PULL');
     try{
-      const {body:remoteData} = await Agnt.get(`/pull/${dataType}/${tableName}`);
+      const {body:remoteData} = await Agnt
+        .post(`/pull/${tableName}`)
+        .send(currPage);
+      if (remoteData.error === 'DEAD_NOT_FOUND') {
+        setStatus('DEAD_DATA_NOT_FOUND');
+        return;
+      }
+
       const procData = pullProc(remoteData);
       setData(procData);
       setStatus('DONE_PULL');
@@ -96,7 +106,7 @@ export const Data = ({initData=[], tableName='', dataType="file", pushProc=ident
   const push = async () => {
     setStatus('PUSH');
     try{
-      const response = await Agnt.post(`/push/${dataType}/${tableName}`).send(pushProc(data));
+      const response = await Agnt.post(`/push/${tableName}`).send(pushProc(data));
       if (response.error){
         throw Error(response.error.message);
       }
@@ -128,6 +138,7 @@ export const Data = ({initData=[], tableName='', dataType="file", pushProc=ident
 
   const refresh = (newData) => {
     console.log('refresh!');
+    setStatus('DONE_REFRESH');
     setData(newData)
   }
 

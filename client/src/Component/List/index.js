@@ -8,6 +8,7 @@ import TreeList from './TreeList';
 import FlatList from './FlatList';
 import useCreateManager from './useCreateManager';
 import Header from './Header';
+import { DepRouterContext } from '../DepRouter';
 
 
 const LoadIndicator = ({status}) => {
@@ -25,8 +26,8 @@ const ErrorIndicator = ({status}) => {
   const text = {
     'DEAD_LOAD' : '网络错误，请刷新重试，或联系开发人员',
     'DEAD_INFO' : '未指定数据和远程地址。请联系开发人员',
-    'DEAD_REFS_NOT_FOUND' : '没有找到引用表的数据，可能是您还没上传',
-    'DEAD_DATA_NOT_FOUND' : '没有找到数据表的数据，可能是您还没上传',
+    'DEAD_REFS_NOT_FOUND' : '没有找到数据，可能是您还没上传',
+    'DEAD_DATA_NOT_FOUND' : '没有找到数据，可能是您还没上传',
     'DEAD_NOT_IMPL' : '服务器上没有对应数据的处理方法，请联系开发人员',
     'DEAD_PROC_ERROR' : '处理数据时发生了错误，请联系开发人员'
   }[status];
@@ -39,7 +40,7 @@ const ErrorIndicator = ({status}) => {
 
 const RefTableComp = ({name, desc, colSpecs}) => {
   const {refs, flat, status, refresh, setStatus} = useContext(RefDataContext);
-
+  const {currPage} = useContext(DepRouterContext);
   const [folded, setFold] = useState(true);
 
   let content;
@@ -59,7 +60,7 @@ const RefTableComp = ({name, desc, colSpecs}) => {
     <div className="upload-file-bar">
       <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>
       {/* <ExportManager name={name} cols={cols}/> */}
-      <UploadManager title={`上传${desc}Excel文件`} {...{name, refresh, setStatus}} />
+      <UploadManager title={`上传${desc}Excel文件`} {...{name, refresh, setStatus, context:currPage}} />
     </div>
     <Header {...{colSpecs, hidden: !status.startsWith('DONE')}} />
     {content}
@@ -68,6 +69,8 @@ const RefTableComp = ({name, desc, colSpecs}) => {
 
 const DataTableComp = ({name, desc, colSpecs}) => {
   const {data, flat, status, refresh, setStatus, push} = useContext(DataContext);
+  const {currPage} = useContext(DepRouterContext);
+
   console.log(status, 'status');
 
   const [folded, setFold] = useState(true);
@@ -91,7 +94,7 @@ const DataTableComp = ({name, desc, colSpecs}) => {
     <div className="upload-file-bar">
       <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>
       {/* <ExportManager name={name} cols={cols}/> */}
-      <UploadManager title={`上传${desc}Excel文件`} {...{name, refresh, setStatus}} />
+      <UploadManager title={`上传${desc}Excel文件`} {...{name, refresh, setStatus, context:currPage}} />
       {/* <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button> */}
       <button className='button' onClick={() => toggleCreate()}>{!isCreating ? '创建新条目' : '取消创建'}</button>
       <button className={status === 'DONE_MODIFIED' ? 'button warning' : 'button'} onClick={() => push()}>更新</button>

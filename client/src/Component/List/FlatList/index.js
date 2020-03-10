@@ -159,7 +159,7 @@ const Row = (colSpecs) => {
       const {width, cellType:type='Text', noBackground} = colSpecs[key];
       const ColRenderer = Cell[type];
       cols.push(<Col className={noBackground ? 'clear-back' : ''} md={width} key={key}>
-        <ColRenderer index={index-1}>{data[key]}</ColRenderer>
+        <ColRenderer index={index-1} data={data} >{data[key]}</ColRenderer>
       </Col>)
     }
     

@@ -1,8 +1,9 @@
-import React, {createContext, useState, useEffect} from 'react';
+import React, {createContext, useState, useEffect, useContext} from 'react';
 import Agnt from 'superagent';
 
 import evalTable from './evaluate';
 import parseTable from './parse';
+import { DepRouterContext } from '../DepRouter';
 
 const msg = {
   unsupp: '不支持的表达式，或者引用的数字并不存在',
@@ -33,6 +34,8 @@ export const RefDataContext = createContext({
 })
 
 export const RefData = ({dataName, dataType="FILE", refsType="FILE", refsName, pathColumn, children}) => {
+
+  const {currPage} = useContext(DepRouterContext);
 
   const [refs, setRefs] = useState([]);
   const [flat, setFlat] = useState([]);
@@ -68,12 +71,19 @@ export const RefData = ({dataName, dataType="FILE", refsType="FILE", refsName, p
   const pull = async () => {
     setStatus('PULL');
     try{
-      const {body:remoteData} = await Agnt.get(`/pull/${dataType}/${dataName}`);
+      const {body:remoteData} = await Agnt
+        .post(`/pull/${dataName}`)
+        .send(currPage);
+
       if (remoteData.error === 'DEAD_NOT_FOUND') {
         setStatus('DEAD_DATA_NOT_FOUND');
         return;
       }
-      const {body:remoteRefs} = await Agnt.get(`/pull/${refsType}/${refsName}`);
+
+      const {body:remoteRefs} = await Agnt
+        .post(`/pull/${refsName}`)
+        .send(currPage);
+
       if (remoteRefs.error === 'DEAD_NOT_FOUND'){
         setStatus('DEAD_REFS_NOT_FOUND');
         return;
@@ -109,9 +119,14 @@ export const RefData = ({dataName, dataType="FILE", refsType="FILE", refsName, p
     evalTable(refs, pathColumn, data);
   }
 
+  const refresh = (newData) => {
+    setStatus('DONE_REFRESH');
+    setData(newData);
+  }
+
   const values = {
     data, refs, flat, status,
-    pathColumn, setCell,
+    pathColumn, setCell, refresh
   }
 
   return <RefDataContext.Provider value={values}>

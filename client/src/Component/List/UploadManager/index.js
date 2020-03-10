@@ -5,7 +5,7 @@ import './file-input.css';
 
 const ident = e => e;
 
-export default function({title="上传文件", name, message={}, refresh=ident, setStatus=ident}){
+export default function({title="上传文件", name, context={}, refresh=ident, setStatus=ident}){
 
     const [isUploading, setUploading] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -15,10 +15,10 @@ export default function({title="上传文件", name, message={}, refresh=ident, 
 
     const uploadFile = (e) => {
         const form = new FormData();
-        for (let key in message){
-            form.append(key, message[key]);
+        for (let key in context){
+            form.append(key, context[key]);
         }
-        
+        console.log(context, 'upload');
         form.append('file', e.target.files[0])
 
         setUploading(true);
@@ -33,7 +33,7 @@ export default function({title="上传文件", name, message={}, refresh=ident, 
                 setInputKey(Math.random().toString(36))
                 const {ok, error, data} = (res.body);
                 if(ok){
-                    // console.log('ok!')
+                    console.log('ok!')
                     refresh(data);
                 } else {
                     setStatus(error);

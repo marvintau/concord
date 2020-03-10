@@ -1,5 +1,4 @@
-const fs = require('fs').promises;
-const path = require('path');
+
 const XLSX = require('xlsx');
 
 const ParseMapDict = require('./parse-dictionary');
@@ -40,7 +39,7 @@ function readSingleSheet(buffer){
   return XLSX.utils.sheet_to_json(firstSheet);
 }
 
-async function dataProc(fileBuffer, dataName){
+async function dataProc(fileBuffer, dataName, context){
 
   if (!(dataName in dataProcDict)){
     return {error: 'DEAD_NOT_IMPL'}
@@ -49,8 +48,7 @@ async function dataProc(fileBuffer, dataName){
   try {
     const table = readSingleSheet(fileBuffer);
     const mapped = columnNameRemap(table, dataName);
-    const result = dataProcDict[dataName](mapped);
-    await fs.writeFile(path.resolve('./file_store', dataName), JSON.stringify(result));
+    const result = await dataProcDict[dataName](mapped, context);
     return {ok: 'DONE', data:result}
   } catch (er) {
     console.log(er);

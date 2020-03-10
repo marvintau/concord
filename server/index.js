@@ -7,9 +7,12 @@ const Router = require('@koa/router');
 const Multer = require('@koa/multer');
 
 const exportExcel = require('./xlsx-export');
-const dataProc = require('./data-proc');
+const dataProc = require('./xlsx-proc');
 const postProc = require('./post-proc');
+const retrieveProc = require('./retrieve-proc');
 const {retrieve} = require('./database');
+
+const {genName} = require('./nameGenerate');
 
 const app = new Koa();
 const router = new Router();
@@ -37,16 +40,20 @@ const dirs = {
       desc: '项目列表',
       type: 'DATA',
       dataType: 'DATA',
-      tableName: 'Project',
-      children: ['Project'],
+      tableName: 'PROJECT',
       colSpecs: {
         year: {desc: '年度', width: 1, isSortable: false, isFilterable: true},
-        name: {desc: '项目（企业）名称', width: 8, isSortable: false, isFilterable: true},
+        companyName: {desc: '项目（企业）名称', width: 8, isSortable: false, isFilterable: true},
         link: {desc: '--', width: 2, isSortable: false, isFilterable: false, cellType:'Link'},
-      }
+      },
+      children: ['Project'],
     },
     Project: {
       desc: '项目页',
+      type: 'TEXT',
+      dataType: undefined,
+      tableName: undefined,
+      colSpecs: undefined,
       children: ['Balance', 'ReferredTreeList'],
     },
     Balance: {
@@ -77,24 +84,11 @@ const dirs = {
   }
 }
 
-router.get('/pull/FILE/:data_name', async ctx => {
+router.post('/pull/:data_name', async ctx => {
   const {data_name} = ctx.params;
+  
   try {
-    const data = await fs.readFile(Path.resolve('./file_store', data_name))
-    ctx.body = JSON.parse(data.toString());
-  } catch (error) {
-    if (error.code === 'ENOENT'){
-      console.log('not found', data_name)
-      ctx.body = {error: 'DEAD_NOT_FOUND'}
-    }
-  }
-})
-
-router.get('/pull/DATA/:data_name', async ctx => {
-  const {data_name} = ctx.params;
-  try {
-    const data = await retrieve('table', data_name)
-    ctx.body = data;
+    ctx.body = await retrieveProc[data_name](ctx.request.body);
   } catch (error) {
     if (error.code === 'ENOENT'){
       console.log('not found', data_name)
@@ -129,16 +123,36 @@ router.post('/export', ctx => {
 router.post('/upload/:data_name', upload.single('file'), async ctx => {
   const {data_name} = ctx.params;
   console.log(data_name, 'upload');
+  console.log(ctx.request.body, 'upload');
   const file = ctx.request.file;
-  const res = await dataProc(file.buffer, data_name);
-  console.log(res, 'proc res')
+  const res = await dataProc(file.buffer, data_name, ctx.request.body);
+  // console.log(res, 'proc res')
   ctx.body = res;
 })
 
 router.post('/pages', ctx => {
   const {fetchPath} = ctx.request.body;
   ctx.body = dirs[fetchPath];
-})
+});
+
+
+(async () => {
+
+  const projects = await retrieve('table', 'Project');
+
+  if (projects.length === 0){
+    let records = [];
+    for (let i = 0; i < 10; i++){
+      records.push({ table:'Project', companyName: `${genName()} Inc.`, year:1990+Math.floor(Math.random()*30)});
+    }
+    await postProc['Project'](records);
+  }
+
+  const result = await retrieve('table', 'Project');
+  console.log(result, 'init');
+
+})();
+
 
 app.use(BodyParser());
 app.use(router.routes());

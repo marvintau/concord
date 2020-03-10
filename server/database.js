@@ -1,15 +1,16 @@
-const Datastore = require('nedb-promise');
-const db = new Datastore();
+const path = require('path');
 
-const {v4} = require('uuid');
-const {genName} = require('./nameGenerate');
+const Datastore = require('nedb-promise');
+const db = new Datastore({
+  filename: path.resolve(__dirname, '../data_store/data.json'),
+  autoload: true
+});
 
 function insert ({table, ...rest}) {
   if (table === undefined){
     throw {error: 'DEAD_TABLE_NOT_SPECIFIED'}
   } else {
-    const link = {path: table, query: {[`${table.toLowerCase()}_id`]: v4()}}
-    return db.insert({table, ...rest, link})
+    return db.insert({table, ...rest})
   }
 }
 
@@ -24,16 +25,6 @@ function update (critCol, critVal, column, val) {
 function retrieve (critCol, critVal) {
   return db.find({[critCol]: critVal})
 }
-
-(async () => {
-  for (let i = 0; i < 10; i++){
-    await insert({table:'Project', name: `${genName()} Inc.`, year:1990+Math.floor(Math.random()*30), volume: Math.random() * 10e6});
-  }
-
-  // let result = await retrieve('type', 'company');
-
-  // console.log(result, 'yeah');
-})();
 
 module.exports = {
   insert,

@@ -13,6 +13,7 @@
 
 # uploaded and generated files
 /data_store
+/file_store
 
 # misc
 .DS_Store

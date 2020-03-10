@@ -220,8 +220,6 @@ const HistoryContainer = (HistRowRenderer, FilterRowRenderer, historyRowHeight, 
           width: "100%", height: historyRowHeight
         }
 
-        console.log(HistRowRenderer, 'hist');
-
         const Hist = <HistRowRenderer
           data={history[index]}
           key={index}
@@ -247,7 +245,7 @@ const Row = (colSpecs) => {
     for (let key in colSpecs){
       const {width, cellType:type='Text'} = colSpecs[key];
       const ColRenderer = Cell[type];
-      cols.push(<Col md={width} key={key}><ColRenderer>{data[key]}</ColRenderer></Col>)
+      cols.push(<Col md={width} key={key}><ColRenderer data={data}>{data[key]}</ColRenderer></Col>)
     }
     
     return <div ref={ref} className='treelist-row hovered' style={style} onClick={select}>
