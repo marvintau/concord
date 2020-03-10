@@ -12,7 +12,6 @@ const DEFAULT_FILTER_HEIGHT = 3;
 
 const FlatListContext = createContext({
   displayList: [],
-  sort:() => {},
   filter: () => {},  
 });
 
@@ -54,29 +53,7 @@ const ItemWrapper = forwardRef(({ data, index, style }, ref) => {
 
 const FlatList = function({data, children, filterRowRenderer, ...rest}){
 
-  const [colSorts, setColSorts] = useState([]);
   const [colFilters, setColFilters] = useState({});
-
-  const sort = (key) => {
-
-    let sorts = [...colSorts];
-
-    if(sorts.length > 0){
-      let keyIndex = sorts.findIndex((e) => e.col === key);
-
-      let iden = {col:key, order:'ascend'};
-      if (keyIndex !== -1){
-        [iden] = sorts.splice(keyIndex, 1);
-        iden.order = iden.order === 'ascend' ? 'descend' : 'ascend';
-      }
-      sorts.push(iden);
-
-    } else {
-      sorts = [{col:key, order:'ascend'}];
-    }
-
-    setColSorts(sorts);
-  }
 
   const filter = (key, pattern) => {
     console.log('filtered')
@@ -84,18 +61,6 @@ const FlatList = function({data, children, filterRowRenderer, ...rest}){
   }
 
   let displayed = [...data];
-  for (let {col, order} of colSorts){
-    displayed.sort((prev, next) => {
-      const original = prev[col] < next[col] ? -1 : prev[col] > next[col] ? 1 : 0;
-      const modifier = {
-        'descend' : 1,
-        'ascend'  : -1
-      }[order];
-
-      return original * modifier;
-    })
-  }
-
   for (let key in colFilters){
     const filtered = displayed.filter((elem) => {
       return elem[key].toString().includes(colFilters[key]);
@@ -108,10 +73,10 @@ const FlatList = function({data, children, filterRowRenderer, ...rest}){
 
   const entries = [{filter: filterRowRenderer !== undefined }, ...displayed]
   
-  return <FlatListContext.Provider value={{sort, filter}}>
+  return <FlatListContext.Provider value={{filter}}>
     <List
       itemData={{ ItemRenderer: children, entries}}
-      innerElementType={StickTopContainer(filterRowRenderer)}
+      innerElementType={StickTopContainer(filterRowRenderer, filter)}
       {...rest}
     >
       {ItemWrapper}
@@ -119,7 +84,7 @@ const FlatList = function({data, children, filterRowRenderer, ...rest}){
   </FlatListContext.Provider>
 }
 
-const StickTopContainer = (FilterRowRenderer) => {
+const StickTopContainer = (FilterRowRenderer, filter) => {
 
   if (FilterRowRenderer === undefined){
     FilterRowRenderer = () => {
@@ -136,7 +101,7 @@ const StickTopContainer = (FilterRowRenderer) => {
   return ({children, ...rest }) => {
 
     return <div {...rest}>
-      <FilterRowRenderer topLength={0} />
+      <FilterRowRenderer topLength={0} filterCol={filter} />
       {children}
     </div>
   }
@@ -169,7 +134,7 @@ const Row = (colSpecs) => {
   });
 }
 
-export default ({colSpecs, data}) =>
+export default ({colSpecs, data, sort, filter}) =>
   <div style={{flex:1, width:'100%'}}>
     <AutoSizer>
       {({height, width}) => {
@@ -178,7 +143,7 @@ export default ({colSpecs, data}) =>
           width={width}
           data={data}
           itemCount={data.length}
-          filterRowRenderer={FilterRow(colSpecs)}
+          filterRowRenderer={FilterRow(colSpecs, filter, sort)}
         >
           {Row(colSpecs)}
         </FlatList>

@@ -22,9 +22,6 @@ export const RefDataContext = createContext({
   push: () => {},
   pull: () => {},
 
-  // // update the value of whole refs
-  // evaluate: () => {},
-
   // get the cell data through cell path
   // the path should be an array of array index (integers);
   // if the path is empty or containing invalid index, return undefined.
@@ -51,7 +48,7 @@ export const RefData = ({dataName, dataType="FILE", refsType="FILE", refsName, p
       if (status === 'DONE_PULL'){
         evalTable(refs, pathColumn, data);
         const flattened = flatten(refs);
-        console.log(flattened.map(({ref:{result}}) => result));
+        console.log(flattened);
         setFlat(flattened);
       }
     })()
@@ -114,9 +111,21 @@ export const RefData = ({dataName, dataType="FILE", refsType="FILE", refsName, p
     }
   }
 
-  const setCell = (index, value) => {
-    refs[index].value = value;
-    evalTable(refs, pathColumn, data);
+  const getCell = (path) => {
+    let list = refs, rec;
+    for (let index of path){
+      rec = list[index];
+      list = rec.children;
+    }
+    return rec;
+  }
+
+  const setCell = (path, desc, expr) => {
+    const rec = getCell(path);
+    rec.ref.expr = expr;
+    rec.ref.desc = desc;
+    const newRefs = evalTable(refs, pathColumn, data);
+    setRefs(newRefs);
   }
 
   const refresh = (newData) => {

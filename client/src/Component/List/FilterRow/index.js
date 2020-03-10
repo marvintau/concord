@@ -1,8 +1,6 @@
 import React, {useState} from 'react';
 import {Input, Button, Col} from 'reactstrap';
 
-import FilterIcon from './filter.svg';
-import SortIcon from './sort-ascending.svg';
 import './filter.css'
 
 const HIST_LINE_HEIGHT = 30;
@@ -19,43 +17,36 @@ const FilterContainer = ({children, topLength}) => {
   return <div className="filter-row sticky" style={style}>{children}</div>
 }
 
-const FilterCol = ({colKey, isFilterable, isSortable, sort=ident, filter=ident, ...colProps}) => {
+const FilterCol = ({colKey, isFilterable, filterCol, ...colProps}) => {
 
   const [inputVal, setInputVal] = useState('');
-
-  const colStyle = {
-    display:'flex',
-  }
-
-  const FilterComp = <div style={{display:'flex'}}>
-    <Input bsSize="sm" value={inputVal} onChange={(e) => setInputVal(e.target.value)} />
-    <Button color="warning" size="sm" style={{marginLeft:'0.5rem'}} onClick={() => filter(colKey, inputVal)}>
-      <img alt="filter-button" style={{height:'1rem'}} src={FilterIcon} />
-    </Button>
+  console.log(inputVal, 'filter');
+  const FilterComp = <div style={{display:'flex', width: '100%', maxWidth: '500px'}}>
+    <Input className="filter-input" bsSize="sm" value={inputVal} onChange={(e) => setInputVal(e.target.value)} onKeyPress={(e) => {
+      if (e.key === 'Enter') filterCol(colKey, inputVal);
+    }} />
   </div>
 
-  return <Col style={colStyle} {...colProps} >
+  return <Col {...colProps} >
     {isFilterable && FilterComp}
-    {isSortable && <Button color="warning" size="sm" onClick={() => {sort(colKey)}} style={{marginLeft:'0.5rem'}}>
-        <img alt="sort-button" style={{height:'1rem'}} src={SortIcon} />
-      </Button>}
   </Col>
 }
 
 export default (colSpecs) => {
-  let isNothing = Object.values(colSpecs).every(({isSortable, isFilterable}) => !(isSortable || isFilterable));
-  if(isNothing){
+  if(Object.values(colSpecs).every(({isFilterable}) => !isFilterable)){
     return undefined;
   }
 
-  const cols = [];
-  for (let key in colSpecs){
-    const {width, isSortable, isFilterable} = colSpecs[key];
-    cols.push(<FilterCol md={width} key={key} colKey={key} isSortable={isSortable} isFilterable={isFilterable} />)
-  }
+  return ({topLength, filterCol}) => {
 
-  return ({topLength}) => 
-    <FilterContainer topLength={topLength}>
+    const cols = [];
+    for (let key in colSpecs){
+      const {width, isFilterable} = colSpecs[key];
+      cols.push(<FilterCol md={width} key={key} {...{colKey:key, isFilterable, filterCol}} />)
+    }
+  
+    return <FilterContainer topLength={topLength}>
       {cols}
     </FilterContainer>
   }
+}

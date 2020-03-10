@@ -17,3 +17,10 @@
 .filter-col > * {
   display: flex;
 }
+
+.filter-input {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(./filter.svg);
+  background-repeat: no-repeat;
+  background-size: 1rem;
+  background-position: right 5px bottom 50%;
+}

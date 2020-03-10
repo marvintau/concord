@@ -33,10 +33,9 @@ const DEFAULT_FILTER_HEIGHT = 3;
 const TreeListContext = createContext({
 
   sublist: [],
-  displayList: [],
+  displayed: [],
   history:[],
 
-  sort:() => {},
   filter: () => {},
 
   pop:() => {},
@@ -96,13 +95,11 @@ const TreeList = function({data, children, historyRowHeight, historyRowRenderer,
   const [history, setHistory] = useState([]);
   const [sublist, setSublist] = useState(ProcessedData);
 
-  const [colSorts, setColSorts] = useState([]);
   const [colFilters, setColFilters] = useState({});
 
   useEffect(() => {
     const ProcessedData = data.map((e, i) => ({...e, listIndex:i}));
     setSublist(ProcessedData);
-    setColSorts([]);
     setColFilters({});
   }, [data])
 
@@ -132,44 +129,12 @@ const TreeList = function({data, children, historyRowHeight, historyRowRenderer,
     setSublist(newSublist);
   }
 
-  const sort = (key) => {
-
-    let sorts = [...colSorts];
-
-    if(sorts.length > 0){
-      let keyIndex = sorts.findIndex((e) => e.col === key);
-
-      let iden = {col:key, order:'ascend'};
-      if (keyIndex !== -1){
-        [iden] = sorts.splice(keyIndex, 1);
-        iden.order = iden.order === 'ascend' ? 'descend' : 'ascend';
-      }
-      sorts.push(iden);
-
-    } else {
-      sorts = [{col:key, order:'ascend'}];
-    }
-
-    setColSorts(sorts);
-  }
-
   const filter = (key, pattern) => {
     console.log('filtered')
     setColFilters({...colFilters, [key]: pattern});
   }
 
   let displayed = [...sublist];
-  for (let {col, order} of colSorts){
-    displayed.sort((prev, next) => {
-      const original = prev[col] < next[col] ? -1 : prev[col] > next[col] ? 1 : 0;
-      const modifier = {
-        'descend' : 1,
-        'ascend'  : -1
-      }[order];
-
-      return original * modifier;
-    })
-  }
 
   for (let key in colFilters){
     const filtered = displayed.filter((elem) => {
@@ -183,11 +148,11 @@ const TreeList = function({data, children, historyRowHeight, historyRowRenderer,
 
   const entries = [...history, {filter: filterRowRenderer !== undefined }, ...displayed]
   
-  return <TreeListContext.Provider value={{history, sublist, select, pop, sort, filter}}>
+  return <TreeListContext.Provider value={{history, sublist, select, pop, filter}}>
     <List
       itemData={{ ItemRenderer: children, entries}}
       itemCount={entries.length}
-      innerElementType={HistoryContainer(historyRowRenderer, filterRowRenderer, historyRowHeight, history, pop)}
+      innerElementType={HistoryContainer(historyRowRenderer, filterRowRenderer, historyRowHeight, history, pop, filter)}
       {...rest}
     >
       {ItemWrapper}
@@ -195,7 +160,7 @@ const TreeList = function({data, children, historyRowHeight, historyRowRenderer,
   </TreeListContext.Provider>
 }
 
-const HistoryContainer = (HistRowRenderer, FilterRowRenderer, historyRowHeight, history, pop) => {
+const HistoryContainer = (HistRowRenderer, FilterRowRenderer, historyRowHeight, history, pop, filter) => {
 
   if (FilterRowRenderer === undefined){
     FilterRowRenderer = ({topLength}) => {
@@ -229,7 +194,7 @@ const HistoryContainer = (HistRowRenderer, FilterRowRenderer, historyRowHeight, 
 
         return Hist;
       })}
-      <FilterRowRenderer topLength={history.length} />
+      <FilterRowRenderer topLength={history.length} filterCol={filter} />
       {children}
     </div>
   }

@@ -43,8 +43,8 @@ const dirs = {
       tableName: 'PROJECT',
       colSpecs: {
         year: {desc: '年度', width: 1, isSortable: false, isFilterable: true},
-        companyName: {desc: '项目（企业）名称', width: 8, isSortable: false, isFilterable: true},
-        link: {desc: '--', width: 2, isSortable: false, isFilterable: false, cellType:'Link'},
+        companyName: {desc: '项目（企业）名称', width: 10, isSortable: false, isFilterable: true},
+        link: {desc: '--', width: 1, isSortable: false, isFilterable: false, cellType:'Link'},
       },
       children: ['Project'],
     },
@@ -78,7 +78,7 @@ const dirs = {
       tableName: 'CASHFLOW_WORKSHEET',
       referredName: 'BALANCE',
       colSpecs: {
-        ref: {desc: '条目', width: 12, isSortable: false, isFilterable: true, cellType:'Ref'}
+        ref: {desc: '条目', width: 12, isSortable: false, isFilterable: true, cellType:'Ref'},
       }      
     }
   }

@@ -5,6 +5,8 @@ import {RefDataContext} from '../../../RefData';
 import Autosuggest from 'react-autosuggest';
 import {Input} from 'reactstrap';
 
+import Check from './check.svg';
+
 import './react-autosuggest.css';
 import './refcell.css';
 
@@ -48,9 +50,9 @@ const getPathSugg = (path, pathColumn, data) => {
 }
 
 
-export default ({disabled, children: cellData}) => {
+export default ({disabled, children: cellData, data:{path}}) => {
 
-  const {data, pathColumn, colAlias} = useContext(RefDataContext);
+  const {data, pathColumn, colAlias, setCell} = useContext(RefDataContext);
 
   const {item, expr, result, status} = cellData;
   
@@ -93,14 +95,13 @@ export default ({disabled, children: cellData}) => {
   const inputProps = {
     value,
     id: 'sugg-input',
-    autoFocus: true,
     onChange:(e, {newValue}) => {
       setValue(newValue);
     }
   }
 
   const saveEdit = (e) => {
-    // setCell(path, desc, value)
+    setCell(path, desc, value)
     setEditing(false);
   }
 
@@ -123,8 +124,8 @@ export default ({disabled, children: cellData}) => {
   return editing
   ? <div className="refcell-line">
       <Input placeholder="在这里修改描述" style={{height: '28.5px', marginRight: '5px'}} value={desc} onChange={(e) => setDesc(e.target.value)} />
-      <Autosuggest {...{...funcs, suggestions, inputProps}} ref={() => { document.getElementById('sugg-input').focus(); }} />
-      <button className="button" onClick={saveEdit}>好</button>
+      <Autosuggest {...{...funcs, suggestions, inputProps}} />
+      <img className='refcell-button' src={Check} onClick={saveEdit} />
     </div>
   : <div className={`refcell-line ${editing ? "refcell-line-editing" : ''}`}>
       <div className="react-autosuggest__input refcell-text"
