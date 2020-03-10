@@ -2,9 +2,11 @@ import React, {useContext, useState} from 'react';
 
 import {Spinner} from 'reactstrap';
 import {RefDataContext, RefData} from '../RefData';
-import UploadManager from '../UploadManager';
+import {DataContext, Data} from '../Data';
+import UploadManager from './UploadManager';
 import TreeList from './TreeList';
 import FlatList from './FlatList';
+import useCreateManager from './useCreateManager';
 import Header from './Header';
 
 
@@ -35,7 +37,7 @@ const ErrorIndicator = ({status}) => {
 }
 
 
-const TableComponent = ({name, desc, colSpecs}) => {
+const RefTableComp = ({name, desc, colSpecs}) => {
   const {refs, flat, status, refresh, setStatus} = useContext(RefDataContext);
 
   const [folded, setFold] = useState(true);
@@ -62,20 +64,66 @@ const TableComponent = ({name, desc, colSpecs}) => {
     <Header {...{colSpecs, hidden: !status.startsWith('DONE')}} />
     {content}
   </div>
+}
+
+const DataTableComp = ({name, desc, colSpecs}) => {
+  const {data, status, refresh, setStatus} = useContext(DataContext);
+
+  const {toggleCreate, isCreating, createManager} = useCreateManager(colSpecs);
+
+  let content;
+  if (status.startsWith('DEAD')){
+    content = <ErrorIndicator {...{status}} />
+  } else if (['PUSH', 'PULL'].includes(status)){
+    content = <LoadIndicator {...{status}} />
+  } else if (status.startsWith('DONE')){
+    content = <FlatList {...{data, status, colSpecs}} />;
+  }
+
+  return <div style={{display:'flex', flexDirection:"column", height:'100%', width:'100%'}}>
+    <div className="upload-file-bar">
+      {/* <ExportManager name={name} cols={cols}/> */}
+      <UploadManager title={`上传${desc}Excel文件`} {...{name, refresh, setStatus}} />
+      {/* <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button> */}
+      <button className='button' onClick={() => toggleCreate()}>{!isCreating ? '创建新条目' : '取消创建'}</button>
+    </div>
+    <div>
+      {createManager}
+    </div>
+    <Header {...{colSpecs, hidden: !status.startsWith('DONE')}} />
+    {content}
+  </div>
 
 }
 
-export default ({tableName, referredName, desc, colSpecs}) => {
+export default ({type, ...restProps}) => {
 
-  const props = {
-    dataName: referredName,
-    refsName: tableName,
-    pathColumn: 'ccode_name',
+  if (type === 'REFT'){
+
+    const {referredName, tableName, pathColumn="ccode_name", desc, colSpecs} = restProps;
+
+    const props = {
+      dataName: referredName,
+      refsName: tableName,
+      pathColumn
+    }
+
+    return <div style={{margin:'0px 10px', height:'100%'}}>
+      <RefData {...props}>
+        <RefTableComp {...{name:tableName, desc, colSpecs}} />
+      </RefData>
+    </div>
+  } else if (type === 'DATA') {
+
+    const {tableName, dataType, desc, colSpecs} = restProps;
+
+    return <div style={{margin:'0px 10px', height:'100%'}}>
+      <Data {...{name:tableName, dataType}}>
+        <DataTableComp {...{name:tableName, desc, colSpecs}} />
+      </Data>
+    </div>
+  } else {
+    console.log(type, restProps);
+    return <></>
   }
-  
-  return <div style={{margin:'0px 10px', height:'100%'}}>
-    <RefData {...props}>
-      <TableComponent {...{name:tableName, desc, colSpecs}} />
-    </RefData>
-  </div>
 }

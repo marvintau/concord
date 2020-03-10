@@ -52,7 +52,7 @@ function recursivePush(list, field, entry){
   }
 }
 
-export function genEntries(length){
+function genEntries(length){
 
   let entries = [];
   for (let i = 0; i < length; i++){
@@ -71,7 +71,7 @@ export function genEntries(length){
 }
 
 
-export function genDirectories(length) {
+function genDirectories(length) {
   let directories = {Home: {children: []}};
 
   for (let i = 0; i < length; i++){
@@ -113,7 +113,7 @@ function flat(entries, pathColKey){
   }, [])
 }
 
-export function genRefTable(entries, len){
+function genRefTable(entries, len){
   // 1. flat the entries
   const flattened = flat(entries, 'desc');
 
@@ -126,4 +126,8 @@ export function genRefTable(entries, len){
   const options = ['$期初', '$期末', '$借方', '$贷方'];
 
   return result.map(([k, {desc}]) => ({ value: `/${k}:${options[(Math.floor(Math.random() * options.length))]}`, desc }));
+}
+
+module.exports = {
+  genName
 }

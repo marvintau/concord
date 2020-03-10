@@ -1,7 +1,7 @@
 import React, {createContext, useState, useEffect} from 'react';
 import Agnt from 'superagent';
 
-export const DataFetchContext = createContext({
+export const DataContext = createContext({
   
   // The local data, and status indicator
   data: [],
@@ -17,7 +17,7 @@ export const DataFetchContext = createContext({
   pull: () => {},
 })
 
-const nop = e => e;
+const ident = e => e;
 
 // Status:
 // INIT: transient state in the beginning
@@ -31,7 +31,7 @@ const nop = e => e;
 // then apply the pullProc of the fetched data. Or you wanted to create some custom saving
 // format on the server, then apply the pushProc.
 
-export const DataFetch = ({initData=[], name='', pushProc=nop, pullProc=nop, children}) => {
+export const Data = ({initData=[], name='', dataType="file", pushProc=ident, pullProc=ident, children}) => {
 
   const [status, setStatus] = useState('INIT');
   const [data, setData] = useState(initData);
@@ -63,7 +63,7 @@ export const DataFetch = ({initData=[], name='', pushProc=nop, pullProc=nop, chi
   const pull = async () => {
     setStatus('PULL');
     try{
-      const {body:remoteData} = await Agnt.get(`/pull/${name}`);
+      const {body:remoteData} = await Agnt.get(`/pull/${dataType}/${name}`);
       const procData = pullProc(remoteData);
       setData(procData);
       setStatus('DONE');
@@ -88,7 +88,7 @@ export const DataFetch = ({initData=[], name='', pushProc=nop, pullProc=nop, chi
     }
   }
 
-  const insert = (index, rec) => {
+  const insert = (rec, index=0) => {
     data.splice(index, 0, rec);
     setData([...data]);
   }
@@ -108,8 +108,8 @@ export const DataFetch = ({initData=[], name='', pushProc=nop, pullProc=nop, chi
     setData(newData)
   }
 
-  return <DataFetchContext.Provider value={{data, status, push, pull, insert, remove, modify, refresh}}>
+  return <DataContext.Provider value={{data, status, push, pull, insert, remove, modify, refresh}}>
     {children}
-  </DataFetchContext.Provider>
+  </DataContext.Provider>
 }
 

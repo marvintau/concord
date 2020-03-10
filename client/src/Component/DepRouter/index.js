@@ -13,7 +13,7 @@ export const DepRouterContext = createContext({
   fetchDir : () => {}
 })
 
-const SideNavigationBar = ({directories, children}) => {
+const SideNavigationBar = ({directories, isHidden, children}) => {
   const {currPath, currSubs, forward, goto} = useContext(DepRouterContext);
 
   const style = {
@@ -50,7 +50,7 @@ const SideNavigationBar = ({directories, children}) => {
 
   return <Sidebar
     sidebar={innerSidebar}
-    docked={currSubs !== undefined}
+    docked={currSubs !== undefined && !isHidden}
     styles={{sidebar: {background: 'white'}}}
   >{children}
   </Sidebar>
@@ -83,6 +83,7 @@ export function DepRouter({home='Home', directories={}, children}) {
   const [currPage, setPage] = useState(initPage);
   const [currPath, setPath] = useState(initPath);
   const [currSubs, setSubs] = useState(initSubs);
+  const [query, setQuery] = useState({});
 
   // performs initialization
   useEffect(() => {
@@ -121,12 +122,30 @@ export function DepRouter({home='Home', directories={}, children}) {
     })
   }
 
+  const queryString = (query) => {
+    if (Object.keys(query).length === 0){
+      return '';
+    } else {
+      const joined = Object.entries(query).map(([k, v]) => `${k}=${v}`).join('&');
+      return `?${joined}`;
+    }
+  }
+
   const forward = (child) => {
-    const pathList = [...currPath, child];
-    setPage(dirs[child]);
+    let path;
+    if (typeof child === 'string'){
+      path = child;
+    } else if (typeof child === 'object') {
+      console.log(child, 'forward')
+      path = child.path;
+      setQuery({...query, ...child.query});
+    }
+
+    const pathList = [...currPath, path];
+    setPage(dirs[path]);
     setPath(pathList);
-    setSubs(dirs[child].children);
-    history.push(`/${pathList.join('/')}`);
+    setSubs(dirs[path].children);
+    history.push(`/${pathList.join('/')}${queryString({...query, ...child.query})}`);
   }
 
   const goto = (child) => {
@@ -141,7 +160,7 @@ export function DepRouter({home='Home', directories={}, children}) {
 
   let content;
   if(dirs && Object.keys(dirs).length > 0){
-    content = <SideNavigationBar directories={dirs}>
+    content = <SideNavigationBar directories={dirs} isHidden={['DATA', 'REFT'].includes(currPage.type)}>
       <NavigationBar directories={dirs} />
       {children}
     </SideNavigationBar>

@@ -43,7 +43,6 @@ const FilterCol = ({colKey, isFilterable, isSortable, sort=ident, filter=ident, 
 }
 
 export default (colSpecs) => {
-  console.log(colSpecs, 'filter')
   let isNothing = Object.values(colSpecs).every(({isSortable, isFilterable}) => !(isSortable || isFilterable));
   if(isNothing){
     return undefined;

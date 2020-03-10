@@ -32,7 +32,7 @@ export const RefDataContext = createContext({
   setStatus: () => {}
 })
 
-export const RefData = ({dataName, refsName, pathColumn, children}) => {
+export const RefData = ({dataName, dataType="FILE", refsType="FILE", refsName, pathColumn, children}) => {
 
   const [refs, setRefs] = useState([]);
   const [flat, setFlat] = useState([]);
@@ -68,12 +68,12 @@ export const RefData = ({dataName, refsName, pathColumn, children}) => {
   const pull = async () => {
     setStatus('PULL');
     try{
-      const {body:remoteData} = await Agnt.get(`/pull/${dataName}`);
+      const {body:remoteData} = await Agnt.get(`/pull/${dataType}/${dataName}`);
       if (remoteData.error === 'DEAD_NOT_FOUND') {
         setStatus('DEAD_DATA_NOT_FOUND');
         return;
       }
-      const {body:remoteRefs} = await Agnt.get(`/pull/${refsName}`);
+      const {body:remoteRefs} = await Agnt.get(`/pull/${refsType}/${refsName}`);
       if (remoteRefs.error === 'DEAD_NOT_FOUND'){
         setStatus('DEAD_REFS_NOT_FOUND');
         return;

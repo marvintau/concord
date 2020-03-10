@@ -156,7 +156,7 @@ const Row = (colSpecs) => {
   
     const cols = [];
     for (let key in colSpecs){
-      const {width, cellType:type, noBackground} = colSpecs[key];
+      const {width, cellType:type='Default', noBackground} = colSpecs[key];
       const ColRenderer = Cell[type];
       cols.push(<Col className={noBackground ? 'clear-back' : ''} md={width} key={key}>
         <ColRenderer index={index-1}>{data[key]}</ColRenderer>

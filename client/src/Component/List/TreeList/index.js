@@ -241,7 +241,7 @@ const Row = (colSpecs) => {
   
     const cols = [];
     for (let key in colSpecs){
-      const {width, cellType:type} = colSpecs[key];
+      const {width, cellType:type='Default'} = colSpecs[key];
       const ColRenderer = Cell[type];
       cols.push(<Col md={width} key={key}><ColRenderer>{data[key]}</ColRenderer></Col>)
     }

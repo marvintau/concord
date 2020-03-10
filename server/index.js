@@ -9,6 +9,8 @@ const Multer = require('@koa/multer');
 const exportExcel = require('./xlsx-export');
 const dataProc = require('./data-proc');
 
+const {retrieve} = require('./database');
+
 const app = new Koa();
 const router = new Router();
 const upload = new Multer();
@@ -29,11 +31,23 @@ const dirs = {
   "/":{
     Home: {
       desc: '首页',
-      children: ['Preface']
+      children: ['ProjectList'],
     },
-    Preface: {
-      desc: '次页',
-      children: ['TreeList', 'Balance', 'ReferredTreeList']
+    ProjectList: {
+      desc: '项目列表',
+      type: 'DATA',
+      dataType: 'DATA',
+      tableName: 'Project',
+      children: ['Project'],
+      colSpecs: {
+        name: {desc: '项目名称', width: 5, isSortable: false, isFilterable: true},
+        volume: {desc: '总资产', width: 5, isSortable: false, isFilterable: true},
+        link: {desc: '导航', width: 2, isSortable: false, isFilterable: false, cellType:'Link'},
+      }
+    },
+    Project: {
+      desc: '项目页',
+      children: ['TreeList', 'Balance', 'ReferredTreeList'],
     },
     TreeList: {
       desc: '树形表'
@@ -42,16 +56,37 @@ const dirs = {
       desc: '余额表'
     },
     ReferredTreeList: {
-      desc: '现金流量表'
+      desc: '现金流量表',
+      type: 'REFT',
+      dataType: 'FILE',
+      refsType: 'FILE',
+      tableName: 'CASHFLOW_WORKSHEET',
+      referredName: 'BALANCE',
+      colSpecs: {
+        ref: {desc: '条目', width: 12, isSortable: false, isFilterable: true, cellType:'Ref'}
+      }      
     }
   }
 }
 
-router.get('/pull/:data_name', async ctx => {
+router.get('/pull/FILE/:data_name', async ctx => {
   const {data_name} = ctx.params;
   try {
     const data = await fs.readFile(Path.resolve('./file_store', data_name))
     ctx.body = JSON.parse(data.toString());
+  } catch (error) {
+    if (error.code === 'ENOENT'){
+      console.log('not found', data_name)
+      ctx.body = {error: 'DEAD_NOT_FOUND'}
+    }
+  }
+})
+
+router.get('/pull/DATA/:data_name', async ctx => {
+  const {data_name} = ctx.params;
+  try {
+    const data = await retrieve('table', data_name)
+    ctx.body = data;
   } catch (error) {
     if (error.code === 'ENOENT'){
       console.log('not found', data_name)
