@@ -1,0 +1,16 @@
+.company {
+  font-weight: bold;
+}
+
+.address {
+  margin: 5px 0;
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  overflow-wrap: normal;
+}
+
+.address-line {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

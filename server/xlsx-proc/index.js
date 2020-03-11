@@ -5,29 +5,33 @@ const ParseMapDict = require('./parse-dictionary');
 
 const BALANCE = require('./balance');
 const CASHFLOW_WORKSHEET = require('./cashflow-worksheet');
+const CONFIRMATION_MANAGEMENT = require('./confirmation-management');
 
 const dataProcDict = {
   BALANCE,
-  CASHFLOW_WORKSHEET
+  CASHFLOW_WORKSHEET,
+  CONFIRMATION_MANAGEMENT
 }
 
 
 function columnNameRemap(table, name){
 
-  const map = ParseMapDict[name];
-
-  for (let p = 0; p < table.length; p++){
-    let rec = table[p],
-      newRec = {};
-
-    for (let [oldKey, newKey] of map){
-      (oldKey in rec) && (newRec[newKey] = rec[oldKey]);
+  if (ParseMapDict[name] !== undefined){
+    const map = ParseMapDict[name];
+  
+    for (let p = 0; p < table.length; p++){
+      let rec = table[p],
+        newRec = {};
+  
+      for (let [oldKey, newKey] of map){
+        (oldKey in rec) && (newRec[newKey] = rec[oldKey]);
+      }
+  
+      !(newRec.iperiod) && (newRec.iperiod = 0);
+      (newRec.ccode) && (newRec.ccode = newRec.ccode.toString());
+      
+      table[p] = newRec;
     }
-
-    !(newRec.iperiod) && (newRec.iperiod = 0);
-    (newRec.ccode) && (newRec.ccode = newRec.ccode.toString());
-    
-    table[p] = newRec;
   }
 
   return table

@@ -11,7 +11,7 @@ export const DataContext = createContext({
   // fundamental editing methods
   insert: () => {},
   remove: () => {},
-  modify: () => {},
+  setCol: () => {},
 
   // interacting with remote end
   push: () => {},
@@ -32,7 +32,7 @@ const ident = e => e;
 // then apply the pullProc of the fetched data. Or you wanted to create some custom saving
 // format on the server, then apply the pushProc.
 
-export const Data = ({initData=[], tableName='', dataType="file", pushProc=ident, pullProc=ident, children}) => {
+export const Data = ({initData=[], tableName='', pushProc=ident, pullProc=ident, children}) => {
 
   const {currPage} = useContext(DepRouterContext);
 
@@ -89,8 +89,8 @@ export const Data = ({initData=[], tableName='', dataType="file", pushProc=ident
       const {body:remoteData} = await Agnt
         .post(`/pull/${tableName}`)
         .send(currPage);
-      if (remoteData.error === 'DEAD_NOT_FOUND') {
-        setStatus('DEAD_DATA_NOT_FOUND');
+      if (remoteData.error) {
+        setStatus(remoteData.error);
         return;
       }
 
@@ -118,31 +118,72 @@ export const Data = ({initData=[], tableName='', dataType="file", pushProc=ident
     }
   }
 
-  const insert = (rec, index=0) => {
-    data.splice(index, 0, rec);
-    setData([...data]);
-    setStatus('DONE_MODIFIED');
+  const getRec = (path) => {
+    let list = data, rec;
+    for (let i = 0; i < path.length; i++){
+      const index = path[i];
+      rec = list[index];
+      if (i === path.length - 1) break;
+      list = rec.children;
+    }
+    return {rec, list};
   }
 
-  const remove = (index) => {
-    data.splice(index, 1);
+  const insert = (path) => {
+    const {list} = getRec(path);
+    
+    let mostPath = [...path];
+    let lastPath = mostPath.pop();
+
+    list.splice(lastPath, 0, {
+      ref: {item: '新项目', expr: '0'},
+      children: []
+    });
+
+    for (let i = 0; i < list.length; i++){
+      list[i].path = [...mostPath, i];
+    }
+
     setData([...data]);
-    setStatus('DONE_MODIFIED');
+    setFlat(flatten(data));
   }
 
-  const modify = (index, rec) => {
-    data.splice(index, 1, rec);
+  const remove = (path) => {
+    const {list} = getRec(path);
+    
+    let mostPath = [...path];
+    let lastPath = mostPath.pop();
+
+    list.splice(lastPath, 1);
+
+    for (let i = 0; i < list.length; i++){
+      list[i].path = [...mostPath, i];
+    }
+
     setData([...data]);
-    setStatus('DONE_MODIFIED');
+    setFlat(flatten(data));
+  }
+
+  const setCol = (path, col, newVal) => {
+    const {rec} = getRec(path);
+    
+    rec[col] = newVal;
+
+    setData([...data]);
+    setFlat(flatten(data));
   }
 
   const refresh = (newData) => {
     console.log('refresh!');
     setStatus('DONE_REFRESH');
-    setData(newData)
+    if (newData === undefined){
+      setData([...data]);
+    } else {
+      setData(newData)
+    }
   }
 
-  return <DataContext.Provider value={{data, flat, status, push, pull, insert, remove, modify, refresh}}>
+  return <DataContext.Provider value={{data, flat, status, push, pull, insert, remove, setCol, refresh}}>
     {children}
   </DataContext.Provider>
 }

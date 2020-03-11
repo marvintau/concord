@@ -114,7 +114,7 @@ export function DepRouter({home='Home', directories={}, children}) {
     const pathList = [...currPath, {path, context}];
     setPath(pathList);
 
-    setPage({...currPage, ...dirs[path], ...context});
+    setPage({...currPage, ...context, ...dirs[path]});
     setSubs(dirs[path].children);
   }
 

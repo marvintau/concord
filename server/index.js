@@ -39,19 +39,45 @@ const dirs = {
     ProjectList: {
       desc: '项目列表',
       type: 'DATA',
-      dataType: 'DATA',
       tableName: 'PROJECT',
       colSpecs: {
+        link: {desc: '--', width: 1, isFilterable: false, cellType:'Link'},
         year: {desc: '年度', width: 1, isFilterable: true},
         companyName: {desc: '项目（企业）名称', width: 10, isFilterable: true},
-        link: {desc: '--', width: 1, isFilterable: false, cellType:'Link'},
       },
       children: ['Project'],
     },
     Project: {
       desc: '项目页',
       type: 'TEXT',
-      dataType: undefined,
+      tableName: undefined,
+      colSpecs: undefined,
+      children: ['Finance', 'Confirmation'],
+    },
+    Confirmation: {
+      desc: '函证管理',
+      type: 'TEXT',
+      children: ['ConfirmationManagement', 'ConfirmationTemplateManagement'],
+    },
+    ConfirmationManagement: {
+      desc: '函证状态管理',
+      type: 'DATA',
+      tableName: 'CONFIRMATION_MANAGEMENT',
+      colSpecs: {
+        ID: {desc: '编号', width: 2, isFilterable: true},
+        contact: {desc:'通信地址', width: 5, isFilterable: true, cellType: 'Address'},
+        confStatus: {desc:'函证状态', width: 5, isFilterable: true, cellType: 'ConfStatus'}
+      },
+    },
+    ConfirmationTemplateManagement: {
+      desc: '询证函模版管理',
+      type: 'DATA',
+      tableName: 'CONFIRMATION_TEMPLATE_MANAGEMENT',
+      colSpecs: undefined,
+    },
+    Finance: {
+      desc: '财务与报表管理',
+      type: 'TEXT',
       tableName: undefined,
       colSpecs: undefined,
       children: ['Balance', 'ReferredTreeList'],
@@ -59,7 +85,6 @@ const dirs = {
     Balance: {
       desc: '余额表',
       type: 'DATA',
-      dataType: 'FILE',
       tableName: 'BALANCE',
       colSpecs: {
         ccode: {desc: '编码', width: 1, isFilterable: true},
@@ -73,8 +98,6 @@ const dirs = {
     ReferredTreeList: {
       desc: '现金流量表',
       type: 'REFT',
-      dataType: 'FILE',
-      refsType: 'FILE',
       tableName: 'CASHFLOW_WORKSHEET',
       referredName: 'BALANCE',
       colSpecs: {
@@ -89,12 +112,19 @@ router.post('/pull/:data_name', async ctx => {
   const {data_name} = ctx.params;
   
   try {
+    if (retrieveProc[data_name] === undefined){
+      throw {code: 'NO_HANDLER'}
+    }
     ctx.body = await retrieveProc[data_name](ctx.request.body);
   } catch (error) {
-    if (error.code === 'ENOENT'){
-      console.log('not found', data_name)
-      ctx.body = {error: 'DEAD_NOT_FOUND'}
+    console.log('yeah', error)
+
+    const msgs ={
+      'ENOENT' : 'DEAD_NOT_FOUND',
+      'NO_HANDLER' : 'DEAD_NOT_IMPL'
     }
+
+    ctx.body = {error: msgs[error.code]}
   }
 })
 

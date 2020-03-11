@@ -27,12 +27,12 @@ export const RefDataContext = createContext({
   // get the cell data through cell path
   // the path should be an array of array index (integers);
   // if the path is empty or containing invalid index, return undefined.
-  setCell: () => {},
+  setCol: () => {},
 
   setStatus: () => {}
 })
 
-export const RefData = ({dataName, dataType="FILE", refsType="FILE", refsName, pathColumn, children}) => {
+export const RefData = ({dataName, refsName, pathColumn, children}) => {
 
   const {currPage} = useContext(DepRouterContext);
 
@@ -74,8 +74,8 @@ export const RefData = ({dataName, dataType="FILE", refsType="FILE", refsName, p
         .post(`/pull/${dataName}`)
         .send(currPage);
 
-      if (remoteData.error === 'DEAD_NOT_FOUND') {
-        setStatus('DEAD_DATA_NOT_FOUND');
+      if (remoteData.error) {
+        setStatus(remoteData.error);
         return;
       }
 
@@ -83,8 +83,8 @@ export const RefData = ({dataName, dataType="FILE", refsType="FILE", refsName, p
         .post(`/pull/${refsName}`)
         .send(currPage);
 
-      if (remoteRefs.error === 'DEAD_NOT_FOUND'){
-        setStatus('DEAD_REFS_NOT_FOUND');
+      if (remoteRefs.error){
+        setStatus(remoteRefs.error);
         return;
       }
 
@@ -113,7 +113,7 @@ export const RefData = ({dataName, dataType="FILE", refsType="FILE", refsName, p
     }
   }
 
-  const getCell = (path) => {
+  const getRec = (path) => {
     let list = refs, rec;
     for (let i = 0; i < path.length; i++){
       const index = path[i];
@@ -124,22 +124,22 @@ export const RefData = ({dataName, dataType="FILE", refsType="FILE", refsName, p
     return {rec, list};
   }
 
-  const setCell = (path, desc, expr) => {
-    const {rec} = getCell(path);
-    rec.ref.expr = expr;
-    rec.ref.desc = desc;
+  const setCol = (path, col, newVal) => {
+    console.log(path, 'set cell');
+    const {rec} = getRec(path);
+    rec[col] = newVal;
     const newRefs = evalTable(refs, pathColumn, data);
     setRefs(newRefs);
   }
 
   const insert = (path) => {
-    const {list} = getCell(path);
+    const {list} = getRec(path);
     
     let mostPath = [...path];
     let lastPath = mostPath.pop();
 
     list.splice(lastPath, 0, {
-      ref: {item: '新项目', expr: '1'},
+      ref: {item: '新项目', expr: '0'},
       children: []
     });
 
@@ -152,7 +152,7 @@ export const RefData = ({dataName, dataType="FILE", refsType="FILE", refsName, p
   }
 
   const remove = (path) => {
-    const {list} = getCell(path);
+    const {list} = getRec(path);
     
     let mostPath = [...path];
     let lastPath = mostPath.pop();
@@ -174,7 +174,7 @@ export const RefData = ({dataName, dataType="FILE", refsType="FILE", refsName, p
 
   const values = {
     data, refs, flat, status,
-    pathColumn, setCell, refresh, insert, remove
+    pathColumn, setCol, refresh, insert, remove
   }
 
   return <RefDataContext.Provider value={values}>

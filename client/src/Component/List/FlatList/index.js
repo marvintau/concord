@@ -47,7 +47,7 @@ const ItemWrapper = forwardRef(({ data, index, style }, ref) => {
     return <div ref={ref}><div style={{height:filter ? 40 : DEFAULT_FILTER_HEIGHT}} /></div>;
   }
 
-  return <ItemRenderer ref={ref} data={entries[index]} index={index} style={style} />;
+  return <ItemRenderer ref={ref} data={entries[index]} style={style} />;
 });
 
 
@@ -117,14 +117,14 @@ export const Column = ({children}) => {
 
 const Row = (colSpecs) => {
 
-  return forwardRef(({ data, index, style, select}, ref) => {
+  return forwardRef(({ data, style, select}, ref) => {
   
     const cols = [];
     for (let key in colSpecs){
       const {width, cellType:type='Text', noBackground} = colSpecs[key];
       const ColRenderer = Cell[type];
       cols.push(<Col className={noBackground ? 'clear-back' : ''} md={width} key={key}>
-        <ColRenderer index={index-1} data={data} >{data[key]}</ColRenderer>
+        <ColRenderer data={data} >{data[key]}</ColRenderer>
       </Col>)
     }
     

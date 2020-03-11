@@ -20,8 +20,8 @@ const FilterContainer = ({children, topLength}) => {
 const FilterCol = ({colKey, isFilterable, filterCol, ...colProps}) => {
 
   const [inputVal, setInputVal] = useState('');
-  console.log(inputVal, 'filter');
-  const FilterComp = <div style={{display:'flex', width: '100%', maxWidth: '500px'}}>
+
+const FilterComp = <div style={{display:'flex', width: '100%', maxWidth: '500px'}}>
     <Input className="filter-input" bsSize="sm" value={inputVal} onChange={(e) => setInputVal(e.target.value)} onKeyPress={(e) => {
       if (e.key === 'Enter') filterCol(colKey, inputVal);
     }} />

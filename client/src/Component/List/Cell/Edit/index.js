@@ -1,8 +1,5 @@
 import React, {useContext} from 'react';
 
-import Cross from './cross.svg';
-import Insert from './insert.svg';
-
 import { RefDataContext } from '../../../RefData';
 
 import './edit.css';

@@ -52,7 +52,7 @@ const getPathSugg = (path, pathColumn, data) => {
 
 export default ({disabled, children: cellData, data:{path}}) => {
 
-  const {data, pathColumn, colAlias, setCell} = useContext(RefDataContext);
+  const {data, pathColumn, colAlias, setCol} = useContext(RefDataContext);
 
   const {item, expr, result, status} = cellData;
   
@@ -88,7 +88,6 @@ export default ({disabled, children: cellData, data:{path}}) => {
     onSuggestionsClearRequested : () => setSugg([]),
     onSuggestionSelected : (e, {suggestionValue}) => {
       setValue(suggestionValue);
-      // setCell(index, suggestionValue);
     },
   }
 
@@ -101,7 +100,7 @@ export default ({disabled, children: cellData, data:{path}}) => {
   }
 
   const saveEdit = (e) => {
-    setCell(path, desc, value)
+    setCol(path, 'ref', {item:desc, expr:value})
     setEditing(false);
   }
 
