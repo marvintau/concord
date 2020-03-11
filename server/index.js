@@ -85,6 +85,8 @@ const dirs = {
     Finance: {
       desc: '财务与报表管理',
       type: 'TEXT',
+      title: '财务与报表管理',
+      content: '包含所有财务相关的信息，包括账目、余额表和各类报表',
       tableName: undefined,
       colSpecs: undefined,
       children: ['Balance', 'ReferredTreeList'],
