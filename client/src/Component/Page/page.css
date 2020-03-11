@@ -1,0 +1,31 @@
+.text {
+  margin: 20px;
+}
+
+.title{
+  font-size: 300%;
+  font-weight: 900;
+  letter-spacing: -0.04rem;
+}
+
+.content {
+  font-weight: lighter;
+  font-size: small;
+  letter-spacing: 0.01rem;
+}
+
+.table-container {
+  height: 100%
+}
+
+@media screen and (min-width: 1280px) and (max-width: 1440px) {
+  .table-container{
+    width: 960px;
+  }
+}
+
+@media screen and (min-width: 800px) and (max-width: 1280px){
+  .table-container {
+    width: 800px;
+  }
+}

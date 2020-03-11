@@ -34,6 +34,9 @@ const dirs = {
   "/":{
     Home: {
       desc: '首页',
+      type: 'TEXT',
+      title: '你好!',
+      content: ['当前测试版本未添加用户控制模组，可以直接进入项目页面'],
       children: ['ProjectList'],
     },
     ProjectList: {
@@ -50,6 +53,8 @@ const dirs = {
     Project: {
       desc: '项目页',
       type: 'TEXT',
+      title: {key: 'companyName'},
+      content: '这里显示公司的摘要，左侧进入分类内容',
       tableName: undefined,
       colSpecs: undefined,
       children: ['Finance', 'Confirmation'],
@@ -57,6 +62,8 @@ const dirs = {
     Confirmation: {
       desc: '函证管理',
       type: 'TEXT',
+      title: '函证管理',
+      content : ['函证相关内容。', '函证状态管理包括函证的生成、以及收发信息。函证模版管理包括不同类型询证函的模版的管理'],
       children: ['ConfirmationManagement', 'ConfirmationTemplateManagement'],
     },
     ConfirmationManagement: {
