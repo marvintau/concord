@@ -133,8 +133,6 @@ export function DepRouter({home='Home', directories={}, children}) {
     setSubs(dirs[gotoPath].children);
   }
 
-  console.log(currPage, 'curr');
-
   let content;
   if(dirs && Object.keys(dirs).length > 0){
     content = <SideNavigationBar directories={dirs} isHidden={['DATA', 'REFT'].includes(currPage.type)}>

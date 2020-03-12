@@ -11,6 +11,7 @@ const dataProc = require('./xlsx-proc');
 const postProc = require('./post-proc');
 const retrieveProc = require('./retrieve-proc');
 const {retrieve} = require('./database');
+const {fetchDir} = require('./dirs');
 
 const {genName} = require('./nameGenerate');
 
@@ -30,92 +31,6 @@ if (mode !== 'production') {
   publicPath = Path.join(__dirname, '../client/build')
 }
 
-const dirs = {
-  "/":{
-    Home: {
-      desc: '首页',
-      type: 'TEXT',
-      title: '你好!',
-      content: ['当前测试版本未添加用户控制模组，可以直接进入项目页面'],
-      children: ['ProjectList'],
-    },
-    ProjectList: {
-      desc: '项目列表',
-      type: 'DATA',
-      tableName: 'PROJECT',
-      colSpecs: {
-        link: {desc: '--', width: 1, isFilterable: false, cellType:'Link'},
-        year: {desc: '年度', width: 1, isFilterable: true},
-        companyName: {desc: '项目（企业）名称', width: 10, isFilterable: true},
-      },
-      children: ['Project'],
-    },
-    Project: {
-      desc: '项目页',
-      type: 'TEXT',
-      title: {key: 'companyName'},
-      content: '这里显示公司的摘要，左侧进入分类内容',
-      tableName: undefined,
-      colSpecs: undefined,
-      children: ['Finance', 'Confirmation'],
-    },
-    Confirmation: {
-      desc: '函证管理',
-      type: 'TEXT',
-      title: '函证管理',
-      content : ['函证相关内容。', '函证状态管理包括函证的生成、以及收发信息。函证模版管理包括不同类型询证函的模版的管理'],
-      children: ['ConfirmationManagement', 'ConfirmationTemplateManagement'],
-    },
-    ConfirmationManagement: {
-      desc: '函证状态管理',
-      type: 'DATA',
-      tableName: 'CONFIRMATION_MANAGEMENT',
-      colSpecs: {
-        ID: {desc: '编号', width: 2, isFilterable: true},
-        contact: {desc:'通信地址', width: 5, isFilterable: true, cellType: 'Address'},
-        confStatus: {desc:'函证状态', width: 5, isFilterable: true, cellType: 'ConfStatus'}
-      },
-    },
-    ConfirmationTemplateManagement: {
-      desc: '询证函模版管理',
-      type: 'DATA',
-      tableName: 'CONFIRMATION_TEMPLATE_MANAGEMENT',
-      colSpecs: undefined,
-    },
-    Finance: {
-      desc: '财务与报表管理',
-      type: 'TEXT',
-      title: '财务与报表管理',
-      content: '包含所有财务相关的信息，包括账目、余额表和各类报表',
-      tableName: undefined,
-      colSpecs: undefined,
-      children: ['Balance', 'ReferredTreeList'],
-    },
-    Balance: {
-      desc: '余额表',
-      type: 'DATA',
-      tableName: 'BALANCE',
-      colSpecs: {
-        ccode: {desc: '编码', width: 1, isFilterable: true},
-        ccode_name: {desc: '科目名称', width: 3, isFilterable: true},
-        mb: {desc: '期初', width: 2, isFilterable: true, cellType:'Number'},
-        md: {desc: '借方', width: 2, isFilterable: true, cellType:'Number'},
-        mc: {desc: '贷方', width: 2, isFilterable: true, cellType:'Number'},
-        me: {desc: '期末', width: 2, isFilterable: true, cellType:'Number'},
-      }
-    },
-    ReferredTreeList: {
-      desc: '现金流量表',
-      type: 'REFT',
-      tableName: 'CASHFLOW_WORKSHEET',
-      referredName: 'BALANCE',
-      colSpecs: {
-        ref: {desc: '条目', width: 11, isFilterable: true, cellType:'Ref'},
-        edit: {desc: '编辑', width: 1, isFilterable: false, cellType:'Edit'},
-      }      
-    }
-  }
-}
 
 router.post('/pull/:data_name', async ctx => {
   const {data_name} = ctx.params;
@@ -170,9 +85,9 @@ router.post('/upload/:data_name', upload.single('file'), async ctx => {
   ctx.body = res;
 })
 
-router.post('/pages', ctx => {
+router.post('/pages', async ctx => {
   const {fetchPath} = ctx.request.body;
-  ctx.body = dirs[fetchPath];
+  ctx.body = await fetchDir(fetchPath);
 });
 
 

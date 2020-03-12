@@ -18,7 +18,6 @@ export default ({}) => {
   }
 
   if (type === 'TEXT') {
-    console.log(currPage);
     const {name, title, content} = currPage;
 
     const actualTitle = title.key !== undefined
