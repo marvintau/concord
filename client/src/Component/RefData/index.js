@@ -15,7 +15,6 @@ export const RefDataContext = createContext({
   
   // data refss
   refs: [],
-  flat: [],
   data: [],
   pathColumn: '',
 
@@ -37,7 +36,6 @@ export const RefData = ({dataName, refsName, pathColumn, children}) => {
   const {currPage} = useContext(DepRouterContext);
 
   const [refs, setRefs] = useState([]);
-  const [flat, setFlat] = useState([]);
   const [data, setData] = useState([]);
   const [status, setStatus] = useState('INIT');
 
@@ -49,23 +47,9 @@ export const RefData = ({dataName, refsName, pathColumn, children}) => {
       }
       if (status === 'DONE_PULL'){
         evalTable(refs, pathColumn, data);
-        const flattened = flatten(refs);
-        console.log(flattened);
-        setFlat(flattened);
       }
     })()
   }, [status])
-
-  const flatten = (list) => {
-    const stack = [...list];
-    const res = [];
-    while(stack.length) {
-      const next = stack.shift();
-      next.children && stack.unshift(...next.children);
-      res.push(next);
-    }
-    return res;
-  }
 
   const pull = async () => {
     setStatus('PULL');
@@ -148,7 +132,6 @@ export const RefData = ({dataName, refsName, pathColumn, children}) => {
     }
 
     setRefs([...refs]);
-    setFlat(flatten(refs));
   }
 
   const remove = (path) => {
@@ -164,7 +147,6 @@ export const RefData = ({dataName, refsName, pathColumn, children}) => {
     }
 
     setRefs([...refs]);
-    setFlat(flatten(refs));
   }
 
   const refresh = (newData) => {
@@ -173,7 +155,7 @@ export const RefData = ({dataName, refsName, pathColumn, children}) => {
   }
 
   const values = {
-    data, refs, flat, status,
+    data, refs, status,
     pathColumn, setCol, refresh, insert, remove
   }
 

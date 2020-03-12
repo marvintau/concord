@@ -5,6 +5,7 @@ import Link from './Link';
 import Edit from './Edit';
 import Address from './Address';
 import ConfStatus from './ConfStatus';
+import Labels from './Labels';
 
 export default {
   Number,
@@ -12,6 +13,7 @@ export default {
   Ref,
   Link,
   Edit,
+  Labels,
   Address,
   ConfStatus
 }

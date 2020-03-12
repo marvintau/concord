@@ -1,0 +1,16 @@
+let JOURNAL = [
+  ['会计年', 'iyear'],
+  ['会计月', 'iperiod'],
+  ['记账时间', 'dbill_date'],
+  ['凭证编号', 'ino_id'],
+  ['编号', 'inid'],
+  ['行', 'inid'],
+  ['业务说明', 'cdigest'],
+  ['摘要', 'cdigest'],
+  ['科目编号', 'ccode'],
+  ['科目编码', 'ccode'],
+  ['科目名称', 'ccode_name'],
+  ['借方发生额', 'md'],
+  ['贷方发生额', 'mc'],
+  ['对方科目名称', 'ccode_equal'],
+]

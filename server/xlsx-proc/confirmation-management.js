@@ -1,9 +1,13 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-const CONFIRMATION_MANAGEMENT = async (data, context) => {
+const {readSingleSheet} = require('./utils');
+
+const CONFIRMATION_MANAGEMENT = async (fileBuffer, context) => {
   
   const {pid} = context;
+
+  const data = readSingleSheet(fileBuffer);
 
   const reformedData = data.map((rec, i) => {
     const {ID, CompanyName, CompanyAddress, CompanyContactName, CompanyContactPhone} = rec;

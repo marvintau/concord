@@ -33,10 +33,9 @@ const dirs = [
     name: 'EquivalentCategory',
     desc: '等效科目名称',
     type: 'DATA',
-    tableName: 'EQUIVALENT_NAMES',
+    tableName: 'EQUIVALENT_CATEGORY_NAME',
     colSpecs: {
-      categoryName: {desc: '科目名称', width: 1, isFilterable: true},
-      equivalents: {desc: '等价的科目名称', width: 11},
+      equiv: {desc: '等价的科目名称', width: 12, cellType:'Labels'},
     },
   },
   {
@@ -134,15 +133,16 @@ const dirs = [
 
 // for development stage only
 (async () => {
-  const result = await retrieve('table', 'dirs');
-  console.log(result, 'resutl')
 
-  if (result.length !== dirs.length){
-    await remove({table: 'dirs'});
-    for (let dir of dirs){
-      await insert({table: 'dirs', ...dir});
-    }
+  await remove('table', 'dirs');
+
+  const result = await retrieve('table', 'dirs');
+  console.log(result, 'tables')
+
+  for (let dir of dirs){
+    await insert({table: 'dirs', ...dir});
   }
+
 })();
 
 async function fetchDir(givenLoadPoint='/') {

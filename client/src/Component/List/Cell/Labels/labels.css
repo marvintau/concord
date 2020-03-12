@@ -1,0 +1,17 @@
+.labels-text {
+  display: flex;
+  align-items: center;
+  height: 2.5rem;
+}
+
+.labels-button {
+  margin-left: 5px;
+  height: 1.5rem;
+  cursor: pointer;
+}
+
+.labels-wrapper {
+  display: flex;
+  align-items: center;
+  height: 2.5rem;
+}

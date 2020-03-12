@@ -4,7 +4,7 @@ import {Input} from 'reactstrap';
 import { DataContext } from '../../../Data';
 import './conf-status.css';
 
-export default ({data:{path}, children={}}) => {
+export default ({colName, data:{path}, children={}}) => {
 
   const {setCol} = useContext(DataContext);
 
@@ -38,7 +38,7 @@ export default ({data:{path}, children={}}) => {
     }
 
     setData(newData);
-    setCol(path, 'confStatus', newData);
+    setCol(path, colName, newData);
     setStatus(status);
   }
 

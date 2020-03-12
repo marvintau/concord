@@ -1,3 +1,6 @@
+const XLSX = require('xlsx');
+
+
 function sort(table, key){
 
   const val = typeof key === 'string'
@@ -67,8 +70,39 @@ function cascade(table, colKey) {
   return children;
 }
 
+function columnNameRemap(table, map){
+  
+  for (let p = 0; p < table.length; p++){
+    let rec = table[p],
+      newRec = {};
+
+    for (let [oldKey, newKey] of map){
+      (oldKey in rec) && (newRec[newKey] = rec[oldKey]);
+    }
+
+    !(newRec.iperiod) && (newRec.iperiod = 0);
+    (newRec.ccode) && (newRec.ccode = newRec.ccode.toString());
+    
+    table[p] = newRec;
+  }
+
+  return table
+}
+
+function readSingleSheet(buffer, withHeader=true){
+  const table = XLSX.read(buffer, {type:'buffer'});
+  const firstSheet = table.Sheets[table.SheetNames[0]];  
+  if (withHeader) {
+    return XLSX.utils.sheet_to_json(firstSheet);
+  } else {
+    return XLSX.utils.sheet_to_json(firstSheet, {header: 1});
+  }
+}
+
 module.exports = {
   sort,
   group,
-  cascade
+  cascade,
+  columnNameRemap,
+  readSingleSheet
 }

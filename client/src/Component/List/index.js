@@ -38,10 +38,21 @@ const ErrorIndicator = ({status}) => {
 
 
 const RefTableComp = ({name, desc, colSpecs}) => {
-  const {refs, flat, status, refresh, setStatus} = useContext(RefDataContext);
+  const {refs, status, refresh, setStatus} = useContext(RefDataContext);
   const {currPage} = useContext(DepRouterContext);
   const [folded, setFold] = useState(true);
 
+  const flatten = (list) => {
+    const stack = [...list];
+    const res = [];
+    while(stack.length) {
+      const next = stack.shift();
+      next.children && stack.unshift(...next.children);
+      res.push(next);
+    }
+    return res;
+  }
+  
   let content;
   if (status.startsWith('DEAD')){
     content = <ErrorIndicator {...{status}} />
@@ -51,7 +62,7 @@ const RefTableComp = ({name, desc, colSpecs}) => {
     if (folded){
       content = <TreeList {...{data:refs, status, colSpecs}} />;
     } else {
-      content = <FlatList {...{data:flat, status, colSpecs}} />;
+      content = <FlatList {...{data:flatten(refs), status, colSpecs}} />;
     }
   }
 
@@ -67,10 +78,19 @@ const RefTableComp = ({name, desc, colSpecs}) => {
 }
 
 const DataTableComp = ({name, desc, colSpecs}) => {
-  const {data, flat, status, refresh, setStatus, push} = useContext(DataContext);
+  const {data, status, refresh, setStatus, push} = useContext(DataContext);
   const {currPage} = useContext(DepRouterContext);
 
-  console.log(status, 'status');
+  const flatten = (list) => {
+    const stack = [...list];
+    const res = [];
+    while(stack.length) {
+      const next = stack.shift();
+      next.children && stack.unshift(...next.children);
+      res.push(next);
+    }
+    return res;
+  }
 
   const [folded, setFold] = useState(true);
 
@@ -85,7 +105,7 @@ const DataTableComp = ({name, desc, colSpecs}) => {
     if (folded){
       content = <TreeList {...{data, status, colSpecs}} />;
     } else {
-      content = <FlatList {...{data:flat, status, colSpecs}} />;
+      content = <FlatList {...{data:flatten(data), status, colSpecs}} />;
     }
   }
 

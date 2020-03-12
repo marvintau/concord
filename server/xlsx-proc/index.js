@@ -1,58 +1,26 @@
 
-const XLSX = require('xlsx');
-
-const ParseMapDict = require('./parse-dictionary');
-
 const BALANCE = require('./balance');
 const CASHFLOW_WORKSHEET = require('./cashflow-worksheet');
 const CONFIRMATION_MANAGEMENT = require('./confirmation-management');
+const EQUIVALENT_CATEGORY_NAME = require('./equivalent-category-name');
 
 const dataProcDict = {
   BALANCE,
   CASHFLOW_WORKSHEET,
-  CONFIRMATION_MANAGEMENT
-}
-
-
-function columnNameRemap(table, name){
-
-  if (ParseMapDict[name] !== undefined){
-    const map = ParseMapDict[name];
-  
-    for (let p = 0; p < table.length; p++){
-      let rec = table[p],
-        newRec = {};
-  
-      for (let [oldKey, newKey] of map){
-        (oldKey in rec) && (newRec[newKey] = rec[oldKey]);
-      }
-  
-      !(newRec.iperiod) && (newRec.iperiod = 0);
-      (newRec.ccode) && (newRec.ccode = newRec.ccode.toString());
-      
-      table[p] = newRec;
-    }
-  }
-
-  return table
-}
-
-function readSingleSheet(buffer){
-  const table = XLSX.read(buffer, {type:'buffer'});
-  const firstSheet = table.Sheets[table.SheetNames[0]];  
-  return XLSX.utils.sheet_to_json(firstSheet);
+  CONFIRMATION_MANAGEMENT,
+  EQUIVALENT_CATEGORY_NAME
 }
 
 async function dataProc(fileBuffer, dataName, context){
+
+  console.log('retrieving', dataName)
 
   if (!(dataName in dataProcDict)){
     return {error: 'DEAD_NOT_IMPL'}
   }
 
   try {
-    const table = readSingleSheet(fileBuffer);
-    const mapped = columnNameRemap(table, dataName);
-    const result = await dataProcDict[dataName](mapped, context);
+    const result = await dataProcDict[dataName](fileBuffer, context);
     return {ok: 'DONE', data:result}
   } catch (er) {
     console.log(er);

@@ -50,9 +50,9 @@ const getPathSugg = (path, pathColumn, data) => {
 }
 
 
-export default ({disabled, children: cellData, data:{path}}) => {
+export default ({colName, disabled, children: cellData, data:{path}}) => {
 
-  const {data, pathColumn, colAlias, setCol} = useContext(RefDataContext);
+  const {data, pathColumn, setCol} = useContext(RefDataContext);
 
   const {item, expr, result, status} = cellData;
   
@@ -70,9 +70,6 @@ export default ({disabled, children: cellData, data:{path}}) => {
       const mostPart = input.replace(/[/][^$/]*$/, '');
       return getPathSugg(mostPart, pathColumn, data).filter(cand => cand.includes(lastSeg));
 
-    // in this case we are matching an incomplete identifier.
-    } else if (input.match(/[$][^$*/+-]*$/)) {
-      return Object.keys(colAlias);
     }
 
     return [];
@@ -100,7 +97,7 @@ export default ({disabled, children: cellData, data:{path}}) => {
   }
 
   const saveEdit = (e) => {
-    setCol(path, 'ref', {item:desc, expr:value})
+    setCol(path, colName, {item:desc, expr:value})
     setEditing(false);
   }
 
