@@ -2,6 +2,8 @@ import React, {createContext, useState, useContext, useEffect} from 'react';
 import {Breadcrumb, BreadcrumbItem, ListGroup, ListGroupItem} from 'reactstrap';
 import Sidebar from 'react-sidebar';
 
+import './dep-router.css';
+
 export const DepRouterContext = createContext({
   currPage: {},
   currPath: [],
@@ -51,7 +53,8 @@ const SideNavigationBar = ({directories, isHidden, children}) => {
     sidebar={innerSidebar}
     docked={currSubs !== undefined && !isHidden}
     styles={{sidebar: {background: 'white'}}}
-  >{children}
+  >
+    <div className="sidebar-content-wrapper">{children}</div>
   </Sidebar>
 }
 
