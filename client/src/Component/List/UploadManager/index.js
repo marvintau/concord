@@ -34,7 +34,7 @@ export default function({title="上传文件", name, context={}, refresh=ident, 
                 const {ok, error, data} = (res.body);
                 if(ok){
                     console.log('ok!')
-                    refresh(data);
+                    refresh({[name]:data});
                 } else {
                     setStatus(error);
                 }

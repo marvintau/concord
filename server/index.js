@@ -34,14 +34,13 @@ if (mode !== 'production') {
 
 router.post('/pull/:data_name', async ctx => {
   const {data_name} = ctx.params;
-  
   try {
     if (retrieveProc[data_name] === undefined){
       throw {code: 'NO_HANDLER'}
     }
     ctx.body = await retrieveProc[data_name](ctx.request.body);
   } catch (error) {
-    console.log('yeah', error)
+    console.log('yeah', data_name, error)
 
     const msgs ={
       'ENOENT' : 'DEAD_NOT_FOUND',

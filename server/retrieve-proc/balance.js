@@ -6,7 +6,7 @@ async function retrieve(context) {
   const filePath = path.resolve('./file_store/Project/', pid, 'BALANCE');
   console.log(filePath);
   const data = await fs.readFile(filePath)
-  return JSON.parse(data.toString());
+  return {data: JSON.parse(data.toString()), pathColumn:'ccode_name'};
 }
 
 module.exports = retrieve;

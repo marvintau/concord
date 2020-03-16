@@ -2,7 +2,6 @@ import React, {createContext, useState, useEffect, useContext} from 'react';
 import Agnt from 'superagent';
 
 import evalTable from './evaluate';
-import parseTable from './parse';
 import { DepRouterContext } from '../DepRouter';
 
 const msg = {
@@ -17,6 +16,8 @@ export const RefDataContext = createContext({
   refs: [],
   data: [],
   pathColumn: '',
+
+  counter: [],
 
   push: () => {},
   pull: () => {},
@@ -39,7 +40,10 @@ export const RefData = ({dataName, refsName, pathColumn, children}) => {
   const [data, setData] = useState([]);
   const [status, setStatus] = useState('INIT');
 
+  let counter = 0;
+
   useEffect(() => {
+
     console.log(status, 'effect');
     (async() => {
       if (status === 'INIT'){
@@ -72,9 +76,9 @@ export const RefData = ({dataName, refsName, pathColumn, children}) => {
         return;
       }
 
-      const parsedRefs = parseTable(remoteRefs);
+      // const parsedRefs = parseTable(remoteRefs);
       setData(remoteData);
-      setRefs(parsedRefs);
+      setRefs(remoteRefs);
       setStatus('DONE_PULL');
     } catch(e){
       console.error(e);
@@ -155,6 +159,7 @@ export const RefData = ({dataName, refsName, pathColumn, children}) => {
   }
 
   const values = {
+    counter,
     data, refs, status,
     pathColumn, setCol, refresh, insert, remove
   }

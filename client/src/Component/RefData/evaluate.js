@@ -120,10 +120,15 @@ const evalArithExpr = (expr, rec, dataRecs) => {
   expr = expr.replace(/[\s$]*/g, '');
   // console.log(expr, colAlias)
 
-  // handle if there is a equal operator
+  // handle if there is a equal operator. Note that the comparison must
+  // be between two variabels.
   if(expr.includes('===') && expr.split('===').length === 2){
-    console.log('eq');
-
+    let [sideA, sideB] = expr.replace(/\$/g, '').split('===').map(e => vars[e]);
+    if (Math.abs(sideA - sideB) > 10e-4){
+      Object.assign(rec.ref, {result: Math.abs(sideA - sideB), status: 'WARN'})
+    } else {
+      Object.assign(rec.ref, {result: '通过', status: 'SUCC'})
+    }
   // in this case we are handling a plain expression without
   // reference
   } else if (dataRecs === undefined){

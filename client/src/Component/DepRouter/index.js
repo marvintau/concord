@@ -2,6 +2,8 @@ import React, {createContext, useState, useContext, useEffect} from 'react';
 import {Breadcrumb, BreadcrumbItem, ListGroup, ListGroupItem} from 'reactstrap';
 import Sidebar from 'react-sidebar';
 
+import {GrandExchangeContext} from '../GrandExchange';
+
 import './dep-router.css';
 
 export const DepRouterContext = createContext({
@@ -73,6 +75,8 @@ const NavigationBar = ({directories}) => {
 
 export function DepRouter({home='Home', directories={}, children}) {
 
+  const {pull} = useContext(GrandExchangeContext);
+
   const [initPage, initPath, initSubs] = Object.keys(directories).length === 0
     ? [{}, [], undefined]
     : [directories['Home'], [{path:'Home', context:{}}], directories['Home'].children]
@@ -117,7 +121,13 @@ export function DepRouter({home='Home', directories={}, children}) {
     const pathList = [...currPath, {path, context}];
     setPath(pathList);
 
-    setPage({...currPage, ...context, ...dirs[path]});
+    const page = {...currPage, ...context, ...dirs[path]};
+    const {sheetName, referredSheetNames=[]} = page;
+    if (sheetName !== undefined){
+      pull([...referredSheetNames, sheetName], page);
+    }
+
+    setPage(page);
     setSubs(dirs[path].children);
   }
 

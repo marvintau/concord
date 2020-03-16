@@ -19,6 +19,7 @@
     "@hapi/joi": "^17.1.0",
     "@koa/multer": "^2.0.2",
     "@koa/router": "^8.0.8",
+    "@marvintau/arith-expr": "0.0.2",
     "boom": "^7.3.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",

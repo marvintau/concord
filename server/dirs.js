@@ -17,7 +17,7 @@ const dirs = [
     type: 'TEXT',
     title: '通用配置',
     content: ['包括适用于所有项目的设置，以及和系统相关的配置项目'],
-    children: ['EquivalentCategory', 'PageConfiguration'],
+    children: ['PathAliases', 'ColAliases', 'PageConfiguration'],
   },
   {
     loadPoint: '/',
@@ -30,10 +30,20 @@ const dirs = [
   },
   {
     loadPoint: '/',
-    name: 'EquivalentCategory',
-    desc: '等效科目名称',
+    name: 'PathAliases',
+    desc: '科目别名',
     type: 'DATA',
-    tableName: 'EQUIVALENT_CATEGORY_NAME',
+    sheetName: '__PATH_NAME_ALIASES',
+    colSpecs: {
+      equiv: {desc: '科目别名', width: 12, cellType:'Labels'},
+    },
+  },
+  {
+    loadPoint: '/',
+    name: 'ColumnAliases',
+    desc: '表头别名',
+    type: 'DATA',
+    sheetName: '__COLUMN_NAME_ALIASES',
     colSpecs: {
       equiv: {desc: '等价的科目名称', width: 12, cellType:'Labels'},
     },
@@ -43,7 +53,7 @@ const dirs = [
     name: 'ProjectList',
     desc: '项目列表',
     type: 'DATA',
-    tableName: 'PROJECT',
+    sheetName: 'PROJECT',
     colSpecs: {
       link: {desc: '--', width: 1, isFilterable: false, cellType:'Link'},
       year: {desc: '年度', width: 1, isFilterable: true},
@@ -58,7 +68,7 @@ const dirs = [
     type: 'TEXT',
     title: {key: 'companyName'},
     content: '这里显示公司的摘要，左侧进入分类内容',
-    tableName: undefined,
+    sheetName: undefined,
     colSpecs: undefined,
     children: ['Finance', 'Confirmation'],
   },
@@ -76,7 +86,7 @@ const dirs = [
     name: 'ConfirmationManagement',
     desc: '函证状态管理',
     type: 'DATA',
-    tableName: 'CONFIRMATION_MANAGEMENT',
+    sheetName: 'CONFIRMATION_MANAGEMENT',
     colSpecs: {
       ID: {desc: '编号', width: 2, isFilterable: true},
       contact: {desc:'通信地址', width: 5, isFilterable: true, cellType: 'Address'},
@@ -88,7 +98,7 @@ const dirs = [
     name: 'ConfirmationTemplateManagement',
     desc: '询证函模版管理',
     type: 'DATA',
-    tableName: 'CONFIRMATION_TEMPLATE_MANAGEMENT',
+    sheetName: 'CONFIRMATION_TEMPLATE_MANAGEMENT',
     colSpecs: undefined,
   },
   {
@@ -98,7 +108,7 @@ const dirs = [
     type: 'TEXT',
     title: '财务与报表管理',
     content: '包含所有财务相关的信息，包括账目、余额表和各类报表',
-    tableName: undefined,
+    sheetName: undefined,
     colSpecs: undefined,
     children: ['Balance', 'CashflowStatement'],
   },
@@ -107,7 +117,7 @@ const dirs = [
     name: 'Balance',
     desc: '余额表',
     type: 'DATA',
-    tableName: 'BALANCE',
+    sheetName: 'BALANCE',
     colSpecs: {
       ccode: {desc: '编码', width: 1, isFilterable: true},
       ccode_name: {desc: '科目名称', width: 3, isFilterable: true},
@@ -121,12 +131,12 @@ const dirs = [
     loadPoint: '/',
     name: 'CashflowStatement',
     desc: '现金流量表',
-    type: 'REFT',
-    tableName: 'CASHFLOW_WORKSHEET',
-    referredName: 'BALANCE',
+    type: 'DATA',
+    sheetName: 'CASHFLOW_WORKSHEET',
+    referredSheetNames: ['BALANCE'],
     colSpecs: {
       ref: {desc: '条目', width: 11, isFilterable: true, cellType:'Ref'},
-      edit: {desc: '编辑', width: 1, isFilterable: false, cellType:'Edit'},
+      // edit: {desc: '编辑', width: 1, isFilterable: false, cellType:'Edit'},
     }      
   }
 ];

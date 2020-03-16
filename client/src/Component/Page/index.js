@@ -1,14 +1,15 @@
 import React, {useContext} from 'react';
 import {DepRouterContext} from '../DepRouter';
+import {GrandExchangeContext} from '../GrandExchange';
+import List from '../List';
 
 import './page.css';
 
-import List from '../List';
-
 export default ({}) => {
   const {currPage} = useContext(DepRouterContext);
-  
-  const {type, children, ...props} = currPage;
+  const {Sheets, status} = useContext(GrandExchangeContext);
+
+  const {type, children} = currPage;
 
   if (type === undefined && children && children.length > 0){
     return <div className="text">
@@ -36,9 +37,12 @@ export default ({}) => {
     </div>
   }
 
-  if (['REFT', 'DATA'].includes(type)){
+  if (type === 'DATA'){
+
+    const {sheetName, desc, colSpecs} = currPage;
+    console.log(Sheets, sheetName, 'page before list')
     return <div className="table-container">
-      <List type={type} {...props} />
+      <List sheet={Sheets[sheetName]} {...{name: sheetName, desc, status, colSpecs}} />
     </div>
   }
 

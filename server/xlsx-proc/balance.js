@@ -42,12 +42,13 @@ async function balance(fileBuffer, context){
 
   const {pid} = context;
 
-  const data = readSingleSheet(fileBuffer);
-  const mappedData = columnNameRemap(data, header);
-  const result = cascade(mappedData, 'ccode');
-  await fs.writeFile(path.resolve(`./file_store/Project/${pid}/BALANCE`), JSON.stringify(result));
+  let data = readSingleSheet(fileBuffer);
+  data = columnNameRemap(data, header);
+  data = cascade(data, 'ccode');
 
-  return result;
+  await fs.writeFile(path.resolve(`./file_store/Project/${pid}/BALANCE`), JSON.stringify(data));
+
+  return {data, pathColumn: 'ccode_name'};
 }
 
 module.exports = balance;

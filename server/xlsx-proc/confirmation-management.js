@@ -7,9 +7,9 @@ const CONFIRMATION_MANAGEMENT = async (fileBuffer, context) => {
   
   const {pid} = context;
 
-  const data = readSingleSheet(fileBuffer);
+  let data = readSingleSheet(fileBuffer);
 
-  const reformedData = data.map((rec, i) => {
+  data = data.map((rec, i) => {
     const {ID, CompanyName, CompanyAddress, CompanyContactName, CompanyContactPhone} = rec;
     return {
       ID,
@@ -23,9 +23,9 @@ const CONFIRMATION_MANAGEMENT = async (fileBuffer, context) => {
     }
   })
 
-  await fs.writeFile(path.resolve(`./file_store/Project/${pid}/CONFIRMATION_MANAGEMENT`), JSON.stringify(reformedData));
+  await fs.writeFile(path.resolve(`./file_store/Project/${pid}/CONFIRMATION_MANAGEMENT`), JSON.stringify(data));
 
-  return reformedData;
+  return {data};
 }
 
 module.exports = CONFIRMATION_MANAGEMENT
