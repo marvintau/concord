@@ -107,9 +107,9 @@ const TreeList = function({data, children, historyRowHeight, historyRowRenderer,
 
     console.log('select', ith);
 
-    if (sublist[ith] && sublist[ith].children !== undefined){
+    if (sublist[ith] && sublist[ith].__children !== undefined){
       let newHistoryEntry = {...sublist[ith], histIndex:history.length};
-      let newSublist = sublist[ith].children.map((e, i) => ({...e, listIndex:i}))
+      let newSublist = sublist[ith].__children.map((e, i) => ({...e, listIndex:i}))
   
       setHistory([...history, newHistoryEntry]);
       setSublist(newSublist);
@@ -122,7 +122,7 @@ const TreeList = function({data, children, historyRowHeight, historyRowRenderer,
 
     let newSublist;
     if (newHistory.length > 0){
-      newSublist = newHistory[newHistory.length-1].children.map((e, i) => ({...e, listIndex:i}));
+      newSublist = newHistory[newHistory.length-1].__children.map((e, i) => ({...e, listIndex:i}));
     } else {
       newSublist = data.map((e, i) => ({...e, listIndex:i}))
     }
@@ -202,7 +202,7 @@ const HistoryContainer = (HistRowRenderer, FilterRowRenderer, historyRowHeight, 
 
 const HIST_LINE_HEIGHT = 30;
 
-const Row = (colSpecs) => {
+const Row = (colSpecs, sheetName) => {
 
   return forwardRef(({ data, style, select}, ref) => {
   
@@ -210,7 +210,9 @@ const Row = (colSpecs) => {
     for (let key in colSpecs){
       const {width, cellType:type='Text'} = colSpecs[key];
       const ColRenderer = Cell[type];
-      cols.push(<Col md={width} key={key}><ColRenderer colName={key} data={data}>{data[key]}</ColRenderer></Col>)
+      cols.push(<Col md={width} key={key}>
+        <ColRenderer sheetName={sheetName} colName={key} data={data}>{data[key]}</ColRenderer>
+      </Col>)
     }
     
     return <div ref={ref} className='treelist-row hovered' style={style} onClick={select}>
@@ -236,7 +238,7 @@ const HistoryRow = (colSpecs) => {
   }
 };
 
-export default ({data, colSpecs}) => 
+export default ({data, colSpecs, sheetName}) => 
   <div style={{flex:1, width:'100%'}}>
     <AutoSizer>
     {({height, width}) => {
@@ -248,7 +250,7 @@ export default ({data, colSpecs}) =>
         historyRowHeight={HIST_LINE_HEIGHT}
         filterRowRenderer={FilterRow(colSpecs)}
       >
-        {Row(colSpecs)}
+        {Row(colSpecs, sheetName)}
       </TreeList>
     }}
     </AutoSizer>

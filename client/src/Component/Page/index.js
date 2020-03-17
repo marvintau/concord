@@ -40,7 +40,7 @@ export default ({}) => {
   if (type === 'DATA'){
 
     const {sheetName, desc, colSpecs} = currPage;
-    console.log(Sheets, sheetName, 'page before list')
+
     return <div className="table-container">
       <List sheet={Sheets[sheetName]} {...{name: sheetName, desc, status, colSpecs}} />
     </div>

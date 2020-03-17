@@ -19,7 +19,7 @@ const CASHFLOW_WORKSHEET = async (fileBuffer, context) => {
   data = columnNameRemap(data, header);
   data = parse('BALANCE', data);
 
-  await fs.writeFile(path.resolve(`./file_store/Project/${pid}/CASHFLOW_WORKSHEET`), JSON.stringify({data}));
+  await fs.writeFile(path.resolve(`./file_store/Project/${pid}/CASHFLOW_WORKSHEET`), JSON.stringify(data));
 
   return {data};
 }

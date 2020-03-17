@@ -75,7 +75,7 @@ const NavigationBar = ({directories}) => {
 
 export function DepRouter({home='Home', directories={}, children}) {
 
-  const {pull} = useContext(GrandExchangeContext);
+  const {pull, status, evalSheet} = useContext(GrandExchangeContext);
 
   const [initPage, initPath, initSubs] = Object.keys(directories).length === 0
     ? [{}, [], undefined]
@@ -97,6 +97,13 @@ export function DepRouter({home='Home', directories={}, children}) {
       setSubs(dir['Home'].children);  
     })()
   }, [])
+
+  useEffect(() => {
+    if (status === 'DONE_PULL') {
+      console.log(currPage, 'eff, dep router');
+      evalSheet(currPage.sheetName);
+    }
+  }, [status])
 
   const fetchDir = (fetchPath) => {
 

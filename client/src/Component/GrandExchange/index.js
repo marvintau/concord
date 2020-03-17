@@ -1,32 +1,22 @@
-import React, {useState, useEffect, createContext, useContext} from 'react';
-import {DepRouterContext} from '../DepRouter';
-import parseArith from '@marvintau/arith-expr';
+import React, {useState, createContext} from 'react';
 import Agnt from 'superagent';
+import {evalTable} from './evals';
 
-const parseExpr = (expr, aliases) => {
-  try {
-    const result = parseArith(expr, aliases);
-    return {result};
-  } catch ({message}){
-    return message.includes('identifier')
-    ? {result: 0, code: 'EXPR_IDENT'}
-    : {result: 0, code: 'EXPR_ILLEG'}
+const outer = (listOfLists) => {
+
+  if (listOfLists.some(elem => !Array.isArray(elem))){
+    throw Error('outer必须得用在list of lists上')
   }
-}
 
-const removeObserverFromDest = (rec, field) => {
-	if (rec[field].isRef){
-	  let observers = rec[field].destRec.__observers;
-    let obsIndex = observers.findIndex(({rec:obsRec}) => obsRec === rec);
-	  observers.splice(obsIndex, 1);
-	}
-}
+  let [first, ...rest] = listOfLists,
+    res = first.map(e => [e]);
 
-const registerObserverToDest = (destRec, rec, field, aliases) => {
-  (!destRec.__observers) && (destRec.__observers = []);
-  destRec.__observers.push({rec, field, aliases});
-}
+  for (let list of rest){
+    res = res.map(e => list.map(l => e.concat(l))).flat();
+  }
 
+  return res;
+}
 
 export const GrandExchangeContext = createContext({
   Sheets: {},
@@ -35,10 +25,12 @@ export const GrandExchangeContext = createContext({
   refreshSheet: () => {},
   evalSheet: () => {},
 
+  getChildren: () => {},
+
   addRec: () => {},
   remRec: () => {},
   getRec: () => {},
-  setRec: () => {},
+  setField: () => {},
 
   pull: () => {},
   push: () => {}
@@ -47,33 +39,10 @@ export const GrandExchangeContext = createContext({
 
 export const GrandExchange = ({children}) => {
 
-  const [Sheets, setSheets] = useState({__COL_ALIASES:{}, __VARS:{}, __PATH_ALIASES: {}});
+  const aliases = {借方: 'md', 贷方: 'mc', 期初: 'mb', 期末:'me'}
+
+  const [Sheets, setSheets] = useState({__COL_ALIASES:{...aliases}, __VARS:{}, __PATH_ALIASES: {}});
   const [status, setStatus] = useState('INIT');
-
-  const getVars = (rec) => {
-
-    const {__VARS:vars, __COL_ALIASES:alias} = Sheets;
-    const aliasCopy = {...alias};
-
-    if (rec) {
-      const {__children, __observers, ...recRest} = rec;
-    
-      for (let [k, {result}] of Object.entries(recRest)){
-        if (result !== undefined){
-          recRest[k] = result;
-        }
-      }
-    
-      for (let [k, v] of Object.entries(aliasCopy)){
-        aliasCopy[k] = recRest[v];
-      }
-    
-      return {...vars, ...recRest, ...aliasCopy};
-    } else {
-      return vars;
-    }
-
-  }
   
   const addSheets = (newSheets) => {
     setSheets({...Sheets, ...newSheets});
@@ -83,16 +52,16 @@ export const GrandExchange = ({children}) => {
   // is created, and a shallow copy of the specified sheet is 
   // made too.
   const refreshSheet = (sheetName) => {
-    setSheets({...Sheets, [sheetName]: [...Sheets[sheetName]]});
+    setSheets({...Sheets, [sheetName]: {...Sheets[sheetName]}});
   }
 
-// Find specific record on a recursive data sheet.
-  const getRec = (sheetName, path) => {
-    
+  // Find specific record on a recursive data sheet.
+  const getSingleRec = (sheetName, path) => {
+    console.log(sheetName, 'get single');
     let {data:list, pathColumn} = Sheets[sheetName], rec;
     for (let i = 0; i < path.length; i++){
 
-      rec = (path.all(e => typeof e === 'number')) 
+      rec = (path.every(e => typeof e === 'number')) 
       ? list[path[i]]
       : list.find(({[pathColumn]:col}) => col === path[i])
 
@@ -103,66 +72,51 @@ export const GrandExchange = ({children}) => {
     return {rec, list};
   }
 
-  const parseRef = (incomingValue) => {
-  
-    const expr = incomingValue.toString()
-    if (expr.includes && expr.includes(':')){
-  
-      const splitted = expr.split(':');
-      if (splitted.length < 3){
-        return {isRef:true, result: 0, code: 'WARN_ILLIGAL_REF'}
+  const getRec = (sheetName, path) => {
+
+    const {__PATH_ALIASES:aliases} = Sheets;
+
+    const candidatePaths = outer(path.map(seg => (seg in aliases) ? aliases[seg] : [seg] ));
+
+    for (let candiPath of candidatePaths){
+      const {rec, list} = getSingleRec(sheetName, candiPath);
+      if (rec !== undefined){
+        return {rec, list, path:candiPath}
       }
-  
-      const [sheetName, path, expr] = splitted;
-      const {rec} = getRec(sheetName, path.split('/'));
-      if (rec === undefined){
-        return {isRef: true, result: 0, code: 'WARN_UNDEF_REC'}
-      }
-  
-      const {result, code} = parseExpr(expr, getVars(rec));
-      return {isRef: true, destRec: rec, result, code};
-  
-    } else {
-      const {result, code} = parseArith(expr, getVars());
-      return {isRef: false, result, code};
     }
+
+    return {rec: undefined, list:[], path: undefined}
+
   }
-  
-  const setRec = (rec, fieldName, expr, item) => {
-  
-    const {result, destRec, isRef} = parseRef(expr);
-  
-    const {expr:currExpr} = rec[fieldName];
-    if (currExpr){
-      (expr === currExpr)  && (rec[fieldName].result = result);
-      (item !== undefined) && (rec[fieldName].item = item);
-    } else if (isRef){
-      rec[fieldName] = { item, expr, result, destRec}
-      registerObserverToDest(destRec, rec, fieldName);
+
+  const getChildren = (sheetName, path) => {
+    const {pathColumn} = Sheets[sheetName];
+    const {rec} = getRec(sheetName, path);
+
+    if (rec !== undefined){
+      return rec.__children.map(({[pathColumn]:pathCol}) => pathCol);
     } else {
-      removeObserverFromDest(rec, fieldName);
-      rec[fieldName] = result;
-    }
-  
-    if (rec.__observers) {
-      for (let {rec:obsRec, field: obsField} of rec.__observers){
-  
-        const {expr:obsExpr} = obsRec[obsField];
-        setRec(obsRec, obsField, obsExpr);
-      }
+      return [];
     }
   }
 
-  const evalList = (table=[]) => {
-    for (let rec of table){
-      for (let key in rec) if (!key.startsWith('__')) {
-        setRec(rec, key, rec[key]);
-      }
-      if (rec.__children){
-        evalList(rec.__children);
+  const setField = (sheetName, path, fieldName, value) => {
+  
+    const {rec} = getRec(sheetName, path);
+    if (rec !== undefined){
+      if (typeof rec[fieldName] === 'object'){
+        Object.assign(rec[fieldName], value)
+      } else {
+        rec[fieldName] = value;
       }
     }
-  }  
+
+  }
+
+  const evalSheet = (sheetName) => {
+    evalTable(Sheets[sheetName].data, Sheets.__VARS, Sheets.__COL_ALIASES, getRec);
+    refreshSheet(sheetName);
+  }
 
   const addRec = (sheetName, path, newRec={}) => {
     const {list} = getRec(sheetName, path);
@@ -177,6 +131,7 @@ export const GrandExchange = ({children}) => {
   }
 
   const pull = (sheetNameList, currPage) => {
+    console.log(sheetNameList, 'pull');
     (async() => {
       setStatus('PULL');
       let pulledSheets = {};
@@ -187,15 +142,17 @@ export const GrandExchange = ({children}) => {
   
         try{
           const {body:{data, pathColumn, error}} = await Agnt.post(`/pull/${sheetName}`).send(currPage);
-          
           if (error) {
             setStatus(error);
             return;
           }
 
+          // evalList(data);
           pulledSheets[sheetName] = {data, pathColumn};
         } catch(e){
+          console.error(e);
           setStatus('DEAD_LOAD');
+          return
         }
       }
       addSheets(pulledSheets);
@@ -220,8 +177,8 @@ export const GrandExchange = ({children}) => {
   }
 
   return <GrandExchangeContext.Provider value={{
-      Sheets, status, addSheets, refreshSheet,
-      getRec, setRec, addRec, remRec,
+      Sheets, status, addSheets, refreshSheet, evalSheet, getChildren,
+      getRec, setField, addRec, remRec,
       pull, push
     }}>
     {children}

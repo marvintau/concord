@@ -37,7 +37,7 @@ function cascade(table, colKey) {
   // grip使用了layerFunc，将列表分为几代（Generation）
   const sorted = sort(table, colKey);
   const layers = Object.values(group(sorted, (rec) => rec[colKey].length));
-
+  console.log(table.length);
   console.log(layers.map(e => e[0][colKey].length), 'cascade');
 
   // 每相邻的两代之间两两比较，如果没有找到父辈的孩子会被弃掉。
@@ -47,7 +47,7 @@ function cascade(table, colKey) {
 
     // 如果记录没有children这个属性则清空
     for (let i = 0; i < parents.length; i++){
-      parents[i].children = [];
+      parents[i].__children = [];
     }
     
     // 在两代中间进行匹配
@@ -57,7 +57,7 @@ function cascade(table, colKey) {
         let parent = parents[i];
           
         if (child[colKey].startsWith(parent[colKey])) try {
-          parent.children.push(child)
+          parent.__children.push(child)
         }catch{
           console.log(parent);
           throw Error('found')

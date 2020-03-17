@@ -115,7 +115,7 @@ export const Column = ({children}) => {
   : <div style={{margin:'0.5rem'}}>{children}</div>;
 }
 
-const Row = (colSpecs) => {
+const Row = (colSpecs, sheetName) => {
 
   return forwardRef(({ data, style, select}, ref) => {
   
@@ -124,7 +124,7 @@ const Row = (colSpecs) => {
       const {width, cellType:type='Text', noBackground} = colSpecs[key];
       const ColRenderer = Cell[type];
       cols.push(<Col className={noBackground ? 'clear-back' : ''} md={width} key={key}>
-        <ColRenderer data={data} colName={key} >{data[key]}</ColRenderer>
+        <ColRenderer data={data} sheetName={sheetName} colName={key} >{data[key]}</ColRenderer>
       </Col>)
     }
     
@@ -134,7 +134,7 @@ const Row = (colSpecs) => {
   });
 }
 
-export default ({colSpecs, data, sort, filter}) =>
+export default ({colSpecs, sheetName, data, sort, filter}) =>
   <div style={{flex:1, width:'100%'}}>
     <AutoSizer>
       {({height, width}) => {
@@ -145,7 +145,7 @@ export default ({colSpecs, data, sort, filter}) =>
           itemCount={data.length}
           filterRowRenderer={FilterRow(colSpecs, filter, sort)}
         >
-          {Row(colSpecs)}
+          {Row(colSpecs, sheetName)}
         </FlatList>
       }}
     </AutoSizer>

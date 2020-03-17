@@ -62,9 +62,9 @@ export default ({sheet, status, name, desc, colSpecs}) => {
     const {data} = sheet;
     console.log(data, 'list')
     if (folded){
-      content = <TreeList {...{data, status, colSpecs}} />;
+      content = <TreeList {...{sheetName:name, data, status, colSpecs}} />;
     } else {
-      content = <FlatList {...{data:flatten(data), status, colSpecs}} />;
+      content = <FlatList {...{sheetName:name, data:flatten(data), status, colSpecs}} />;
     }
   }
 
