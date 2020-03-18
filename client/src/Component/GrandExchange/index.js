@@ -22,6 +22,24 @@ const outer = (listOfLists) => {
   return res;
 }
 
+const dupRec = (rec, init=true) => {
+  let {__children, __path, ...newRec} = rec;
+  newRec = JSON.parse(JSON.stringify(newRec));
+  
+  if (init){
+    for (let key in newRec) switch (typeof key){
+      case 'number':
+        newRec[key] = 0; break;
+      case 'string':
+        newRec[key] = ""; break;
+      default:
+        newRec[key] = {}; break;
+    }
+  }
+
+  return newRec;
+}
+
 export const GrandExchangeContext = createContext({
   Sheets: {},
   status: '',
@@ -32,6 +50,7 @@ export const GrandExchangeContext = createContext({
   getChildren: () => {},
 
   addRec: () => {},
+  addChild: () => {},
   remRec: () => {},
   getRec: () => {},
   setField: () => {},
@@ -107,7 +126,6 @@ export const GrandExchange = ({children}) => {
   }
 
   const setField = (sheetName, path, fieldName, value) => {
-  
     const {rec} = getRec(sheetName, path);
     if (rec !== undefined){
       if (typeof rec[fieldName] === 'object'){
@@ -116,7 +134,6 @@ export const GrandExchange = ({children}) => {
         rec[fieldName] = value;
       }
     }
-
   }
 
   const evalSheet = (sheetName) => {
@@ -124,16 +141,39 @@ export const GrandExchange = ({children}) => {
     refreshSheet(sheetName);
   }
 
-  const addRec = (sheetName, path, newRec={}) => {
-    const {list} = getRec(sheetName, path);
+  const addRec = (sheetName, path) => {
+    const {list, rec} = getRec(sheetName, path);
+
     const index = path.slice(-1)[0];
-    list.splice(index, 0, newRec);
+    list.splice(index, 0, dupRec(rec));
+
+    for (let [index, rec] of list.entries()){
+      if (rec.__path !== undefined){
+        rec.__path = [...rec.__path.slice(0, -1), index]
+      }
+    }
   }
   
   const remRec = (sheetName, path) => {
     const {list} = getRec(sheetName, path);
     const index = path.slice(-1)[0];
     list.splice(index, 1);
+
+    for (let [index, rec] of list.entries()){
+      if (rec.__path !== undefined){
+        rec.__path = [...rec.__path.slice(0, -1), index]
+      }
+    }
+
+  }
+
+  const addChild = (sheetName, path) => {
+    const {rec} = getRec(sheetName, path);
+    if (rec.__children === undefined || rec.__children.length === 0){
+      let newRec = dupRec(rec);
+      newRec.__path = [...path, 0]
+      rec.__children = [newRec];
+    }
   }
 
   const pull = (sheetNameList, currPage) => {
@@ -184,7 +224,7 @@ export const GrandExchange = ({children}) => {
 
   return <GrandExchangeContext.Provider value={{
       Sheets, status, addSheets, refreshSheet, evalSheet, getChildren,
-      getRec, setField, addRec, remRec,
+      getRec, setField, addRec, addChild, remRec,
       pull, push
     }}>
     {children}

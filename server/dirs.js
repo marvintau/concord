@@ -136,7 +136,7 @@ const dirs = [
     referredSheetNames: ['BALANCE'],
     colSpecs: {
       ref: {desc: '条目', width: 11, isFilterable: true, cellType:'Ref'},
-      // edit: {desc: '编辑', width: 1, isFilterable: false, cellType:'Edit'},
+      edit: {desc: '编辑', width: 1, isFilterable: false, cellType:'Edit'},
     }      
   }
 ];

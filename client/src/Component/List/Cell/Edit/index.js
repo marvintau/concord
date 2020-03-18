@@ -1,20 +1,30 @@
 import React, {useContext} from 'react';
 
-import { RefDataContext } from '../../../RefData';
+import { GrandExchangeContext } from '../../../GrandExchange';
 
 import './edit.css';
 
-export default ({data, children, hidden}) => {
+export default ({sheetName, data, children, disabled}) => {
 
-  const {remove, insert} = useContext(RefDataContext);
+  const {addRec, remRec, addChild, evalSheet} = useContext(GrandExchangeContext);
   
-  const {path} = data;
-  const {item} = data.ref;
+  const {__path:path, __children} = data;
+
+  const add = (sheetName, path) => {
+    if (__children !== undefined){
+      addRec(sheetName, path);
+    } else {
+      addChild(sheetName, path);
+    }
+    evalSheet(sheetName);
+  }
+
+  console.log(disabled, 'edit')
 
   return <div className="link">
-    {(hidden || (item && item.startsWith('#'))) ? <></> : <div className="edit">
-      <div className="remove" onClick={() => remove(path)} />
-      <div className="insert" onClick={() => insert(path)} />
+    {disabled ? <></> : <div className="edit">
+      <div className="remove" onClick={() => remRec(sheetName, path)} />
+      <div className="insert" onClick={() => add(sheetName, path)} />
     </div>}
   </div>
   

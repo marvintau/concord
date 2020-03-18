@@ -24,7 +24,7 @@ const getSuggValue = (inputPath, sugg) => {
 
 export default ({sheetName, colName, disabled, children: cellData, data:{__path}}) => {
 
-  const {item, expr, result, code} = cellData;
+  const {item="", expr="", result, code} = cellData;
   
   const [editing, setEditing] = useState()
   const [desc, setDesc] = useState(item);
