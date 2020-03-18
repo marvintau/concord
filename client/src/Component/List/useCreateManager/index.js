@@ -1,6 +1,6 @@
 import React, {useRef, useContext, useState} from 'react';
-import {Input, Form} from 'reactstrap';
-import {DataContext} from '../../Data';
+
+import {GrandExchangeContext} from '../../GrandExchange';
 import {DepRouterContext} from '../../DepRouter';
 
 import './create-manager.css'
@@ -9,7 +9,7 @@ export default (colSpecs) => {
 
   const [isCreating, setCreating] = useState(false);
 
-  const {insert} = useContext(DataContext);
+  const {insert} = useContext(GrandExchangeContext);
   const {currPage:{tableName}} = useContext(DepRouterContext);
 
   const formElem = useRef(null);

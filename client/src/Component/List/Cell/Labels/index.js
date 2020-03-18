@@ -1,13 +1,13 @@
 import React, {useState, useContext} from 'react';
 import {Input} from 'reactstrap';
-import {DataContext} from '../../../Data';
+import { GrandExchangeContext } from '../../../GrandExchange';
 
 import Check from './check.svg';
 import './labels.css';
 
 export default ({colName, path, children}) => {
 
-  const {setCol} = useContext(DataContext);
+  const {setCol} = useContext(GrandExchangeContext);
 
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(children.join(', '));

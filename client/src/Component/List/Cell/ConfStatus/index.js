@@ -1,12 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
 import {Input} from 'reactstrap';
 
-import { DataContext } from '../../../Data';
+import { GrandExchangeContext } from '../../../GrandExchange';
 import './conf-status.css';
 
-export default ({colName, data:{path}, children={}}) => {
+export default ({sheetName, colName, data:{__path:path}, children={}}) => {
 
-  const {setCol} = useContext(DataContext);
+  const {setField} = useContext(GrandExchangeContext);
 
   const {status: initStatus='BEFORE_SEND'} = children;
 
@@ -38,7 +38,7 @@ export default ({colName, data:{path}, children={}}) => {
     }
 
     setData(newData);
-    setCol(path, colName, newData);
+    setField(sheetName, path, colName, newData);
     setStatus(status);
   }
 
