@@ -19,7 +19,7 @@ const rem = (header) => {
 }
 
 const getSuggValue = (inputPath, sugg) => {
-  return inputPath.replace(/(?<=[$/])([^$/]*)$/, sugg);
+  return inputPath.replace(/(?<=[$:/])([^$:/]*)$/, sugg);
 }
 
 export default ({sheetName, colName, disabled, children: cellData, data:{__path}}) => {
@@ -35,9 +35,10 @@ export default ({sheetName, colName, disabled, children: cellData, data:{__path}
 
   // This handles auto-completing path
   const getPathSugg = (input) => {
-
-    const [sheetName, path] = input.split(':');
-    const splitted = path.split('/');
+    let [sheetName, path] = input.split(':');
+    const splitted = path ? path.split('/') : [];
+    
+    console.log(sheetName, splitted, 'path sugg');
     
     return getChildren(sheetName, splitted);
   }
@@ -46,10 +47,12 @@ export default ({sheetName, colName, disabled, children: cellData, data:{__path}
     // if the input matches the non-slash-non-semicolon substring in the end,
     // this is an incomplete path, so we remove the last incomplete segment
     // of path, and get the possible candidates.
-    if (input.match(/[/][^$/]*$/)) {
-      const lastSeg = input.split('/').slice(-1)[0];
-      const mostPart = input.replace(/[/][^$/]*$/, '');
-      return getPathSugg(mostPart).filter(cand => cand.includes(lastSeg));
+    if (input.match(/[:/][^$/]*$/)) {
+      const lastSeg = input.split(/[:/]/).slice(-1)[0];
+      const mostPart = input.replace(/[:/][^$/]*$/, '');
+      const cands = getPathSugg(mostPart);
+      const filtered = cands.filter(cand => cand.includes(lastSeg));
+      return (filtered.length === 0) ? cands : filtered;
     }
     return [];
   }
@@ -63,6 +66,7 @@ export default ({sheetName, colName, disabled, children: cellData, data:{__path}
     onSuggestionsFetchRequested : ({ value }) => setSugg(getSugg(value)),
     onSuggestionsClearRequested : () => setSugg([]),
     onSuggestionSelected : (e, {suggestionValue}) => {
+      console.log(suggestionValue, 'select');
       setValue(suggestionValue);
     },
   }

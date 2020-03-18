@@ -20,12 +20,14 @@
 
 @media screen and (min-width: 1280px) and (max-width: 1440px) {
   .table-container{
+    margin: 10px;
     width: 960px;
   }
 }
 
 @media screen and (min-width: 800px) and (max-width: 1280px){
   .table-container {
+    margin: 10px;
     width: 800px;
   }
 }

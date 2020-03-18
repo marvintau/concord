@@ -73,8 +73,6 @@ const evalField = (currRec, fieldName, vars, aliases, getDestRec) => {
     rest = expr;
   }
 
-  console.log('evalField', fieldName, rest);
-
   if (rest in Func){
     evalFunc(currRec, fieldName, rest);
   } else {

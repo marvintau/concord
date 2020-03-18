@@ -8,6 +8,10 @@ const outer = (listOfLists) => {
     throw Error('outer必须得用在list of lists上')
   }
 
+  if (listOfLists.length === 0){
+    return [];
+  }
+
   let [first, ...rest] = listOfLists,
     res = first.map(e => [e]);
 
@@ -90,10 +94,12 @@ export const GrandExchange = ({children}) => {
   }
 
   const getChildren = (sheetName, path) => {
-    const {pathColumn} = Sheets[sheetName];
+    const {pathColumn, data} = Sheets[sheetName];
     const {rec} = getRec(sheetName, path);
-
-    if (rec !== undefined){
+    if (path.length === 0){
+      console.log('here')
+      return data.map(({[pathColumn]:pathCol}) => pathCol);
+    } else if (rec !== undefined){
       return rec.__children.map(({[pathColumn]:pathCol}) => pathCol);
     } else {
       return [];
