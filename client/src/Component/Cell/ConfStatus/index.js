@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import {Input} from 'reactstrap';
 
-import { GrandExchangeContext } from '../../../GrandExchange';
+import { GrandExchangeContext } from '../../GrandExchange';
 import './conf-status.css';
 
 export default ({sheetName, colName, data:{__path:path}, children={}}) => {
@@ -41,8 +41,6 @@ export default ({sheetName, colName, data:{__path:path}, children={}}) => {
     setField(sheetName, path, colName, newData);
     setStatus(status);
   }
-
-  console.log(status, 'status');
 
   if (["BEFORE_SEND", 'RESEND'].includes(status)){
     return <div className="conf-status-group">

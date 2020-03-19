@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 
-import { GrandExchangeContext } from '../../../GrandExchange';
+import { GrandExchangeContext } from '../../GrandExchange';
 
 import './edit.css';
 

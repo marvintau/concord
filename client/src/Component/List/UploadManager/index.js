@@ -1,4 +1,5 @@
 import React, {useRef, useState} from 'react';
+import {Spinner} from 'reactstrap';
 import Agnt from 'superagent';
 
 import './file-input.css';
@@ -7,7 +8,7 @@ const ident = e => e;
 
 export default function({title="上传文件", name, context={}, refresh=ident, setStatus=ident}){
 
-    const [isUploading, setUploading] = useState(false);
+    const [stage, setStage] = useState('READY');
     const [progress, setProgress] = useState(0);
     const [inputKey, setInputKey] = useState(Math.random().toString(36));
 
@@ -21,15 +22,18 @@ export default function({title="上传文件", name, context={}, refresh=ident, 
         console.log(context, 'upload');
         form.append('file', e.target.files[0])
 
-        setUploading(true);
+        setStage('UPLOAD');
 
         Agnt.post(`/upload/${name}`)
             .on('progress', ({percent}) => {
                 percent && setProgress(percent);
+                if (percent && percent > 0.99){
+                    setStage('PROCESS');
+                }
             })
             .send(form)
             .then((res) => {
-                setUploading(false);
+                setStage('READY');
                 setInputKey(Math.random().toString(36))
                 const {ok, error, data} = (res.body);
                 if(ok){
@@ -45,10 +49,18 @@ export default function({title="上传文件", name, context={}, refresh=ident, 
         fileRef.current.click();
     }
 
-    const display = isUploading
-        ? <div className="input-button"><div>已上传</div><div>{progress.toFixed(2)}%</div></div>
+    const display = stage === 'UPLOAD'
+        ? <div className="input-button">
+            <Spinner size="sm" />
+            <div>已上传</div>
+            <div>{progress.toFixed(2)}%</div>
+          </div>
+        : stage === 'PROCESS'
+        ? <div className="input-button">
+            <Spinner size="sm" />
+            <div>后台处理中...</div>
+          </div>
         : <div className="input-button">{title}</div>;
-    const style =  {backgroundImage:`linear-gradient(0deg, #FFC0CB ${progress.toFixed(2)}, #00FFFF ${(1-progress).toFixed(2)})`};
 
     return <div className="upload-wrapper">
         <input key={inputKey} ref={fileRef} className='file-input' type="file" id="choose-backup-file" title="" onChange={uploadFile}/>

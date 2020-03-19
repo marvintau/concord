@@ -24,6 +24,7 @@
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "del": "^5.1.0",
+    "easyqrcodejs-nodejs": "^3.5.1",
     "express": "~4.16.1",
     "file-saver": "^2.0.2",
     "http-errors": "~1.6.3",

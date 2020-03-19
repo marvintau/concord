@@ -1,7 +1,7 @@
 import React, {useState, useContext} from 'react';
 
 import Autosuggest from 'react-autosuggest';
-import {GrandExchangeContext} from '../../../GrandExchange';
+import {GrandExchangeContext} from '../../GrandExchange';
 
 import {Input} from 'reactstrap';
 

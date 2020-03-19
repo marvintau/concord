@@ -92,8 +92,9 @@ const dirs = [
     sheetName: 'CONFIRMATION_MANAGEMENT',
     colSpecs: {
       ID: {desc: '编号', width: 2, isFilterable: true},
-      contact: {desc:'通信地址', width: 5, isFilterable: true, cellType: 'Address'},
-      confStatus: {desc:'函证状态', width: 5, isFilterable: true, cellType: 'ConfStatus'}
+      contact: {desc:'通信地址', width: 4, isFilterable: true, cellType: 'Address'},
+      confStatus: {desc:'函证状态', width: 4, isFilterable: true, cellType: 'ConfStatus'},
+      qr: {desc:'二维码', width: 2, cellType:'QR'},
     },
   },
   {

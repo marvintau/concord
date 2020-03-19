@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {DepRouterContext} from '../../../DepRouter';
+import {DepRouterContext} from '../../DepRouter';
 
 import ArrowIcon from './right-arrow.svg';
 import './link.css';

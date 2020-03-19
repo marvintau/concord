@@ -1,6 +1,6 @@
 import React, {useState, useContext} from 'react';
 import {Input} from 'reactstrap';
-import { GrandExchangeContext } from '../../../GrandExchange';
+import { GrandExchangeContext } from '../../GrandExchange';
 
 import Check from './check.svg';
 import './labels.css';
