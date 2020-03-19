@@ -46,7 +46,7 @@ async function balance(fileBuffer, context){
   data = columnNameRemap(data, header);
   data = cascade(data, 'ccode');
   // console.log(data);
-  await fs.writeFile(path.resolve(`./file_store/Project/${pid}/BALANCE`), JSON.stringify(data));
+  await fs.writeFile(path.resolve(`./file_store/PROJECT/${pid}/BALANCE`), JSON.stringify(data));
 
   return {data, pathColumn: 'ccode_name'};
 }

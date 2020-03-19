@@ -19,8 +19,6 @@ export default ({sheetName, data, children, disabled}) => {
     evalSheet(sheetName);
   }
 
-  console.log(disabled, 'edit')
-
   return <div className="link">
     {disabled ? <></> : <div className="edit">
       <div className="remove" onClick={() => remRec(sheetName, path)} />

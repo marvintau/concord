@@ -32,12 +32,24 @@ const dupRec = (rec, init=true) => {
         newRec[key] = 0; break;
       case 'string':
         newRec[key] = ""; break;
+      case 'undefined':
+        newRec[key] = ''; break;
       default:
         newRec[key] = {}; break;
     }
   }
 
   return newRec;
+}
+
+const resetPath = (list, currPath=[]) => {
+  for (let [index, rec] of list.entries()){
+    const nextPath = [...currPath, index];
+    rec.__path = nextPath;
+    if(rec.__children !== undefined){
+      resetPath(rec.__children, nextPath);
+    }
+  }
 }
 
 export const GrandExchangeContext = createContext({
@@ -99,6 +111,11 @@ export const GrandExchange = ({children}) => {
 
     const {__PATH_ALIASES:aliases} = Sheets;
 
+    if (path === undefined || path.length === 0){
+      const {data} = Sheets[sheetName];
+      return {rec:undefined, list:data, path:undefined};
+    }
+
     const candidatePaths = outer(path.map(seg => (seg in aliases) ? aliases[seg] : [seg] ));
 
     for (let candiPath of candidatePaths){
@@ -141,30 +158,32 @@ export const GrandExchange = ({children}) => {
     refreshSheet(sheetName);
   }
 
-  const addRec = (sheetName, path) => {
+  const addRec = (sheetName, path, newRec) => {
+
     const {list, rec} = getRec(sheetName, path);
 
-    const index = path.slice(-1)[0];
-    list.splice(index, 0, dupRec(rec));
-
-    for (let [index, rec] of list.entries()){
-      if (rec.__path !== undefined){
-        rec.__path = [...rec.__path.slice(0, -1), index]
-      }
+    if (path.length === 0){
+      list.unshift(newRec);
+      resetPath(list, []);
+    } else {
+      const index = path.pop();
+      const insertRec = newRec === undefined ? dupRec(rec) : newRec;
+      list.splice(index, 0, insertRec);
+      resetPath(list, path);
     }
   }
   
   const remRec = (sheetName, path) => {
+
+    if (path === undefined || path.length === 0){
+      return;      
+    }
+
     const {list} = getRec(sheetName, path);
     const index = path.slice(-1)[0];
     list.splice(index, 1);
 
-    for (let [index, rec] of list.entries()){
-      if (rec.__path !== undefined){
-        rec.__path = [...rec.__path.slice(0, -1), index]
-      }
-    }
-
+    resetPath(list);
   }
 
   const addChild = (sheetName, path) => {
@@ -176,13 +195,13 @@ export const GrandExchange = ({children}) => {
     }
   }
 
-  const pull = (sheetNameList, currPage) => {
+  const pull = (sheetNameList, currPage, forceUpdate=false) => {
     console.log(sheetNameList, 'pull');
     (async() => {
       setStatus('PULL');
       let pulledSheets = {};
       for (let sheetName of sheetNameList){
-        if (sheetName in Sheets){
+        if ((sheetName in Sheets) && !forceUpdate){
           continue;
         }
   
@@ -206,20 +225,23 @@ export const GrandExchange = ({children}) => {
     })()
   }
 
-  const push = async () => {
-    setStatus('PUSH');
-    // try{
-    //   const response = await Agnt.post(`/push/${sheetName}`).send(data);
-    //   if (response.error){
-    //     throw Error(response.error.message);
-    //   }
-    //   setStatus('DONE');
-
-    // } catch(e){
-    //   console.error(e);
-    //   setStatus('DEAD_LOAD');
-    // }
-    setStatus('DONE_PUSH');
+  const push = (sheetName) => {
+    (async () => {
+      setStatus('PUSH');
+      try{
+        const {data} = Sheets[sheetName];
+        const response = await Agnt.post(`/push/${sheetName}`).send(data);
+        if (response.error){
+          throw Error(response.error.message);
+        }
+        setStatus('DONE');
+  
+      } catch(e){
+        console.error(e);
+        setStatus('DEAD_LOAD');
+      }
+      setStatus('DONE_PUSH');
+    })()
   }
 
   return <GrandExchangeContext.Provider value={{

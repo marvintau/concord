@@ -72,10 +72,11 @@ const FlatList = function({data, children, filterRowRenderer, ...rest}){
   }
 
   const entries = [{filter: filterRowRenderer !== undefined }, ...displayed]
-  
+  console.log(entries, 'entries');
   return <FlatListContext.Provider value={{filter}}>
     <List
       itemData={{ ItemRenderer: children, entries}}
+      itemCount={entries.length}
       innerElementType={StickTopContainer(filterRowRenderer, filter)}
       {...rest}
     >
@@ -142,7 +143,6 @@ export default ({colSpecs, sheetName, data, sort, filter}) =>
           height={height}
           width={width}
           data={data}
-          itemCount={data.length}
           filterRowRenderer={FilterRow(colSpecs, filter, sort)}
         >
           {Row(colSpecs, sheetName)}

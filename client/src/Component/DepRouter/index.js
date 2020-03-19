@@ -24,6 +24,7 @@ const SideNavigationBar = ({directories, isHidden, children}) => {
     width: '200px'
   }
 
+  
   let subElems = [];
   if(currSubs !== undefined){
     subElems = currSubs.map((e, i) => {
@@ -134,6 +135,7 @@ export function DepRouter({home='Home', directories={}, children}) {
       pull([...referredSheetNames, sheetName], page);
     }
 
+    console.log(page, dirs[path], path, 'path');
     setPage(page);
     setSubs(dirs[path].children);
   }

@@ -5,12 +5,12 @@ import {DepRouterContext} from '../../DepRouter';
 
 import './create-manager.css'
 
-export default (colSpecs) => {
+export default (sheetName, colSpecs) => {
 
   const [isCreating, setCreating] = useState(false);
 
-  const {insert} = useContext(GrandExchangeContext);
-  const {currPage:{tableName}} = useContext(DepRouterContext);
+  const {addRec, evalSheet, push, pull} = useContext(GrandExchangeContext);
+  const {currPage} = useContext(DepRouterContext);
 
   const formElem = useRef(null);
 
@@ -36,7 +36,10 @@ export default (colSpecs) => {
       const formData = new FormData(formElem.current)
       const rec = Object.fromEntries(formData.entries());
   
-      insert({...rec, table:tableName});  
+      addRec(sheetName, [], {...rec, table:sheetName});
+      evalSheet(sheetName);
+      push(sheetName);
+      pull([sheetName], currPage, true);
       setCreating(false);
     } else {
       formElem.current.classList.add('was-validated');

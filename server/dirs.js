@@ -33,9 +33,10 @@ const dirs = [
     name: 'PathAliases',
     desc: '科目别名',
     type: 'DATA',
-    sheetName: '__PATH_NAME_ALIASES',
+    sheetName: 'PATH_NAME_ALIASES',
+    createFromHeader: true,
     colSpecs: {
-      equiv: {desc: '科目别名', width: 12, cellType:'Labels'},
+      aliases: {desc: '科目别名', width: 12, cellType:'Labels'},
     },
   },
   {
@@ -43,9 +44,10 @@ const dirs = [
     name: 'ColumnAliases',
     desc: '表头别名',
     type: 'DATA',
-    sheetName: '__COLUMN_NAME_ALIASES',
+    sheetName: 'COLUMN_NAME_ALIASES',
+    createFromHeader: true,
     colSpecs: {
-      equiv: {desc: '等价的科目名称', width: 12, cellType:'Labels'},
+      aliases: {desc: '等价的科目名称', width: 12, cellType: 'Labels'},
     },
   },
   {
@@ -54,16 +56,17 @@ const dirs = [
     desc: '项目列表',
     type: 'DATA',
     sheetName: 'PROJECT',
+    createFromHeader: true,
     colSpecs: {
       link: {desc: '--', width: 1, isFilterable: false, cellType:'Link'},
       year: {desc: '年度', width: 1, isFilterable: true},
       companyName: {desc: '项目（企业）名称', width: 10, isFilterable: true},
     },
-    children: ['Project'],
+    children: ['PROJECT'],
   },
   {
     loadPoint: '/',
-    name: 'Project',
+    name: 'PROJECT',
     desc: '项目页',
     type: 'TEXT',
     title: {key: 'companyName'},

@@ -90,7 +90,7 @@ export const evalTable = (table, vars, aliases, getDestRec) => {
     if (Array.isArray(rec.__children) && rec.__children.length > 0){
       evalTable(rec.__children, vars, aliases, getDestRec);
     }
-    for (let key of Object.keys(rec)) if (!key.startsWith('__')){
+    for (let key of Object.keys(rec)) if (!key.startsWith('__') && key !== 'table'){
       evalField(rec, key, vars, aliases, getDestRec);
     }
   }

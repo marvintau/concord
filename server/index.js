@@ -51,7 +51,7 @@ router.post('/pull/:data_name', async ctx => {
   }
 })
 
-router.post('/push/DATA/:data_name', async ctx => {
+router.post('/push/:data_name', async ctx => {
   const {data_name} = ctx.params;
   await postProc[data_name](ctx.request.body);
   ctx.body = {result: 'DONE'};
@@ -92,17 +92,17 @@ router.post('/pages', async ctx => {
 
 (async () => {
 
-  const projects = await retrieve('table', 'Project');
+  const projects = await retrieve('table', 'PROJECT');
 
   if (projects.length === 0){
     let records = [];
     for (let i = 0; i < 10; i++){
-      records.push({ table:'Project', companyName: `${genName()} Inc.`, year:1990+Math.floor(Math.random()*30)});
+      records.push({ table:'PROJECT', companyName: `${genName()} Inc.`, year:1990+Math.floor(Math.random()*30)});
     }
-    await postProc['Project'](records);
+    await postProc['PROJECT'](records);
   }
 
-  const result = await retrieve('table', 'Project');
+  const result = await retrieve('table', 'PROJECT');
   console.log(result, 'init');
 
 })();

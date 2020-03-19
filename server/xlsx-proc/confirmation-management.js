@@ -23,7 +23,7 @@ const CONFIRMATION_MANAGEMENT = async (fileBuffer, context) => {
     }
   })
 
-  await fs.writeFile(path.resolve(`./file_store/Project/${pid}/CONFIRMATION_MANAGEMENT`), JSON.stringify(data));
+  await fs.writeFile(path.resolve(`./file_store/PROJECT/${pid}/CONFIRMATION_MANAGEMENT`), JSON.stringify(data));
 
   return {data};
 }

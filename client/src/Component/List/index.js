@@ -51,6 +51,8 @@ export default ({sheet, status, name, desc, colSpecs}) => {
   const {addSheets, setStatus} = useContext(GrandExchangeContext);
   const {currPage} = useContext(DepRouterContext);
 
+  const {toggleCreate, isCreating, createManager} = useCreateManager(name, colSpecs);
+
   const [folded, setFold] = useState(true);
   
   let content;
@@ -60,7 +62,7 @@ export default ({sheet, status, name, desc, colSpecs}) => {
     content = <LoadIndicator {...{status}} />
   } else if (status.startsWith('DONE')){
     const {data} = sheet;
-    console.log(data, 'list')
+
     if (folded){
       content = <TreeList {...{sheetName:name, data, status, colSpecs}} />;
     } else {
@@ -68,11 +70,16 @@ export default ({sheet, status, name, desc, colSpecs}) => {
     }
   }
 
+
   return <div style={{display:'flex', flexDirection:"column", height:'100%', width:'100%'}}>
     <div className="upload-file-bar">
       <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>
+      {(currPage.createFromHeader) && <button className='button' onClick={() => toggleCreate()}>{`${isCreating ? '取消' : ''}创建${desc}条目`}</button>}
       {/* <ExportManager name={name} cols={cols}/> */}
       <UploadManager title={`上传${desc}Excel文件`} {...{name, refresh:addSheets, setStatus, context:currPage}} />
+    </div>
+    <div>
+      {createManager}
     </div>
     <Header {...{colSpecs, hidden: !status.startsWith('DONE')}} />
     {content}
