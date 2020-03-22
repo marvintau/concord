@@ -11,7 +11,7 @@ export default ({data, children, disabled}) => {
     setShowing(!isShowing);
   }
 
-  const qrImage = <img src={children} />;
+  const qrImage = <img className="qr-image" src={children} />;
 
   return <div className="link">
     {(disabled || (children===undefined)) ? <></> : <div>

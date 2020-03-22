@@ -4,7 +4,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import {Col} from 'reactstrap';
 
 import FilterRow from '../FilterRow';
-import Cell from '../Cell';
+import Cell from '../../Cell';
 
 import './flat-list.css';
 

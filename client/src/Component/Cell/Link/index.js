@@ -6,10 +6,10 @@ import './link.css';
 
 export default ({data, children, hidden}) => {
 
-  const {forward} = useContext(DepRouterContext);
+  const {fore} = useContext(DepRouterContext);
 
   return <div className="link">
-    {hidden || (children===undefined) ? <></> : <div className="link" onClick={() => forward(children, data)}>
+    {hidden || (children===undefined) ? <></> : <div className="link" onClick={() => fore(children, data)}>
       <img style={{height:'1.5rem'}} src={ArrowIcon} />
     </div>}
   </div>

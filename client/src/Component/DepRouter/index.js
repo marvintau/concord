@@ -8,15 +8,17 @@ import './dep-router.css';
 
 export const DepRouterContext = createContext({
   currPage: {},
+  currArgs: {},
   currPath: [],
   currSubs: [],
-  forward: () => {},
-  goto: () => {},
+  fore: () => {},
+  back: () => {},
+  jump: () => {},
   fetchDir : () => {}
 })
 
 const SideNavigationBar = ({directories, isHidden, children}) => {
-  const {currPath, currSubs, forward, goto} = useContext(DepRouterContext);
+  const {currPath, currSubs, fore, back, jump} = useContext(DepRouterContext);
 
   const style = {
     height:'100%',
@@ -24,11 +26,10 @@ const SideNavigationBar = ({directories, isHidden, children}) => {
     width: '200px'
   }
 
-  
   let subElems = [];
   if(currSubs !== undefined){
     subElems = currSubs.map((e, i) => {
-      return <ListGroupItem key={i} onClick={() => forward(e)} style={{cursor:'pointer'}}>
+      return <ListGroupItem key={i} onClick={() => fore(e)} style={{cursor:'pointer'}}>
         {directories[e].desc}
       </ListGroupItem>
     })
@@ -45,7 +46,7 @@ const SideNavigationBar = ({directories, isHidden, children}) => {
         {subElems}
       </ListGroup>
       <ListGroup style={style}>
-        {currParent && <ListGroupItem color="warning" style={{cursor:'pointer'}} onClick={() => goto(currParent)}>
+        {currParent && <ListGroupItem color="warning" style={{cursor:'pointer'}} onClick={() => back(currParent)}>
           返回至 {directories[currParent].desc}
         </ListGroupItem>}
       </ListGroup>
@@ -62,10 +63,10 @@ const SideNavigationBar = ({directories, isHidden, children}) => {
 }
 
 const NavigationBar = ({directories}) => {
-  const {currPath, goto} = useContext(DepRouterContext);
+  const {currPath, back} = useContext(DepRouterContext);
   const pathElems = currPath.map(({path}, i) => {
     return <BreadcrumbItem key={i}>
-      <a onClick={() => goto(path)} href="#">{directories[path].desc}</a>
+      <a onClick={() => back(path)} href="#">{directories[path].desc}</a>
     </BreadcrumbItem>
   })
 
@@ -74,34 +75,42 @@ const NavigationBar = ({directories}) => {
   return currPath.length > 1 ? bread : <></>
 }
 
-export function DepRouter({home='Home', directories={}, children}) {
+export function DepRouter({children}) {
 
   const {pull, status, evalSheet} = useContext(GrandExchangeContext);
 
-  const [initPage, initPath, initSubs] = Object.keys(directories).length === 0
-    ? [{}, [], undefined]
-    : [directories['Home'], [{path:'Home', context:{}}], directories['Home'].children]
+  const [dirs, setDirs] = useState({});
+  const [currArgs, setArgs] = useState({});
+  const [currPage, setPage] = useState({});
+  const [currPath, setPath] = useState([]);
+  const [currSubs, setSubs] = useState([]);
 
-  const [dirs, setDirs] = useState(directories);
-  const [currPage, setPage] = useState(initPage);
-  const [currPath, setPath] = useState(initPath);
-  const [currSubs, setSubs] = useState(initSubs);
-
-  // performs initialization
+  // performs initialization.
+  // Note that useEffect with empty dep array will guarantee that
+  // it will be called single once.
   useEffect(() => {
     (async function(){
-      const dir = await fetchDir('/');
-      setDirs(dir);
 
-      setPath([{path:'Home', context:{}}]);
-      setPage(dir['Home']);
-      setSubs(dir['Home'].children);  
+      console.log('useEffect, init');
+
+      const {search, pathname} = window.location;
+      const args = Object.fromEntries((new URLSearchParams(search)).entries());
+      
+      const pathSegs = pathname.split('/').slice(1)
+
+      const fetchedDirs = await fetchDir('/');
+      setDirs(fetchedDirs);
+
+      if (pathSegs.length > 1 || fetchedDirs[pathSegs[0]] === undefined){
+        init(fetchedDirs);
+      } else {
+        jump(fetchedDirs[pathSegs[0]], args);
+      }
     })()
   }, [])
 
   useEffect(() => {
     if (status === 'DONE_PULL') {
-      console.log(currPage, 'eff, dep router');
       evalSheet(currPage.sheetName);
     }
   }, [status])
@@ -124,32 +133,59 @@ export function DepRouter({home='Home', directories={}, children}) {
     })
   }
 
-  const forward = (path, context={}) => {
-
-    const pathList = [...currPath, {path, context}];
-    setPath(pathList);
-
-    const page = {...currPage, ...context, ...dirs[path]};
-    const {sheetName, referredSheetNames=[]} = page;
-    if (sheetName !== undefined){
-      pull([...referredSheetNames, sheetName], page);
-    }
-
-    console.log(page, dirs[path], path, 'path');
-    setPage(page);
-    setSubs(dirs[path].children);
+  const init = (initDirs) => {
+    setArgs({});
+    setPath([{path:'Home', args:{}}]);
+    setPage(initDirs['Home']);
+    setSubs(initDirs['Home'].children);  
   }
 
-  const goto = (gotoPath) => {
-    const index = currPath.findIndex(({path}) => path === gotoPath);
-    console.log('goto', currPath[index], index)
+  const fore = (path, args={}) => {
+    console.log(args, 'args')
+
+    const page = dirs[path];
+
+    setPage(page);
+    setSubs(page.children);
+    
+    const newArgs = {...currArgs, ...args};
+    setArgs(newArgs);
+
+
+    const pathList = [...currPath, {path, args:newArgs}];
+    setPath(pathList);
+
+    const {sheetName, referredSheetNames=[]} = page;
+
+    if (sheetName !== undefined){
+      pull([...referredSheetNames, sheetName], newArgs);
+    }
+
+  }
+
+  const jump = (page, args={}) => {
+
+    setPage(page);
+    setArgs(args);
+    setPath([]);
+
+    const {sheetName, referredSheetNames=[]} = page;
+
+    if (sheetName !== undefined){
+      pull([...referredSheetNames, sheetName], args);
+    }
+  }
+
+  const back = (dest) => {
+    const index = currPath.findIndex(({path}) => path === dest);
+    console.log('back', currPath[index], index)
 
     const pathList = currPath.slice(0, index+1);
     setPath(pathList);
     
-    setPage(Object.assign({}, ...pathList.map(({context}) => context), dirs[gotoPath]));
+    setPage(Object.assign({}, ...pathList.map(({context}) => context), dirs[dest]));
     
-    setSubs(dirs[gotoPath].children);
+    setSubs(dirs[dest].children);
   }
 
   let content;
@@ -162,7 +198,9 @@ export function DepRouter({home='Home', directories={}, children}) {
     content = 'loading ...';
   }
 
-  return <DepRouterContext.Provider value={{currPage, currPath, currSubs, forward, goto, fetchDir}}>
+  return <DepRouterContext.Provider value={{
+      currPage, currPath, currSubs, currArgs,
+      fore, back, jump, fetchDir}}>
     {content}
   </DepRouterContext.Provider>
 }

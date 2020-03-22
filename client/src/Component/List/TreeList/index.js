@@ -3,7 +3,7 @@ import {DynamicSizeList as List} from 'react-window'
 import AutoSizer from "react-virtualized-auto-sizer";
 
 import FilterRow from '../FilterRow';
-import Cell from '../Cell';
+import Cell from '../../Cell';
 
 import {Col} from 'reactstrap';
 import './tree-list.css';

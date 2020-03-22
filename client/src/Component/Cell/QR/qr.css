@@ -6,6 +6,10 @@
   cursor: pointer;
 }
 
+.qr-image {
+  height: 64px;
+}
+
 .qr:hover {
   opacity: 1;
 }

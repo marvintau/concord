@@ -41,7 +41,7 @@ const dirs = [
   },
   {
     loadPoint: '/',
-    name: 'ColumnAliases',
+    name: 'ColAliases',
     desc: '表头别名',
     type: 'DATA',
     sheetName: 'COLUMN_NAME_ALIASES',
@@ -90,11 +90,12 @@ const dirs = [
     desc: '函证状态管理',
     type: 'DATA',
     sheetName: 'CONFIRMATION_MANAGEMENT',
+    qrLink:true,
     colSpecs: {
       ID: {desc: '编号', width: 2, isFilterable: true},
-      contact: {desc:'通信地址', width: 4, isFilterable: true, cellType: 'Address'},
+      contact: {desc:'通信地址', width: 5, isFilerable: true, cellType: 'Address'},
       confStatus: {desc:'函证状态', width: 4, isFilterable: true, cellType: 'ConfStatus'},
-      qr: {desc:'二维码', width: 2, cellType:'QR'},
+      qr: {desc:'QR', width: 1, cellType:'QR'},
     },
   },
   {
@@ -163,7 +164,7 @@ async function fetchDir(givenLoadPoint='/') {
   const dirs = await retrieve('table', 'dirs');
   const loaded = dirs.filter(({loadPoint}) => loadPoint === givenLoadPoint);
 
-  return Object.fromEntries(loaded.map(({loadPoint, name, ...rest}) => [name, rest]))
+  return Object.fromEntries(loaded.map(({loadPoint, name, ...rest}) => [name, {name, ...rest}]))
 }
 
 module.exports = {fetchDir}
