@@ -44,6 +44,7 @@ async function balance(fileBuffer, context){
 
   let data = readSingleSheet(fileBuffer);
   data = columnNameRemap(data, header);
+  data = uniq(data, 'ccode');
   data = cascade(data, 'ccode');
   console.log(data.length, 'processed');
   await fs.writeFile(path.resolve(`./file_store/PROJECT/${pid}/BALANCE`), JSON.stringify(data));

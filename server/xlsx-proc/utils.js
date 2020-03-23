@@ -13,6 +13,17 @@ function sort(table, key){
   })
 }
 
+function uniq(table, key){
+  const sorted = sort(table, key);
+
+  const dict = {};
+  for (let rec of sorted){
+    dict[rec[key]] = rec;
+  }
+
+  return Object.values(dict);
+}
+
 function group(table, key){
 
   let group = {};
@@ -101,6 +112,7 @@ function readSingleSheet(buffer, withHeader=true){
 
 module.exports = {
   sort,
+  uniq,
   group,
   cascade,
   columnNameRemap,
