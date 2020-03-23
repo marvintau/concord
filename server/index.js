@@ -77,7 +77,7 @@ router.post('/export', ctx => {
 router.post('/upload/:data_name', upload.single('file'), async ctx => {
   const {data_name} = ctx.params;
   console.log(data_name, 'upload');
-  console.log(ctx.request.body, 'upload');
+  console.log(ctx.request.body, 'upload form');
   const file = ctx.request.file;
   const res = await dataProc(file.buffer, data_name, ctx.request.body);
   // console.log(res, 'proc res')

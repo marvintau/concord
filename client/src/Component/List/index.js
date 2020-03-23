@@ -49,7 +49,7 @@ const flatten = (data) => {
 export default ({sheet, status, name, desc, colSpecs}) => {
   
   const {addSheets, setStatus} = useContext(GrandExchangeContext);
-  const {currPage} = useContext(DepRouterContext);
+  const {currPage, currArgs} = useContext(DepRouterContext);
 
   const {toggleCreate, isCreating, createManager} = useCreateManager(name, colSpecs);
 
@@ -76,7 +76,7 @@ export default ({sheet, status, name, desc, colSpecs}) => {
       <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>
       {(currPage.createFromHeader) && <button className='button' onClick={() => toggleCreate()}>{`${isCreating ? '取消' : ''}创建${desc}条目`}</button>}
       {/* <ExportManager name={name} cols={cols}/> */}
-      <UploadManager title={`上传${desc}Excel文件`} {...{name, refresh:addSheets, setStatus, context:currPage}} />
+      <UploadManager title={`上传${desc}Excel文件`} {...{name, refresh:addSheets, setStatus, context:{...currArgs, ...currPage}}} />
     </div>
     <div>
       {createManager}
