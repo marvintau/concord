@@ -1,7 +1,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-const {cascade, readSingleSheet, columnNameRemap} = require('./utils');
+const {uniq, cascade, readSingleSheet, columnNameRemap} = require('./utils');
 
 let header = [
   ['会计年' , 'iyear'],
