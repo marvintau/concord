@@ -10,10 +10,9 @@ import './page.css';
 
 const qrLink = (name, dict) => {
 
-  const {host} = window.location;
-
+  const {protocol, host} = window.location;
   const linkString = Object.entries(dict).map(([k, v]) => `${k}=${v}`).join('&');
-  return `${host}/${name}?${linkString}`
+  return `${protocol}${host}/${name}?${linkString}`
 }
 
 const BrowserPage = ({}) => {
