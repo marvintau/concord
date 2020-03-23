@@ -12,7 +12,7 @@ const qrLink = (name, dict) => {
 
   const {protocol, host} = window.location;
   const linkString = Object.entries(dict).map(([k, v]) => `${k}=${v}`).join('&');
-  return `${protocol}${host}/${name}?${linkString}`
+  return `${protocol}//${host}/${name}?${linkString}`
 }
 
 const BrowserPage = ({}) => {
