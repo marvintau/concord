@@ -3,6 +3,7 @@ const Path = require('path');
 const Koa = require('koa');
 const BodyParser = require('koa-bodyparser');
 const Serve = require('koa-static');
+const Send = require('koa-send');
 const Router = require('@koa/router');
 const Multer = require('@koa/multer');
 
@@ -31,6 +32,7 @@ if (mode !== 'production') {
   publicPath = Path.join(__dirname, '../client/build')
 }
 
+console.log('Port: ', port, '  Public path: ', publicPath);
 
 router.post('/pull/:data_name', async ctx => {
   const {data_name} = ctx.params;
@@ -102,14 +104,27 @@ router.post('/pages', async ctx => {
     await postProc['PROJECT'](records);
   }
 
-  const result = await retrieve('table', 'PROJECT');
-  console.log(result, 'init');
+  console.log('Example projects inited');
 
 })();
 
+app.use(async (ctx, next) => {
+  const start = Date.now();
+  await next();
+  const ms = Date.now() - start;
+  console.log(`${ctx.url} ${ms}ms`);
+});
 
 app.use(BodyParser());
 app.use(router.routes());
 
 app.use(Serve(publicPath));
+
+app.use(async (ctx, next) => {
+  console.log(ctx.response.status);
+  if (parseInt(ctx.response.status) === 404){
+    await Send(ctx, 'index.html', {root: publicPath});
+  }
+})
+
 app.listen(port);
