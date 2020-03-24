@@ -1,10 +1,9 @@
-const fs = require('fs').promises;
-const path = require('path');
+const {retrieveTable} = require('../database');
 
-async function retrieve(context) {
-  const {pid} = context;
-  const data = await fs.readFile(path.resolve('./file_store/PROJECT/', pid, 'CASHFLOW_WORKSHEET'));
-  return {data: JSON.parse(data.toString())};
+async function get(context) {
+  const {project_id} = context;
+  const doc = await retrieveTable({project_id}, 'CASHFLOW_WORKSHEET');
+  return doc;
 }
 
-module.exports = retrieve;
+module.exports = get;

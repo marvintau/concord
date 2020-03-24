@@ -9,7 +9,7 @@ export default (sheetName, colSpecs) => {
 
   const [isCreating, setCreating] = useState(false);
 
-  const {addRec, evalSheet, push, pull} = useContext(GrandExchangeContext);
+  const {push, pull} = useContext(GrandExchangeContext);
   const {currPage} = useContext(DepRouterContext);
 
   const formElem = useRef(null);
@@ -36,9 +36,7 @@ export default (sheetName, colSpecs) => {
       const formData = new FormData(formElem.current)
       const rec = Object.fromEntries(formData.entries());
   
-      addRec(sheetName, [], {...rec, table:sheetName});
-      evalSheet(sheetName);
-      push(sheetName);
+      push(sheetName, {type: 'ADD_REC', rec: {...rec, table: sheetName}});
       pull([sheetName], currPage, true);
       setCreating(false);
     } else {

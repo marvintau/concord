@@ -8,13 +8,12 @@ const Router = require('@koa/router');
 const Multer = require('@koa/multer');
 
 const exportExcel = require('./xlsx-export');
-const dataProc = require('./xlsx-proc');
-const postProc = require('./post-proc');
-const retrieveProc = require('./retrieve-proc');
-const {retrieve} = require('./database');
-const {fetchDir} = require('./dirs');
 
-const {genName} = require('./nameGenerate');
+const uploadProc = require('./upload-proc');
+const retrieveProc = require('./retrieve-proc');
+const updateProc = require('./update-proc');
+
+const {fetchDir} = require('./dirs');
 
 const app = new Koa();
 const router = new Router();
@@ -45,7 +44,7 @@ router.post('/pull/:data_name', async ctx => {
     console.log('yeah', data_name, error)
 
     const msgs ={
-      'ENOENT' : 'DEAD_NOT_FOUND',
+      'NOT_FOUND' : 'DEAD_NOT_FOUND',
       'NO_HANDLER' : 'DEAD_NOT_IMPL'
     }
 
@@ -55,8 +54,12 @@ router.post('/pull/:data_name', async ctx => {
 
 router.post('/push/:data_name', async ctx => {
   const {data_name} = ctx.params;
-  await postProc[data_name](ctx.request.body);
-  ctx.body = {result: 'DONE'};
+  try {
+    await updateProc[data_name](ctx.request.body);
+    ctx.body = {result: 'DONE'};
+  } catch (error) {
+    ctx.body = {error: error.code}
+  }
 })
 
 router.post('/export', ctx => {
@@ -81,7 +84,7 @@ router.post('/upload/:data_name', upload.single('file'), async ctx => {
   console.log(data_name, 'upload');
   console.log(ctx.request.body, 'upload form');
   const file = ctx.request.file;
-  const res = await dataProc(file.buffer, data_name, ctx.request.body);
+  const res = await uploadProc(file.buffer, data_name, ctx.request.body);
   // console.log(res, 'proc res')
   ctx.body = res;
 })
@@ -90,23 +93,6 @@ router.post('/pages', async ctx => {
   const {fetchPath} = ctx.request.body;
   ctx.body = await fetchDir(fetchPath);
 });
-
-
-(async () => {
-
-  const projects = await retrieve('table', 'PROJECT');
-
-  if (projects.length === 0){
-    let records = [];
-    for (let i = 0; i < 10; i++){
-      records.push({ table:'PROJECT', companyName: `${genName()} Inc.`, year:1990+Math.floor(Math.random()*30)});
-    }
-    await postProc['PROJECT'](records);
-  }
-
-  console.log('Example projects inited');
-
-})();
 
 app.use(async (ctx, next) => {
   const start = Date.now();
@@ -125,6 +111,6 @@ app.use(async (ctx, next) => {
   if (parseInt(ctx.response.status) === 404){
     await Send(ctx, 'index.html', {root: publicPath});
   }
-})
+});
 
 app.listen(port);

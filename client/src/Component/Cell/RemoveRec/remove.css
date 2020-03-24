@@ -1,0 +1,7 @@
+.remove {
+  height: 1.5rem;
+  width: 1.5rem;
+  background-size: 1.5rem;
+  opacity: 0.3;
+  background-image: url('./cross.svg');
+}

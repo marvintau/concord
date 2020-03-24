@@ -1,4 +1,7 @@
-const {insert, remove, retrieve} = require('./database');
+const {remove, retrieveRecs, createRecs} = require('./database');
+
+const {genName} = require('./nameGenerate');
+const {v4} = require('uuid');
 
 const dirs = [
   {
@@ -60,7 +63,8 @@ const dirs = [
     colSpecs: {
       link: {desc: '--', width: 1, isFilterable: false, cellType:'Link'},
       year: {desc: '年度', width: 1, isFilterable: true},
-      companyName: {desc: '项目（企业）名称', width: 10, isFilterable: true},
+      companyName: {desc: '项目（企业）名称', width: 9, isFilterable: true},
+      remove: {desc: '删除', width: 1, cellType:'Remove'}
     },
     children: ['PROJECT'],
   },
@@ -138,6 +142,7 @@ const dirs = [
     desc: '现金流量表',
     type: 'DATA',
     sheetName: 'CASHFLOW_WORKSHEET',
+    saveFromHeader: true,
     referredSheetNames: ['BALANCE'],
     colSpecs: {
       ref: {desc: '条目', width: 11, isFilterable: true, cellType:'Ref'},
@@ -149,19 +154,40 @@ const dirs = [
 // for development stage only
 (async () => {
 
-  await remove('table', 'dirs');
-
-  const result = await retrieve('table', 'dirs');
-  console.log(result, 'tables')
-
-  for (let dir of dirs){
-    await insert({table: 'dirs', ...dir});
+  try {
+    await remove({table: 'DIRS'});
+    await createRecs('DIRS', dirs);
+  } catch(err) {
+    console.log(err);
   }
 
 })();
 
+(async () => {
+
+  try {
+    let retrieved = await retrieveRecs({table: 'PROJECT'});
+    console.log(retrieved.length, 'retrieved project');
+
+    if (retrieved.length === 0){
+      let records = [];
+      for (let i = 0; i < 15; i++){
+        records.push({companyName: `${genName()} Inc.`, project_id:v4(), year:1990+Math.floor(Math.random()*30), link:'PROJECT'});
+      }
+      createRecs('PROJECT', records);
+    }
+
+    retrieved = await retrieveRecs({table: 'PROJECT'});
+    console.log(retrieved.length, 'retrieved project');
+
+  } catch (err) {
+    console.log(err);
+  }
+})();
+
 async function fetchDir(givenLoadPoint='/') {
-  const dirs = await retrieve('table', 'dirs');
+  const dirs = await retrieveRecs({table: 'DIRS'});
+
   const loaded = dirs.filter(({loadPoint}) => loadPoint === givenLoadPoint);
 
   return Object.fromEntries(loaded.map(({loadPoint, name, ...rest}) => [name, {name, ...rest}]))

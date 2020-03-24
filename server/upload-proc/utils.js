@@ -1,4 +1,5 @@
 const XLSX = require('xlsx');
+const QRCode = require('easyqrcodejs-nodejs');
 
 
 function sort(table, key){
@@ -110,11 +111,33 @@ function readSingleSheet(buffer, withHeader=true){
   }
 }
 
+const generateQR = async text => {
+
+  const options = {
+    text,
+    width: 128,
+    height: 128,
+    colorDark : "#000000",
+    colorLight : "transparent",
+    correctLevel : QRCode.CorrectLevel.H, // L, M, Q, H
+    dotScale: 1 // Must be greater than 0, less than or equal to 1. default is 1
+  }
+
+  try {
+    let result = await (new QRCode(options)).toDataURL().then(res => res);
+    return result;
+  } catch (err) {
+    console.log(err);
+    return 'error';
+  }
+}
+
 module.exports = {
   sort,
   uniq,
   group,
   cascade,
   columnNameRemap,
-  readSingleSheet
+  readSingleSheet,
+  generateQR
 }

@@ -4,6 +4,7 @@ import Ref from './Ref';
 import QR from './QR';
 import Link from './Link';
 import Edit from './Edit';
+import Remove from './RemoveRec'
 import Address from './Address';
 import ConfStatus from './ConfStatus';
 import Labels from './Labels';
@@ -16,6 +17,7 @@ export default {
   Link,
   Edit,
   Labels,
+  Remove,
   Address,
   ConfStatus
 }

@@ -1,5 +1,4 @@
-const fs = require('fs').promises;
-const path = require('path');
+const {setTable} = require('../database');
 const parse = require('./parse');
 const {columnNameRemap, readSingleSheet} = require('./utils');
 
@@ -11,17 +10,17 @@ let header = [
   ['value', 'expr']
 ]
 
-const CASHFLOW_WORKSHEET = async (fileBuffer, context) => {
-  
-  const {pid} = context;
+async function CASHFLOW_WORKSHEET(fileBuffer, context){
+
+  const {project_id} = context;
 
   let data = readSingleSheet(fileBuffer);
   data = columnNameRemap(data, header);
   data = parse('BALANCE', data);
 
-  await fs.writeFile(path.resolve(`./file_store/PROJECT/${pid}/CASHFLOW_WORKSHEET`), JSON.stringify(data));
-
-  return {data};
+  const entry = {data};
+  await setTable({project_id}, 'CASHFLOW_WORKSHEET', entry)
+  return entry;
 }
 
 module.exports = CASHFLOW_WORKSHEET

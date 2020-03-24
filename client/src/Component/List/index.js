@@ -48,7 +48,7 @@ const flatten = (data) => {
 
 export default ({sheet, status, name, desc, colSpecs}) => {
   
-  const {addSheets, setStatus} = useContext(GrandExchangeContext);
+  const {addSheets, setStatus, push} = useContext(GrandExchangeContext);
   const {currPage, currArgs} = useContext(DepRouterContext);
 
   const {toggleCreate, isCreating, createManager} = useCreateManager(name, colSpecs);
@@ -70,13 +70,19 @@ export default ({sheet, status, name, desc, colSpecs}) => {
     }
   }
 
+  const save = () => {
+    console.log(currArgs, 'save');
+    push(name, {type:'DATA', data: sheet.data, ...currArgs});
+  }
+
 
   return <div style={{display:'flex', flexDirection:"column", height:'100%', width:'100%'}}>
     <div className="upload-file-bar">
       <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>
-      {(currPage.createFromHeader) && <button className='button' onClick={() => toggleCreate()}>{`${isCreating ? '取消' : ''}创建${desc}条目`}</button>}
-      {/* <ExportManager name={name} cols={cols}/> */}
       <UploadManager title={`上传${desc}Excel文件`} {...{name, refresh:addSheets, setStatus, context:{...currArgs, ...currPage}}} />
+      {(currPage.createFromHeader) && <button className='button' onClick={() => toggleCreate()}>{`${isCreating ? '取消' : ''}创建${desc}条目`}</button>}
+      {(currPage.saveFromHeader) && <button className='button warning' onClick={() => save()}>保存至服务器</button>}
+      {/* <ExportManager name={name} cols={cols}/> */}
     </div>
     <div>
       {createManager}

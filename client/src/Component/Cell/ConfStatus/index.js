@@ -4,9 +4,9 @@ import {Input} from 'reactstrap';
 import { GrandExchangeContext } from '../../GrandExchange';
 import './conf-status.css';
 
-export default ({sheetName, colName, data:{__path:path}, children={}}) => {
+export default ({sheetName, colName, data:{__path:path, __children, ...restRec}, children={}}) => {
 
-  const {setField} = useContext(GrandExchangeContext);
+  const {setField, push, pull} = useContext(GrandExchangeContext);
 
   const {status: initStatus='BEFORE_SEND'} = children;
 
@@ -36,10 +36,14 @@ export default ({sheetName, colName, data:{__path:path}, children={}}) => {
         newData = {...data, status, confirmed:res[status]};
         break;
     }
-
-    setData(newData);
-    setField(sheetName, path, colName, newData);
-    setStatus(status);
+    // console.log(currArgs, 'currArgs')
+    // setData(newData);
+    // setField(sheetName, path, colName, newData);
+    // setStatus(status);
+    push(sheetName, {type:'UPDATE', rec: restRec, key: colName, val: newData})
+    
+    const {project_id} = restRec;
+    pull([sheetName], {project_id}, true);
   }
 
   if (["BEFORE_SEND", 'RESEND'].includes(status)){

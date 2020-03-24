@@ -40,8 +40,18 @@ export default function QRCodeScanner ({buttonName, success}) {
   })()
   }, [reader, deviceID]);
 
+  useEffect(() => {
+    return () => {
+      turnOffCamera();
+    }
+  }, []);
+
   const turnOffCamera = () => {
     const videoElem = videoRef.current;
+    if (videoElem === null){
+      return;
+    }
+
     console.log(videoElem);
     const stream = videoElem.srcObject;
     const tracks = stream.getTracks();
@@ -63,7 +73,7 @@ export default function QRCodeScanner ({buttonName, success}) {
 
     codeReader.decodeFromInputVideoDevice(undefined, 'video')
       .then((result) => {
-        setMessage(result);
+        console.log(result);
         if (success !== undefined){
           success(result);
         }

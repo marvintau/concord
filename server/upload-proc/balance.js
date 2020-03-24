@@ -1,4 +1,4 @@
-const fs = require('fs').promises;
+const {setTable, retrieveRecs} = require('../database');
 const path = require('path');
 
 const {uniq, cascade, readSingleSheet, columnNameRemap} = require('./utils');
@@ -40,16 +40,19 @@ let header = [
 
 async function balance(fileBuffer, context){
 
-  const {pid} = context;
+  const {project_id} = context;
 
   let data = readSingleSheet(fileBuffer);
   data = columnNameRemap(data, header);
   data = uniq(data, 'ccode');
   data = cascade(data, 'ccode');
   console.log(data.length, 'processed');
-  await fs.writeFile(path.resolve(`./file_store/PROJECT/${pid}/BALANCE`), JSON.stringify(data));
-  console.log('write into file');
-  return {data, pathColumn: 'ccode_name'};
+  // await fs.writeFile(path.resolve(`./file_store/PROJECT/${pid}/BALANCE`), JSON.stringify(data));
+
+  const entry = {data, pathColumn:'ccode_name'};
+  await setTable({project_id}, 'BALANCE', entry)
+
+  return entry;
 }
 
 module.exports = balance;

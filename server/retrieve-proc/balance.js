@@ -1,12 +1,11 @@
-const fs = require('fs').promises;
-const path = require('path');
+const {retrieveTable} = require('../database');
 
-async function retrieve(context) {
-  const {pid} = context;
-  const filePath = path.resolve('./file_store/PROJECT/', pid, 'BALANCE');
-  console.log(filePath);
-  const data = await fs.readFile(filePath)
-  return {data: JSON.parse(data.toString()), pathColumn:'ccode_name'};
+async function get(context) {
+  const {project_id} = context;
+  console.log(context, 'BALANCE CON')
+  const doc = await retrieveTable({project_id}, 'BALANCE');
+  console.log(doc, 'BALANCE');
+  return doc;
 }
 
-module.exports = retrieve;
+module.exports = get;

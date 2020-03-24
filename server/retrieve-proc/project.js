@@ -1,7 +1,7 @@
-const {retrieve} = require('../database');
+const {retrieveRecs} = require('../database');
 
-async function e(context) {
-  const data = await retrieve('table', 'PROJECT');
+async function e() {
+  const data = await retrieveRecs({table: 'PROJECT'});
   return {data};
 }
 

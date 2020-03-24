@@ -195,6 +195,15 @@ export const GrandExchange = ({children}) => {
     }
   }
 
+  // const fetchRec = (text) => {
+  //   (async() => {
+  //     const params = new URLSearchParams(text);
+  //     const {sheetName} = Object.fromEntries(params.entries());
+
+  //     await Agnt.post(`fetch/${}`);
+  //   })
+  // }
+
   const pull = (sheetNameList, currPage, forceUpdate=false) => {
     console.log(sheetNameList, 'pull');
     (async() => {
@@ -225,12 +234,17 @@ export const GrandExchange = ({children}) => {
     })()
   }
 
-  const push = (sheetName) => {
+  const push = (sheetName, {type, crit, rec, key, val, ...rem}) => {
     (async () => {
       setStatus('PUSH');
       try{
-        const {data} = Sheets[sheetName];
-        const response = await Agnt.post(`/push/${sheetName}`).send(data);
+        const payload = ['ADD_REC', 'REM_REC'].includes(type)
+        ? {type, rec}
+        : type === 'UPDATE'
+        ? {type, rec, key, val}
+        : {type, data: Sheets[sheetName].data, ...rem}
+
+        const response = await Agnt.post(`/push/${sheetName}`).send(payload);
         if (response.error){
           throw Error(response.error.message);
         }

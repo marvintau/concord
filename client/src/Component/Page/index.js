@@ -1,4 +1,4 @@
-import React, {useContext, useState, Suspense} from 'react';
+import React, {useContext, useState} from 'react';
 import QRCode from 'qrcode.react';
 import {BrowserView, MobileOnlyView} from 'react-device-detect';
 
@@ -16,7 +16,7 @@ const qrLinkContent = (name, dict) => {
   const {protocol, host} = window.location;
   const linkString = Object.entries(dict).map(([k, v]) => `${k}=${v}`).join('&');
   const encoded = encodeURI(`${protocol}//${host}/${name}?${linkString}`);
-  console.log(encoded, 'qrContent');
+  // console.log(encoded, 'qrContent');
   return encoded;
 }
 
@@ -72,17 +72,22 @@ const BrowserPage = ({}) => {
 
 const MobilePage = () => {
 
+  const {fetchRec} = useContext(GrandExchangeContext);
   const {currPage} = useContext(DepRouterContext);
   const {sheetName, name, desc, colSpecs} = currPage;
 
-  // const [res, setRes] = useState(undefined);
+  const [stage, setStage] = useState('RETRIEVING_REC');
 
-  return <div className='mobile-container'>
-    <div className="title">{desc}</div>
-    <div className='content'>手机端管理工具</div>
-    <QRScanner buttonName='扫描记录对应的二维码'/>
-    {/* <div>{res}</div> */}
-  </div>
+  let content = <></>;
+  if (stage === 'RETRIEVING_REC') {
+    content = <div className='mobile-container'>
+      <div className="title">{desc}</div>
+      <div className='content'>手机端管理工具</div>
+      <QRScanner buttonName='扫描记录对应的二维码' success={({text}) => fetchRec(text)}/>
+    </div>
+  }
+
+  return content;
 }
 
 export default () => {
