@@ -199,6 +199,8 @@ export function DepRouter({children}) {
       <Spinner />
       <div>正在载入，请稍候</div>
       <div>Loading the remaining stuff...</div>
+      <div></div>
+      <div>如果您是通过微信扫码进入，并长时间停留在此页，请从右上角菜单选择“在浏览器打开”进入</div>
     </div>;
   }
 
