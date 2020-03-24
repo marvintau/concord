@@ -8,7 +8,7 @@ import List from '../List';
 
 import './page.css';
 
-const qrLink = (name, dict) => {
+const qrLinkContent = (name, dict) => {
 
   const {protocol, host} = window.location;
   const linkString = Object.entries(dict).map(([k, v]) => `${k}=${v}`).join('&');
@@ -25,7 +25,7 @@ const BrowserPage = ({}) => {
     return <div className="page-text">
       <div className="title">未命名</div>
       <div className="content">此目录页没有描述，您可以选择左侧菜单进入下级目录一探究竟</div>
-      {qrLink && <QRCode value={qrLink(name, currArgs)} />}
+      {qrLink && <QRCode value={qrLinkContent(name, currArgs)} />}
     </div>
   }
 
@@ -47,7 +47,7 @@ const BrowserPage = ({}) => {
     return <div className="page-text">
       <div className="title">{actualTitle}</div>
       <div className="content">{actualText}</div>
-      {qrLink && <QRCode value={qrLink(name, currArgs)} />}
+      {qrLink && <QRCode value={qrLinkContent(name, currArgs)} />}
     </div>
   }
 
@@ -57,7 +57,7 @@ const BrowserPage = ({}) => {
     
     return <div className="table-container">
       <List sheet={Sheets[sheetName]} {...{name: sheetName, desc, status, colSpecs}} />
-      {qrLink && <QRCode value={qrLink(name, currArgs)} />}
+      {qrLink && <QRCode value={qrLinkContent(name, currArgs)} />}
     </div>
   }
 
