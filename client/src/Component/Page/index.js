@@ -6,10 +6,9 @@ import {DepRouterContext} from '../DepRouter';
 import {GrandExchangeContext} from '../GrandExchange';
 import List from '../List';
 import './page.css';
-import { Spinner } from 'reactstrap';
 
-// import QRScanner from '../QRScanner';
-const QRScanner = React.lazy(() => import('../QRScanner'));
+import QRScanner from '../QRScanner';
+// const QRScanner = React.lazy(() => import('../QRScanner'));
 
 
 const qrLinkContent = (name, dict) => {
@@ -81,9 +80,7 @@ const MobilePage = () => {
   return <div className='mobile-container'>
     <div className="title">{desc}</div>
     <div className='content'>手机端管理工具</div>
-    <Suspense fallback={<div><Spinner/> 二维码模块加载中...</div>}>
-      <QRScanner buttonName='扫描记录对应的二维码'/>
-    </Suspense>
+    <QRScanner buttonName='扫描记录对应的二维码'/>
     {/* <div>{res}</div> */}
   </div>
 }
