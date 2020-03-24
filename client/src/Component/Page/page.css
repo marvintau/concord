@@ -20,6 +20,11 @@
   display: flex;
 }
 
+.mobile-container{
+  height: 100%;
+  width: 100%;
+}
+
 @media screen and (min-width: 1280px) and (max-width: 1440px) {
   .table-container{
     margin: 10px;

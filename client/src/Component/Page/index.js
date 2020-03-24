@@ -66,8 +66,13 @@ const BrowserPage = ({}) => {
 }
 
 const MobilePage = () => {
-  return <div>
-    yeah, mobile
+
+  const {currPage} = useContext(DepRouterContext);
+  const {sheetName, name, desc} = currPage;
+
+  return <div className='mobile-container'>
+    <div className="title">{desc}</div>
+    <div className='content'>手机端管理工具</div>
   </div>
 }
 
