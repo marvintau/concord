@@ -1,5 +1,5 @@
 import React, {createContext, useState, useContext, useEffect} from 'react';
-import {Breadcrumb, BreadcrumbItem, ListGroup, ListGroupItem} from 'reactstrap';
+import {Breadcrumb, BreadcrumbItem, ListGroup, ListGroupItem, Spinner} from 'reactstrap';
 import Sidebar from 'react-sidebar';
 
 import {GrandExchangeContext} from '../GrandExchange';
@@ -195,7 +195,11 @@ export function DepRouter({children}) {
       {children}
     </SideNavigationBar>
   } else {
-    content = 'loading ...';
+    content = <div style={{height: '100%', width: "100%", display: 'flex', flexDirection: 'column', alignItems:'center', justifyContent:'center'}}>
+      <Spinner />
+      <div>正在载入，请稍候</div>
+      <div>Loading the remaining stuff...</div>
+    </div>;
   }
 
   return <DepRouterContext.Provider value={{
