@@ -84,7 +84,7 @@ const MobilePage = () => {
     {(res === undefined) && <Suspense fallback={<div><Spinner/> 二维码模块加载中...</div>}>
       <QRScanner buttonName='扫描记录对应的二维码'/>
     </Suspense>}
-    <div>{res}</div>
+    {/* <div>{res}</div> */}
   </div>
 }
 
