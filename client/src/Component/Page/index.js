@@ -1,18 +1,20 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import QRCode from 'qrcode.react';
 import {BrowserView, MobileOnlyView} from 'react-device-detect';
 
 import {DepRouterContext} from '../DepRouter';
 import {GrandExchangeContext} from '../GrandExchange';
 import List from '../List';
-
+import QRScanner from '../QRScanner';
 import './page.css';
 
 const qrLinkContent = (name, dict) => {
 
   const {protocol, host} = window.location;
   const linkString = Object.entries(dict).map(([k, v]) => `${k}=${v}`).join('&');
-  return `${protocol}//${host}/${name}?${linkString}`
+  const encoded = encodeURI(`${protocol}//${host}/${name}?${linkString}`);
+  console.log(encoded, 'qrContent');
+  return encoded;
 }
 
 const BrowserPage = ({}) => {
@@ -70,9 +72,13 @@ const MobilePage = () => {
   const {currPage} = useContext(DepRouterContext);
   const {sheetName, name, desc} = currPage;
 
+  const [res, setRes] = useState('');
+
   return <div className='mobile-container'>
     <div className="title">{desc}</div>
     <div className='content'>手机端管理工具</div>
+    <QRScanner buttonName='扫描记录对应的二维码' success={(result) => setRes(result)}/>
+    <div>{res}</div>
   </div>
 }
 
