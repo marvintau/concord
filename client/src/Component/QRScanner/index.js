@@ -63,7 +63,10 @@ export default function QRCodeScanner ({buttonName, success}) {
 
     codeReader.decodeFromInputVideoDevice(undefined, 'video')
       .then((result) => {
-        success(result);
+        setMessage(result);
+        if (success !== undefined){
+          success(result);
+        }
       }).catch((err) => {
         setMessage(err.toString());
       })
