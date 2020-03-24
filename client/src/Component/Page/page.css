@@ -25,6 +25,11 @@
   width: 100%;
 }
 
+.qr-block {
+  margin-top: 40px;
+  margin-left: 20px;
+}
+
 @media screen and (min-width: 1280px) and (max-width: 1440px) {
   .table-container{
     margin: 10px;
