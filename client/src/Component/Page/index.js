@@ -76,14 +76,14 @@ const MobilePage = () => {
   const {currPage} = useContext(DepRouterContext);
   const {sheetName, name, desc, colSpecs} = currPage;
 
-  const [res, setRes] = useState('');
+  const [res, setRes] = useState(undefined);
 
   return <div className='mobile-container'>
     <div className="title">{desc}</div>
     <div className='content'>手机端管理工具</div>
-    <Suspense fallback={<div><Spinner/> 二维码模块加载中...</div>}>
+    {res === undefined && <Suspense fallback={<div><Spinner/> 二维码模块加载中...</div>}>
       <QRScanner buttonName='扫描记录对应的二维码' success={(result) => setRes(result)}/>
-    </Suspense>
+    </Suspense>}
     <div>{res}</div>
   </div>
 }
