@@ -5,10 +5,10 @@ import {BrowserView, MobileOnlyView} from 'react-device-detect';
 import {DepRouterContext} from '../DepRouter';
 import {GrandExchangeContext} from '../GrandExchange';
 import List from '../List';
+import Doc from '../Doc';
 import './page.css';
 
 import QRScanner from '../QRScanner';
-// const QRScanner = React.lazy(() => import('../QRScanner'));
 
 
 const qrLinkContent = (name, dict) => {
@@ -16,7 +16,7 @@ const qrLinkContent = (name, dict) => {
   const {protocol, host} = window.location;
   const linkString = Object.entries(dict).map(([k, v]) => `${k}=${v}`).join('&');
   const encoded = encodeURI(`${protocol}//${host}/${name}?${linkString}`);
-  // console.log(encoded, 'qrContent');
+  console.log(encoded, 'qrContent');
   return encoded;
 }
 
@@ -72,18 +72,38 @@ const BrowserPage = ({}) => {
 
 const MobilePage = () => {
 
-  const {fetchRec} = useContext(GrandExchangeContext);
+  const {fetchURL} = useContext(GrandExchangeContext);
   const {currPage} = useContext(DepRouterContext);
   const {sheetName, name, desc, colSpecs} = currPage;
 
-  const [stage, setStage] = useState('RETRIEVING_REC');
+  const [stage, setStage] = useState('RETRIEVING_DOC');
+  const [doc, setDoc] = useState({});
+  const fetchRecord = (text) => {
+    (async () => {
+      try{
+        console.log('fetchURL, called')
+        const data = await fetchURL(text);
+        setDoc(data);
+        setStage('MANAGE_DOC');
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+  };
 
   let content = <></>;
-  if (stage === 'RETRIEVING_REC') {
+  if (stage === 'RETRIEVING_DOC') {
     content = <div className='mobile-container'>
       <div className="title">{desc}</div>
       <div className='content'>手机端管理工具</div>
-      <QRScanner buttonName='扫描记录对应的二维码' success={({text}) => fetchRec(text)}/>
+      <QRScanner buttonName='扫描记录对应的二维码' success={({text}) => fetchRecord(text)}/>
+    </div>
+  }
+
+  if (stage === 'MANAGE_DOC') {
+    content = <div className='mobile-container'>
+      <div className="title">{desc}</div>
+      <Doc data={doc} {...{sheetName, colSpecs}} />
     </div>
   }
 

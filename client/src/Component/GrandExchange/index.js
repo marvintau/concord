@@ -68,8 +68,8 @@ export const GrandExchangeContext = createContext({
   setField: () => {},
 
   pull: () => {},
-  push: () => {}
-
+  push: () => {},
+  fetchURL: () => {}
 })
 
 export const GrandExchange = ({children}) => {
@@ -195,14 +195,23 @@ export const GrandExchange = ({children}) => {
     }
   }
 
-  // const fetchRec = (text) => {
-  //   (async() => {
-  //     const params = new URLSearchParams(text);
-  //     const {sheetName} = Object.fromEntries(params.entries());
+  const fetchURL = async (url) => {
+    const params = new URLSearchParams(url);
+    const {sheet, ...rest} = Object.fromEntries(params.entries());
 
-  //     await Agnt.post(`fetch/${}`);
-  //   })
-  // }
+    if (sheet === undefined){
+      setStatus('DEAD_FETCH_NO_SHEET_NAME');
+      return;
+    }
+
+    try {
+      console.log(rest, 'rest');
+      const {body:{data}} = await Agnt.post(`/fetch/${sheet}`).send(rest);
+      return data;
+    } catch (error){
+      console.log(error);
+    }
+  }
 
   const pull = (sheetNameList, currPage, forceUpdate=false) => {
     console.log(sheetNameList, 'pull');
@@ -261,7 +270,7 @@ export const GrandExchange = ({children}) => {
   return <GrandExchangeContext.Provider value={{
       Sheets, status, addSheets, refreshSheet, evalSheet, getChildren,
       getRec, setField, addRec, addChild, remRec,
-      pull, push
+      pull, push, fetchURL,
     }}>
     {children}
   </GrandExchangeContext.Provider>

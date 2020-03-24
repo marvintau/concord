@@ -48,6 +48,7 @@ function retrieveRecs (crit) {
 
 async function retrieveTable (crit, table) {
   const doc = await db.findOne(crit);
+  console.log(doc, 'retrieve table')
   if (doc[table] === undefined){
     throw {code: 'NOT_FOUND'}
   } else {

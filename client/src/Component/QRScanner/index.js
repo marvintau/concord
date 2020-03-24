@@ -52,8 +52,12 @@ export default function QRCodeScanner ({buttonName, success}) {
       return;
     }
 
-    console.log(videoElem);
     const stream = videoElem.srcObject;
+
+    if (stream === null){
+      return;
+    }
+
     const tracks = stream.getTracks();
   
     tracks.forEach(function(track) {
