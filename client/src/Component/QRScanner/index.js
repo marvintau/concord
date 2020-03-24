@@ -59,7 +59,7 @@ export default function QRCodeScanner ({buttonName, success}) {
 
     setMessage('相机在7秒钟内关闭');
 
-    setTimeout(turnOffCamera, 7000);
+    // setTimeout(turnOffCamera, 7000);
 
     codeReader.decodeFromInputVideoDevice(undefined, 'video')
       .then((result) => {

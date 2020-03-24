@@ -6,6 +6,7 @@ import {DepRouterContext} from '../DepRouter';
 import {GrandExchangeContext} from '../GrandExchange';
 import List from '../List';
 import './page.css';
+import { Spinner } from 'reactstrap';
 
 // import QRScanner from '../QRScanner';
 const QRScanner = React.lazy(() => import('../QRScanner'));
@@ -73,14 +74,14 @@ const BrowserPage = ({}) => {
 const MobilePage = () => {
 
   const {currPage} = useContext(DepRouterContext);
-  const {sheetName, name, desc} = currPage;
+  const {sheetName, name, desc, colSpecs} = currPage;
 
   const [res, setRes] = useState('');
 
   return <div className='mobile-container'>
     <div className="title">{desc}</div>
     <div className='content'>手机端管理工具</div>
-    <Suspense fallback={<div>二维码模块加载中...</div>}>
+    <Suspense fallback={<div><Spinner/> 二维码模块加载中...</div>}>
       <QRScanner buttonName='扫描记录对应的二维码' success={(result) => setRes(result)}/>
     </Suspense>
     <div>{res}</div>
