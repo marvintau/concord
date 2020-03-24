@@ -19,13 +19,13 @@ const BrowserPage = ({}) => {
   const {currPage, currArgs} = useContext(DepRouterContext);
   const {Sheets, status} = useContext(GrandExchangeContext);
 
-  const {type, name, children} = currPage;
+  const {type, name, children, qrLink} = currPage;
 
   if (type === undefined && children && children.length > 0){
     return <div className="page-text">
       <div className="title">未命名</div>
       <div className="content">此目录页没有描述，您可以选择左侧菜单进入下级目录一探究竟</div>
-      <QRCode value={qrLink(name, currArgs)} />
+      {qrLink && <QRCode value={qrLink(name, currArgs)} />}
     </div>
   }
 
@@ -47,7 +47,7 @@ const BrowserPage = ({}) => {
     return <div className="page-text">
       <div className="title">{actualTitle}</div>
       <div className="content">{actualText}</div>
-      <QRCode value={qrLink(name, currArgs)} />
+      {qrLink && <QRCode value={qrLink(name, currArgs)} />}
     </div>
   }
 
@@ -57,6 +57,7 @@ const BrowserPage = ({}) => {
     
     return <div className="table-container">
       <List sheet={Sheets[sheetName]} {...{name: sheetName, desc, status, colSpecs}} />
+      {qrLink && <QRCode value={qrLink(name, currArgs)} />}
     </div>
   }
 
