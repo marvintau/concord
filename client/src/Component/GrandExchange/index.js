@@ -219,9 +219,6 @@ export const GrandExchange = ({children}) => {
       setStatus('PULL');
       let pulledSheets = {};
       for (let sheetName of sheetNameList){
-        if ((sheetName in Sheets) && !forceUpdate){
-          continue;
-        }
   
         try{
           const {body:{data, pathColumn, error}} = await Agnt.post(`/pull/${sheetName}`).send(currPage);
@@ -230,7 +227,6 @@ export const GrandExchange = ({children}) => {
             return;
           }
 
-          // evalList(data);
           pulledSheets[sheetName] = {data, pathColumn};
         } catch(e){
           console.error(e);

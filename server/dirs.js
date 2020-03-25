@@ -75,6 +75,7 @@ const dirs = [
     type: 'TEXT',
     title: {key: 'companyName'},
     content: '这里显示公司的摘要，左侧进入分类内容',
+    refreshData: true,
     sheetName: undefined,
     colSpecs: undefined,
     children: ['Finance', 'Confirmation'],
