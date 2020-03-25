@@ -20,7 +20,7 @@ const dirs = [
     type: 'TEXT',
     title: '通用配置',
     content: ['包括适用于所有项目的设置，以及和系统相关的配置项目'],
-    children: ['PathAliases', 'ColAliases', 'PageConfiguration'],
+    children: ['CategoryNameAliases', 'ColAliases', 'PageConfiguration'],
   },
   {
     loadPoint: '/',
@@ -33,13 +33,13 @@ const dirs = [
   },
   {
     loadPoint: '/',
-    name: 'PathAliases',
+    name: 'CategoryNameAliases',
     desc: '科目别名',
     type: 'DATA',
-    sheetName: 'PATH_NAME_ALIASES',
+    sheetName: 'CATEGORY_NAME_ALIASES',
     createFromHeader: true,
     colSpecs: {
-      aliases: {desc: '科目别名', width: 12, cellType:'Labels'},
+      alias: {desc: '科目别名', width: 12, cellType:'Labels'},
     },
   },
   {

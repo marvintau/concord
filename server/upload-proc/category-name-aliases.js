@@ -1,5 +1,4 @@
-const fs = require('fs').promises;
-const path = require('path');
+const {createRecs} = require('../database');
 const {readSingleSheet} = require('./utils');
 
 const EQUIVALENT = async (buffer) => {
@@ -12,13 +11,11 @@ const EQUIVALENT = async (buffer) => {
     }
   }
 
-  data = data.filter(e => e.length > 1).map(e => ({equiv: e.slice(1)}));
+  data = data.filter(e => e.length > 1).map(e => ({alias: e.slice(1)}));
 
-  await fs.mkdir(`./file_store/General`, {recursive: true});
-  await fs.writeFile(path.resolve(`./file_store/General/EQUIVALENT_CATEGORY_NAME`), JSON.stringify(data));
+  createRecs('CATEGORY_NAME_ALIASES', data);
 
-  console.log(data);
-  return data;
+  return {data};
 }
 
 module.exports = EQUIVALENT

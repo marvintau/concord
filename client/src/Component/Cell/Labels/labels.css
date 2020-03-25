@@ -12,6 +12,37 @@
 
 .labels-wrapper {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  height: 2.5rem;
+  height: 3rem;
+}
+
+.label-modify-button {
+  margin-left: 10px;
+  height: 1.5rem;
+  width: 1.6rem;
+  background-image: url('./modify.svg');
+  background-size: 1.5rem;
+  background-repeat: no-repeat;
+  background-position: 99% 50%;
+  background-color: transparent;
+}
+
+.label-check-button {
+  margin-left: 10px;
+  height: 1.5rem;
+  width: 1.6rem;
+  background-image: url('./check.svg');
+  background-size: 1.5rem;
+  background-repeat: no-repeat;
+  background-position: 99% 50%;
+  background-color: transparent;
+}
+
+.hov {
+  opacity: 0.2;
+}
+
+.hov:hover {
+  opacity: 1;
 }
