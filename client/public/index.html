@@ -18,10 +18,20 @@
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <title> 🧐审计项目管理 - Working in Progress</title>
+    <title>审计项目管理 - Working in Progress</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <div id="root">
+      <style>
+        .loading-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+      </style>
+      <div class="loading-container">正在载入页面，请稍候</div>
+    </div>
   </body>
 </html>
