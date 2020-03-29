@@ -122,10 +122,10 @@ const Row = (colSpecs, sheetName) => {
   
     const cols = [];
     for (let key in colSpecs){
-      const {width, cellType:type='Text', noBackground} = colSpecs[key];
+      const {width, cellType:type='Text', noBackground, attr} = colSpecs[key];
       const ColRenderer = Cell[type];
       cols.push(<Col className={noBackground ? 'clear-back' : ''} md={width} key={key}>
-        <ColRenderer data={data} sheetName={sheetName} colName={key} >{data[key]}</ColRenderer>
+        <ColRenderer data={data} sheetName={sheetName} colName={key} attr={attr}>{data[key]}</ColRenderer>
       </Col>)
     }
     

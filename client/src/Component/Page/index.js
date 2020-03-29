@@ -4,7 +4,7 @@ import {BrowserView, MobileOnlyView} from 'react-device-detect';
 
 import {DepRouterContext} from '../DepRouter';
 import {GrandExchangeContext} from '../GrandExchange';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from 'react-markdown/with-html';
 import List from '../List';
 import Doc from '../Doc';
 
@@ -49,8 +49,6 @@ const BrowserPage = ({}) => {
   }
 
   if (type === 'TEXT') {
-    const {manual, title} = currPage;
-
     return <div className="page-text">
       {manualPage}
       {qrLink && <div className="qr-block"><QRCode value={qrLinkContent(name, currArgs)} /></div>}
@@ -59,11 +57,14 @@ const BrowserPage = ({}) => {
 
   if (type === 'DATA'){
 
-    const {sheetName, name, desc, isCascaded, isBatchCreateSupported, colSpecs} = currPage;
+    const {sheetName, name, desc, colSpecs} = currPage;
     
     return <div className="table-container">
-      <List sheet={Sheets[sheetName]} {...{name: sheetName, desc, status, isCascaded, isBatchCreateSupported, colSpecs}} />
-      {qrLink && <div className="qr-block"><QRCode value={qrLinkContent(name, currArgs)} /></div>}
+      <List sheet={Sheets[sheetName]} {...{name: sheetName, desc, status, colSpecs}} />
+      <div className="page-right-side">
+        {qrLink && <div className="qr-block"><QRCode value={qrLinkContent(name, currArgs)} /></div>}
+        {manualPage}
+      </div>
     </div>
   }
 

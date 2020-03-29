@@ -63,10 +63,9 @@ const dirs = [
     isCascaded: false,
     isBatchCreateSupported: false,
     colSpecs: {
-      link: {desc: '--', width: 1, cellType:'Link'},
       year: {desc: '年度', width: 1, isFilterable: true},
       companyName: {desc: '项目（企业）名称', width: 9, isFilterable: true},
-      remove: {desc: '删除', width: 1, cellType:'Remove'}
+      manage: {desc: '-', width: 2, cellType:'Edit', attr:{isSync: true, removeEnabled: true, navigateEnabled: true}}
     },
     children: ['PROJECT'],
   },
@@ -75,8 +74,6 @@ const dirs = [
     name: 'PROJECT',
     desc: '项目页',
     type: 'TEXT',
-    // title: {key: 'companyName'},
-    // content: '这里显示公司的摘要，左侧进入分类内容',
     refreshData: true,
     sheetName: undefined,
     colSpecs: undefined,
@@ -87,8 +84,6 @@ const dirs = [
     name: 'Confirmation',
     desc: '函证管理',
     type: 'TEXT',
-    // title: '函证管理',
-    // content : '函证相关内容。函证状态管理包括函证的生成、以及收发信息。函证模版管理包括不同类型询证函的模版的管理',
     children: ['ConfirmationManagement', 'ConfirmationTemplateManagement'],
   },
   {
@@ -118,8 +113,6 @@ const dirs = [
     name: 'Finance',
     desc: '财务与报表管理',
     type: 'TEXT',
-    // title: '财务与报表管理',
-    // content: '包含所有财务相关的信息，包括账目、余额表和各类报表',
     sheetName: undefined,
     colSpecs: undefined,
     children: ['Balance', 'CashflowStatement'],
@@ -129,6 +122,8 @@ const dirs = [
     name: 'Balance',
     desc: '余额表',
     type: 'DATA',
+    isCascaded: true,
+    isBatchCreateSupported: true,
     sheetName: 'BALANCE',
     colSpecs: {
       ccode: {desc: '编码', width: 1, isFilterable: true},
@@ -145,11 +140,13 @@ const dirs = [
     desc: '现金流量表',
     type: 'DATA',
     sheetName: 'CASHFLOW_WORKSHEET',
+    isCascaded: true,
+    isBatchCreateSupported: true,
     saveFromHeader: true,
     referredSheetNames: ['BALANCE'],
     colSpecs: {
-      ref: {desc: '条目', width: 11, isFilterable: true, cellType:'Ref'},
-      edit: {desc: '编辑', width: 1, isFilterable: false, cellType:'Edit'},
+      ref: {desc: '条目', width: 10, isFilterable: true, cellType:'Ref'},
+      edit: {desc: '编辑', width: 2, isFilterable: false, cellType:'Edit', attr:{isSync:false, insertEnabled:true, removeEnabled: true}},
     }      
   }
 ];

@@ -3,6 +3,15 @@
   margin: 20px;
 }
 
+.page-right-side {
+  height: auto;
+  overflow-y: scroll;
+  margin-top: 35px;
+  padding:0 20px;
+  min-width: 400px;
+  flex: 1;
+}
+
 .table-container {
   height: 100%;
   width: 100%;
@@ -24,16 +33,16 @@
   margin-left: 20px;
 }
 
-@media screen and (min-width: 1280px) and (max-width: 1440px) {
+@media screen and (min-width: 960px) and (max-width: 1440px) {
   .table-container{
     margin: 10px;
-    width: 800px;
+    width: 1200px;
   }
 }
 
-@media screen and (min-width: 800px) and (max-width: 1280px){
+@media screen and (max-width: 960px){
   .table-container {
     margin: 10px;
-    width: 640px;
+    width: 1040px;
   }
 }

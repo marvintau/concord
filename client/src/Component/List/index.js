@@ -46,12 +46,13 @@ const flatten = (data) => {
   return res;
 }
 
-export default ({sheet, status, name, desc, isCascaded, isBatchCreateSupported, colSpecs}) => {
+export default ({sheet, status, name, desc, colSpecs}) => {
   
   const {addSheets, setStatus, push} = useContext(GrandExchangeContext);
   const {currPage, currArgs} = useContext(DepRouterContext);
-
   const {toggleCreate, isCreating, createManager} = useCreateManager(name, colSpecs);
+
+  const {isCascaded, isBatchCreateSupported, createFromHeader, saveFromHeader} = currPage;
 
   const [folded, setFold] = useState(true);
   
@@ -82,8 +83,8 @@ export default ({sheet, status, name, desc, isCascaded, isBatchCreateSupported, 
     <div className="upload-file-bar">
       {isCascaded && <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>}
       {isBatchCreateSupported &&<UploadManager title={`上传${desc}Excel文件`} {...{name, refresh:addSheets, setStatus, context:{...currArgs, ...currPage}}} />}
-      {(currPage.createFromHeader) && <button className='button' onClick={() => toggleCreate()}>{`${isCreating ? '取消' : ''}创建${desc}条目`}</button>}
-      {(currPage.saveFromHeader) && <button className='button warning' onClick={() => save()}>保存至服务器</button>}
+      {createFromHeader && <button className='button' onClick={() => toggleCreate()}>{`${isCreating ? '取消' : ''}创建${desc}条目`}</button>}
+      {saveFromHeader && <button className='button warning' onClick={() => save()}>保存至服务器</button>}
       {/* <ExportManager name={name} cols={cols}/> */}
     </div>
     <div>
