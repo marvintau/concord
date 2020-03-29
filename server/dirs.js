@@ -3,14 +3,18 @@ const {remove, retrieveRecs, createRecs} = require('./database');
 const {genName} = require('./nameGenerate');
 const {v4} = require('uuid');
 
+const manualPage = require('./manual-page');
+
+const processManualPage = name => {
+  return manualPage[name] !== undefined ? manualPage[name] : '描述未详'
+}
+
 const dirs = [
   {
     loadPoint: '/',
     name: 'Home',
     desc: '首页',
     type: 'TEXT',
-    title: '你好!',
-    content: ['当前测试版本未添加用户控制模组，可以直接进入项目页面'],
     children: ['ProjectList', 'GeneralConfigure'],
   },
   {
@@ -18,8 +22,6 @@ const dirs = [
     name: 'GeneralConfigure',
     desc: '通用配置',
     type: 'TEXT',
-    title: '通用配置',
-    content: ['包括适用于所有项目的设置，以及和系统相关的配置项目'],
     children: ['CategoryNameAliases', 'ColAliases', 'PageConfiguration'],
   },
   {
@@ -27,9 +29,7 @@ const dirs = [
     name: 'PageConfiguration',
     desc: '页面导航',
     type: 'TEXT',
-    title: '页面导航设置',
-    content: ['在这里配置页面、数据表格'],
-    // children: ['']
+    children: ['']
   },
   {
     loadPoint: '/',
@@ -60,8 +60,10 @@ const dirs = [
     type: 'DATA',
     sheetName: 'PROJECT',
     createFromHeader: true,
+    isCascaded: false,
+    isBatchCreateSupported: false,
     colSpecs: {
-      link: {desc: '--', width: 1, isFilterable: false, cellType:'Link'},
+      link: {desc: '--', width: 1, cellType:'Link'},
       year: {desc: '年度', width: 1, isFilterable: true},
       companyName: {desc: '项目（企业）名称', width: 9, isFilterable: true},
       remove: {desc: '删除', width: 1, cellType:'Remove'}
@@ -73,8 +75,8 @@ const dirs = [
     name: 'PROJECT',
     desc: '项目页',
     type: 'TEXT',
-    title: {key: 'companyName'},
-    content: '这里显示公司的摘要，左侧进入分类内容',
+    // title: {key: 'companyName'},
+    // content: '这里显示公司的摘要，左侧进入分类内容',
     refreshData: true,
     sheetName: undefined,
     colSpecs: undefined,
@@ -85,8 +87,8 @@ const dirs = [
     name: 'Confirmation',
     desc: '函证管理',
     type: 'TEXT',
-    title: '函证管理',
-    content : ['函证相关内容。', '函证状态管理包括函证的生成、以及收发信息。函证模版管理包括不同类型询证函的模版的管理'],
+    // title: '函证管理',
+    // content : '函证相关内容。函证状态管理包括函证的生成、以及收发信息。函证模版管理包括不同类型询证函的模版的管理',
     children: ['ConfirmationManagement', 'ConfirmationTemplateManagement'],
   },
   {
@@ -116,8 +118,8 @@ const dirs = [
     name: 'Finance',
     desc: '财务与报表管理',
     type: 'TEXT',
-    title: '财务与报表管理',
-    content: '包含所有财务相关的信息，包括账目、余额表和各类报表',
+    // title: '财务与报表管理',
+    // content: '包含所有财务相关的信息，包括账目、余额表和各类报表',
     sheetName: undefined,
     colSpecs: undefined,
     children: ['Balance', 'CashflowStatement'],
@@ -154,6 +156,11 @@ const dirs = [
 
 // for development stage only
 (async () => {
+
+  for (let dir of dirs) {
+    let {name} = dir;
+    dir.manual = processManualPage(name);
+  }
 
   try {
     await remove({table: 'DIRS'});

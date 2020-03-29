@@ -46,7 +46,7 @@ const flatten = (data) => {
   return res;
 }
 
-export default ({sheet, status, name, desc, colSpecs}) => {
+export default ({sheet, status, name, desc, isCascaded, isBatchCreateSupported, colSpecs}) => {
   
   const {addSheets, setStatus, push} = useContext(GrandExchangeContext);
   const {currPage, currArgs} = useContext(DepRouterContext);
@@ -63,7 +63,9 @@ export default ({sheet, status, name, desc, colSpecs}) => {
   } else if (status.startsWith('DONE')){
     const {data} = sheet;
 
-    if (folded){
+    if (!isCascaded){
+      content = <FlatList {...{sheetName:name, data:flatten(data), status, colSpecs}} />;
+    } else if (folded){
       content = <TreeList {...{sheetName:name, data, status, colSpecs}} />;
     } else {
       content = <FlatList {...{sheetName:name, data:flatten(data), status, colSpecs}} />;
@@ -78,8 +80,8 @@ export default ({sheet, status, name, desc, colSpecs}) => {
 
   return <div style={{display:'flex', flexDirection:"column", height:'100%', width:'100%'}}>
     <div className="upload-file-bar">
-      <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>
-      <UploadManager title={`上传${desc}Excel文件`} {...{name, refresh:addSheets, setStatus, context:{...currArgs, ...currPage}}} />
+      {isCascaded && <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>}
+      {isBatchCreateSupported &&<UploadManager title={`上传${desc}Excel文件`} {...{name, refresh:addSheets, setStatus, context:{...currArgs, ...currPage}}} />}
       {(currPage.createFromHeader) && <button className='button' onClick={() => toggleCreate()}>{`${isCreating ? '取消' : ''}创建${desc}条目`}</button>}
       {(currPage.saveFromHeader) && <button className='button warning' onClick={() => save()}>保存至服务器</button>}
       {/* <ExportManager name={name} cols={cols}/> */}

@@ -7,12 +7,14 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "bootstrap": "^4.4.1",
+    "github-markdown-css": "^4.0.0",
     "react": "^16.12.0",
     "react-autosuggest": "^9.4.3",
     "react-dom": "^16.12.0",
+    "react-markdown": "^4.3.1",
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.3.1",
+    "react-scripts": "latest",
     "react-sidebar": "^3.0.2",
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.6.0-alpha.1",
@@ -39,5 +41,6 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:3001"
+  "proxy": "http://localhost:3001",
+  "devDependencies": {}
 }

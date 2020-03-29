@@ -1,4 +1,3 @@
-const fs = require('fs').promises;
 const Path = require('path');
 const Koa = require('koa');
 const BodyParser = require('koa-bodyparser');

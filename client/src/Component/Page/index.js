@@ -4,9 +4,12 @@ import {BrowserView, MobileOnlyView} from 'react-device-detect';
 
 import {DepRouterContext} from '../DepRouter';
 import {GrandExchangeContext} from '../GrandExchange';
+import ReactMarkdown from 'react-markdown';
 import List from '../List';
 import Doc from '../Doc';
+
 import './page.css';
+import './docu.css';
 
 import QRScanner from '../QRScanner';
 
@@ -24,44 +27,42 @@ const BrowserPage = ({}) => {
   const {currPage, currArgs} = useContext(DepRouterContext);
   const {Sheets, status} = useContext(GrandExchangeContext);
 
-  const {type, name, children, qrLink} = currPage;
+  const {type, name, children, qrLink, manual} = currPage;
+
+  const manualPage = <ReactMarkdown
+    source={manual}
+    renderers={{
+      p: ({children, ...props}) => {
+        console.log(props);
+        return children
+      },
+    }}
+  />
+
 
   if (type === undefined && children && children.length > 0){
     return <div className="page-text">
-      <div className="title">未命名</div>
-      <div className="content">此目录页没有描述，您可以选择左侧菜单进入下级目录一探究竟</div>
+      <div className="docu-header">未命名</div>
+      <div className="content">此页无描述</div>
       {qrLink && <div className="qr-block"><QRCode value={qrLinkContent(name, currArgs)} /></div>}
     </div>
   }
 
   if (type === 'TEXT') {
-    const {name, title, content} = currPage;
-
-    
-    const actualTitle = title.key !== undefined
-    ? currArgs[title.key]
-    : title;
-    
-    console.log(currPage, actualTitle);
-    const actualText = typeof content === 'string'
-      ? content 
-      : Array.isArray(content)
-      ? <div>{content.map((e, i) => <p key={i}>{e}</p>)}</div>
-      : content.toString();
+    const {manual, title} = currPage;
 
     return <div className="page-text">
-      <div className="title">{actualTitle}</div>
-      <div className="content">{actualText}</div>
+      {manualPage}
       {qrLink && <div className="qr-block"><QRCode value={qrLinkContent(name, currArgs)} /></div>}
     </div>
   }
 
   if (type === 'DATA'){
 
-    const {sheetName, name, desc, colSpecs} = currPage;
+    const {sheetName, name, desc, isCascaded, isBatchCreateSupported, colSpecs} = currPage;
     
     return <div className="table-container">
-      <List sheet={Sheets[sheetName]} {...{name: sheetName, desc, status, colSpecs}} />
+      <List sheet={Sheets[sheetName]} {...{name: sheetName, desc, status, isCascaded, isBatchCreateSupported, colSpecs}} />
       {qrLink && <div className="qr-block"><QRCode value={qrLinkContent(name, currArgs)} /></div>}
     </div>
   }

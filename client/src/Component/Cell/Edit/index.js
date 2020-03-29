@@ -19,11 +19,9 @@ export default ({sheetName, data, children, disabled}) => {
     evalSheet(sheetName);
   }
 
-  return <div className="link">
-    {disabled ? <></> : <div className="edit">
-      <div className="remove" onClick={() => remRec(sheetName, path)} />
-      <div className="insert" onClick={() => add(sheetName, path)} />
-    </div>}
+  return disabled ? <></> : <div className="edit">
+    <div className="remove" onClick={() => remRec(sheetName, path)} />
+    <div className="insert" onClick={() => add(sheetName, path)} />
   </div>
   
 }

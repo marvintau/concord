@@ -1,0 +1,7 @@
+{
+  "verbose": true,
+  "watch": [
+    "server"
+  ],
+  "ext": "js,json,md"
+}
