@@ -3,12 +3,14 @@ const BALANCE = require('./balance');
 const CASHFLOW_WORKSHEET = require('./cashflow-worksheet');
 const CONFIRMATION_MANAGEMENT = require('./confirmation-management');
 const CATEGORY_NAME_ALIASES = require('./category-name-aliases');
+const CONFIRMATION_TEMPLATE = require('./confirmation-template');
 
 const uploadDict = {
   BALANCE,
   CASHFLOW_WORKSHEET,
   CONFIRMATION_MANAGEMENT,
-  CATEGORY_NAME_ALIASES
+  CATEGORY_NAME_ALIASES,
+  CONFIRMATION_TEMPLATE
 }
 
 async function dataProc(fileBuffer, dataName, context){

@@ -100,10 +100,10 @@ router.post('/export', ctx => {
 router.post('/upload/:data_name', upload.single('file'), async ctx => {
   const {data_name} = ctx.params;
   console.log(data_name, 'upload');
-  console.log(ctx.request.body, 'upload form');
+  console.log(ctx.request.body, 'uploaded form');
   const file = ctx.request.file;
+  console.log(file, 'uploaded file');
   const res = await uploadProc(file.buffer, data_name, ctx.request.body);
-  // console.log(res, 'proc res')
   ctx.body = res;
 })
 

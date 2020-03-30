@@ -37,7 +37,7 @@ const dirs = [
     desc: '科目别名',
     type: 'DATA',
     sheetName: 'CATEGORY_NAME_ALIASES',
-    createFromHeader: true,
+    tools: ['HeaderCreate'],
     colSpecs: {
       alias: {desc: '科目别名', width: 12, cellType:'Labels'},
     },
@@ -48,7 +48,7 @@ const dirs = [
     desc: '表头别名',
     type: 'DATA',
     sheetName: 'COLUMN_NAME_ALIASES',
-    createFromHeader: true,
+    tools: ['HeaderCreate'],
     colSpecs: {
       aliases: {desc: '等价的科目名称', width: 12, cellType: 'Labels'},
     },
@@ -59,9 +59,7 @@ const dirs = [
     desc: '项目列表',
     type: 'DATA',
     sheetName: 'PROJECT',
-    createFromHeader: true,
-    isCascaded: false,
-    isBatchCreateSupported: false,
+    tools: ['HeaderCreate', 'ImportExcel'],
     colSpecs: {
       year: {desc: '年度', width: 1, isFilterable: true},
       companyName: {desc: '项目（企业）名称', width: 9, isFilterable: true},
@@ -92,12 +90,13 @@ const dirs = [
     desc: '函证状态管理',
     type: 'DATA',
     sheetName: 'CONFIRMATION_MANAGEMENT',
+    tools: ['ImportExcel', 'GenerateTemplate'],
     qrLink:true,
     colSpecs: {
       ID: {desc: '编号', width: 2, isFilterable: true},
-      contact: {desc:'通信地址', width: 5, isFilerable: true, cellType: 'Address'},
+      contact: {desc:'通信地址', width: 4, isFilerable: true, cellType: 'Address'},
       confStatus: {desc:'函证状态', width: 4, isFilterable: true, cellType: 'ConfStatus'},
-      qr: {desc:'QR', width: 1, cellType:'QR'},
+      qr: {desc:'QR', width: 2, cellType:'QR'},
     },
   },
   {
@@ -105,8 +104,14 @@ const dirs = [
     name: 'ConfirmationTemplateManagement',
     desc: '询证函模版管理',
     type: 'DATA',
-    sheetName: 'CONFIRMATION_TEMPLATE_MANAGEMENT',
-    colSpecs: undefined,
+    sheetName: 'CONFIRMATION_TEMPLATE',
+    tools: ['ImportExcel', 'HeaderCreate'],
+    colSpecs: {
+      tempName: {desc: '模版名称', width: 4, isFilerable: true},
+      tempType: {desc: '模版类型', width: 4, isFilerable: true},
+      fileInput: {desc:'上传', width: 2, cellType: 'FileInput'},
+      manage: {desc: '管理', width: 2, cellType:'Edit', attr:{isSync: true, removeEnabled: true, insertEnabled: false}}
+    },
   },
   {
     loadPoint: '/',
@@ -123,7 +128,7 @@ const dirs = [
     desc: '余额表',
     type: 'DATA',
     isCascaded: true,
-    isBatchCreateSupported: true,
+    tools: ['ImportExcel'],
     sheetName: 'BALANCE',
     colSpecs: {
       ccode: {desc: '编码', width: 1, isFilterable: true},
@@ -141,8 +146,7 @@ const dirs = [
     type: 'DATA',
     sheetName: 'CASHFLOW_WORKSHEET',
     isCascaded: true,
-    isBatchCreateSupported: true,
-    saveFromHeader: true,
+    tools: ['ImportExcel', 'SaveRemote'],
     referredSheetNames: ['BALANCE', 'CATEGORY_NAME_ALIASES'],
     colSpecs: {
       ref: {desc: '条目', width: 10, isFilterable: true, cellType:'Ref'},

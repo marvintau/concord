@@ -7,14 +7,14 @@ import "./labels.css";
 
 export default ({colName, path, children}) => {
 
-  const {setCol} = useContext(GrandExchangeContext);
+  const {setField} = useContext(GrandExchangeContext);
 
   const [editing, setEditing] = useState(false);
   const [tags, setTags] = useState(children);
 
   const set = (newTags) => {
     setTags(newTags);
-    setCol(path, colName, newTags);
+    setField(path, colName, newTags);
   }
 
   return <div className='labels-wrapper'>

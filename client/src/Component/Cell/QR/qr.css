@@ -1,13 +1,20 @@
 .qr {
   opacity: 0.1;
+  height: 1.5rem;
   display: flex;
   justify-content: center;
   text-align: center;
   cursor: pointer;
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 1.5rem;
+  background-image: url('./scan.svg');
 }
 
 .qr-image {
-  height: 64px;
+  margin: -1px;
+  height: 120px;
 }
 
 .qr:hover {

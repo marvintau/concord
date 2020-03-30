@@ -36,6 +36,8 @@ export default (sheetName, colSpecs) => {
       const formData = new FormData(formElem.current)
       const rec = Object.fromEntries(formData.entries());
   
+      console.log('creating record to', sheetName);
+
       push(sheetName, {type: 'ADD_REC', rec: {...rec, table: sheetName}});
       pull([sheetName], currPage, true);
       setCreating(false);

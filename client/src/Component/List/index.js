@@ -4,6 +4,7 @@ import {Spinner} from 'reactstrap';
 import TreeList from './TreeList';
 import FlatList from './FlatList';
 import UploadManager from './UploadManager';
+import GenerateTemplate from './GenerateTemplate';
 import useCreateManager from './useCreateManager';
 import Header from './Header';
 import {GrandExchangeContext} from '../GrandExchange';
@@ -52,7 +53,7 @@ export default ({sheet, status, name, desc, colSpecs}) => {
   const {currPage, currArgs} = useContext(DepRouterContext);
   const {toggleCreate, isCreating, createManager} = useCreateManager(name, colSpecs);
 
-  const {isCascaded, isBatchCreateSupported, createFromHeader, saveFromHeader} = currPage;
+  const {isCascaded, tools} = currPage;
 
   const [folded, setFold] = useState(true);
   
@@ -73,18 +74,42 @@ export default ({sheet, status, name, desc, colSpecs}) => {
     }
   }
 
+  let toolElems = [];
+  for (let tool of tools){
+    if (tool === 'ImportExcel'){
+      let props = {name, refresh:addSheets, setStatus, context:{...currArgs, ...currPage}};
+      toolElems.push(<UploadManager key={tool}
+        title={`上传${desc}Excel文件`}
+      {...props} />);
+    }
+    if (tool === 'HeaderCreate'){
+      toolElems.push(<button key={tool}
+        className='button'
+        onClick={() => toggleCreate()}
+      >{`${isCreating ? '取消' : ''}创建${desc}条目`}
+      </button>)
+    }
+    if (tool === 'SaveRemote'){
+      toolElems.push(<button
+        className='button warning'
+        onClick={() => save()}
+      >保存至服务器</button>)
+    }
+    if (tool === 'GenerateTemplate') {
+      toolElems.push(<GenerateTemplate key={tool} {...currArgs} />)
+    }
+  }
+
   const save = () => {
-    console.log(currArgs, 'save');
     push(name, {type:'DATA', data: sheet.data, ...currArgs});
   }
+
 
 
   return <div style={{display:'flex', flexDirection:"column", height:'100%', width:'100%'}}>
     <div className="upload-file-bar">
       {isCascaded && <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>}
-      {isBatchCreateSupported &&<UploadManager title={`上传${desc}Excel文件`} {...{name, refresh:addSheets, setStatus, context:{...currArgs, ...currPage}}} />}
-      {createFromHeader && <button className='button' onClick={() => toggleCreate()}>{`${isCreating ? '取消' : ''}创建${desc}条目`}</button>}
-      {saveFromHeader && <button className='button warning' onClick={() => save()}>保存至服务器</button>}
+      {toolElems}
       {/* <ExportManager name={name} cols={cols}/> */}
     </div>
     <div>

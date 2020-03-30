@@ -1,6 +1,4 @@
 import React, {useContext, useState} from 'react';
-
-import ScanIcon from './scan.svg';
 import './qr.css';
 
 export default ({data, children, disabled}) => {
@@ -13,12 +11,9 @@ export default ({data, children, disabled}) => {
 
   const qrImage = <img className="qr-image" src={children} />;
 
-  return <div className="link">
-    {(disabled || (children===undefined)) ? <></> : <div>
-      {isShowing 
-        ? <div onClick={() => toggle()}>{qrImage}</div> 
-        : <img  className="qr" style={{height:'1.5rem'}} src={ScanIcon} onClick={() => toggle()} />}
-    </div>}
+  return (disabled || (children===undefined)) ? <></> : <div>
+    {isShowing 
+      ? <div onClick={() => toggle()}>{qrImage}</div> 
+      : <div className="qr" onClick={() => toggle()} />}
   </div>
-  
 }

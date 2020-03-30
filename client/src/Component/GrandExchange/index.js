@@ -2,9 +2,6 @@ import React, {useState, createContext} from 'react';
 import Agnt from 'superagent';
 import {evalTable} from './evals';
 
-import PullPostProcs from './post-pull';
-console.log(PullPostProcs, 'postproc');
-
 const outer = (listOfLists) => {
 
   if (listOfLists.some(elem => !Array.isArray(elem))){
@@ -238,6 +235,7 @@ export const GrandExchange = ({children}) => {
   
         try{
           const {body:{data, pathColumn, error}} = await Agnt.post(`/pull/${sheetName}`).send(currPage);
+          console.log(data, 'pull')
           if (error) {
             setStatus(error);
             return;
