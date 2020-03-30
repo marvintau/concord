@@ -19,9 +19,11 @@
     "@marvintau/arith-expr": "0.0.4",
     "@pathofdev/react-tag-input": "^1.0.7",
     "@zxing/library": "^0.16.0",
+    "archiver-promise": "^1.0.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "del": "^5.1.0",
+    "docx-templates": "^3.1.1",
     "easyqrcodejs-nodejs": "^3.5.1",
     "file-saver": "^2.0.2",
     "http-errors": "~1.6.3",
@@ -60,7 +62,9 @@
     ]
   },
   "nodemonConfig": {
-    "watch": ["server"],
+    "watch": [
+      "server"
+    ],
     "delay": "2500"
   }
 }

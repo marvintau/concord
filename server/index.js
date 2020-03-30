@@ -1,3 +1,5 @@
+const fs = require('fs').promises;
+
 const Path = require('path');
 const Koa = require('koa');
 const BodyParser = require('koa-bodyparser');
@@ -7,6 +9,7 @@ const Router = require('@koa/router');
 const Multer = require('@koa/multer');
 
 const exportExcel = require('./xlsx-export');
+const generateDocs = require('./generate-docs');
 
 const uploadProc = require('./upload-proc');
 const retrieveProc = require('./retrieve-proc');
@@ -95,6 +98,18 @@ router.post('/export', ctx => {
   const exported = exportExcel(prunedData);
   // console.log(exported);
   ctx.body = exported;
+})
+
+router.post('/generate-letters', async ctx => {
+  const {project_id, project_name} = ctx.request.body;
+  console.log('generaate reached here');
+  try{
+    await generateDocs(project_id, project_name);
+    const buffer = await fs.readFile(`generated/${project_id}/${project_name}.zip`);
+    ctx.body = buffer;
+  } catch (error) {
+    ctx.body = {error: 'SERVER'};
+  }
 })
 
 router.post('/upload/:data_name', upload.single('file'), async ctx => {
