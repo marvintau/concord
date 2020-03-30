@@ -41,7 +41,6 @@ const prepVars = (rec, vars, alias) => {
 const evalDest = (currRec, fieldName, dest, vars, aliases, getDestRec) => {
   
   if (dest.includes(':')){
-    console.log(dest);
     const splitted = dest.split(':');
     if (splitted.length < 3){
       Object.assign(currRec[fieldName], {result: 0, code: 'WARN_ILLIGAL_REF_FORMAT'});

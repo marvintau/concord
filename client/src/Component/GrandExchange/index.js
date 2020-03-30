@@ -2,6 +2,9 @@ import React, {useState, createContext} from 'react';
 import Agnt from 'superagent';
 import {evalTable} from './evals';
 
+import PullPostProcs from './post-pull';
+console.log(PullPostProcs, 'postproc');
+
 const outer = (listOfLists) => {
 
   if (listOfLists.some(elem => !Array.isArray(elem))){
@@ -92,7 +95,6 @@ export const GrandExchange = ({children}) => {
 
   // Find specific record on a recursive data sheet.
   const getSingleRec = (sheetName, path) => {
-    console.log(sheetName, 'get single');
     let {data:list, pathColumn} = Sheets[sheetName], rec;
     for (let i = 0; i < path.length; i++){
 
@@ -154,6 +156,20 @@ export const GrandExchange = ({children}) => {
   }
 
   const evalSheet = (sheetName) => {
+
+    const categoryAliases = {};
+    if (Sheets.CATEGORY_NAME_ALIASES) {
+      const {data: aliasData} = Sheets.CATEGORY_NAME_ALIASES;
+      
+      for (let {alias} of aliasData){
+        for (let name of alias){
+          categoryAliases[name] = alias;
+        }
+      }
+      
+      Sheets.__PATH_ALIASES = categoryAliases;
+    }
+
     evalTable(Sheets[sheetName].data, Sheets.__VARS, Sheets.__COL_ALIASES, getRec);
     refreshSheet(sheetName);
   }
@@ -228,6 +244,7 @@ export const GrandExchange = ({children}) => {
           }
 
           pulledSheets[sheetName] = {data, pathColumn};
+
         } catch(e){
           console.error(e);
           setStatus('DEAD_LOAD');

@@ -143,7 +143,7 @@ const dirs = [
     isCascaded: true,
     isBatchCreateSupported: true,
     saveFromHeader: true,
-    referredSheetNames: ['BALANCE'],
+    referredSheetNames: ['BALANCE', 'CATEGORY_NAME_ALIASES'],
     colSpecs: {
       ref: {desc: '条目', width: 10, isFilterable: true, cellType:'Ref'},
       edit: {desc: '编辑', width: 2, isFilterable: false, cellType:'Edit', attr:{isSync:false, insertEnabled:true, removeEnabled: true}},
