@@ -31,5 +31,5 @@ export default ({project_id, companyName}) => {
   };
 
   console.log(project_id, companyName, 'generate');
-  return <button className='button' onClick={send} disabled={stage==='GENERATING'}>{stage==='GENERATING' ? '生成中...' : "生成"}</button>
+  return <button className='button' onClick={send} disabled={stage==='GENERATING'}>{stage==='GENERATING' ? '生成中...' : "生成函证文档"}</button>
 }

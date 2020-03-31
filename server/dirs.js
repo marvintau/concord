@@ -94,7 +94,8 @@ const dirs = [
     qrLink:true,
     colSpecs: {
       ID: {desc: '编号', width: 2, isFilterable: true},
-      contact: {desc:'通信地址', width: 4, isFilerable: true, cellType: 'Address'},
+      type: {desc:'类型', width: 1, isFilerable: true},
+      contact: {desc:'通信地址', width: 3, isFilerable: true, cellType: 'Address'},
       confStatus: {desc:'函证状态', width: 4, isFilterable: true, cellType: 'ConfStatus'},
       qr: {desc:'QR', width: 2, cellType:'QR'},
     },

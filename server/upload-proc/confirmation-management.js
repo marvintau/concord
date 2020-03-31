@@ -14,10 +14,11 @@ const CONFIRMATION_MANAGEMENT = async (fileBuffer, context) => {
 
   let data = [];
   for (let [index, rec] of origData.entries()){
-    const {ID, CompanyName, CompanyAddress, CompanyContactName, CompanyContactPhone} = rec;
+    const {ID, Subject, CompanyName, CompanyAddress, CompanyContactName, CompanyContactPhone} = rec;
     let newRec = {
       project_id,
       ID,
+      type: Subject,
       contact: {
         company: CompanyName,
         address: CompanyAddress,
