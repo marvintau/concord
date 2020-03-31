@@ -29,8 +29,7 @@
 }
 
 .qr-block {
-  margin-top: 40px;
-  margin-left: 20px;
+  text-align: center;
 }
 
 @media screen and (min-width: 960px) and (max-width: 1440px) {

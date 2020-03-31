@@ -44,14 +44,20 @@ const BrowserPage = ({}) => {
     return <div className="page-text">
       <div className="docu-header">未命名</div>
       <div className="content">此页无描述</div>
-      {qrLink && <div className="qr-block"><QRCode value={qrLinkContent(name, currArgs)} /></div>}
+      {qrLink && <div className="qr-block">
+        <h3>手机扫码处</h3>
+        <QRCode value={qrLinkContent(name, currArgs)} />
+      </div>}
     </div>
   }
 
   if (type === 'TEXT') {
     return <div className="page-text">
       {manualPage}
-      {qrLink && <div className="qr-block"><QRCode value={qrLinkContent(name, currArgs)} /></div>}
+      {qrLink && <div className="qr-block">
+        <h3>手机扫码处</h3>
+        <QRCode value={qrLinkContent(name, currArgs)} />
+      </div>}
     </div>
   }
 
@@ -62,7 +68,10 @@ const BrowserPage = ({}) => {
     return <div className="table-container">
       <List sheet={Sheets[sheetName]} {...{name: sheetName, desc, status, colSpecs}} />
       <div className="page-right-side">
-        {qrLink && <div className="qr-block"><QRCode value={qrLinkContent(name, currArgs)} /></div>}
+        {qrLink && <div className="qr-block">
+          <h3>手机扫码处</h3>
+          <QRCode value={qrLinkContent(name, currArgs)} />
+        </div>}
         {manualPage}
       </div>
     </div>
