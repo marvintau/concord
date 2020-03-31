@@ -37,7 +37,7 @@ const dirs = [
     desc: '科目别名',
     type: 'DATA',
     sheetName: 'CATEGORY_NAME_ALIASES',
-    tools: ['HeaderCreate'],
+    tools: ['HeaderCreate', 'ImportExcel'],
     colSpecs: {
       alias: {desc: '科目别名', width: 12, cellType:'Labels'},
     },
@@ -59,7 +59,7 @@ const dirs = [
     desc: '项目列表',
     type: 'DATA',
     sheetName: 'PROJECT',
-    tools: ['HeaderCreate', 'ImportExcel'],
+    tools: ['HeaderCreate'],
     colSpecs: {
       year: {desc: '年度', width: 1, isFilterable: true},
       companyName: {desc: '项目（企业）名称', width: 9, isFilterable: true},

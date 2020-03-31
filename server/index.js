@@ -50,7 +50,7 @@ router.post('/pull/:data_name', async ctx => {
       'NO_HANDLER' : 'DEAD_NOT_IMPL'
     }
 
-    ctx.body = {error: msgs[error.code]}
+    ctx.body = {error: msgs[error.code], data_name}
   }
 })
 

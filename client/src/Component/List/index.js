@@ -77,7 +77,7 @@ export default ({sheet, status, name, desc, colSpecs}) => {
   let toolElems = [];
   for (let tool of tools){
     if (tool === 'ImportExcel'){
-      let props = {name, refresh:addSheets, setStatus, context:{...currArgs, ...currPage}};
+      let props = {name, refresh:addSheets, setStatus, context:{...currPage, ...currArgs}};
       toolElems.push(<UploadManager key={tool}
         title={`上传${desc}Excel文件`}
       {...props} />);
