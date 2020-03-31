@@ -1,8 +1,10 @@
-const {createRecs} = require('../database');
+const {createRecs, remove} = require('../database');
 const {readSingleSheet} = require('./utils');
 
 const EQUIVALENT = async (buffer) => {
   
+  remove({table: 'CATEGORY_NAME_ALIASES'});
+
   let data = readSingleSheet(buffer, false);
 
   for(let recIndex = 0; recIndex < data.length; recIndex++){

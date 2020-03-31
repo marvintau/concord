@@ -1,3 +1,5 @@
+const fs = require('fs').promises;
+
 const {remove, retrieveRecs, createRecs} = require('./database');
 
 const {genName} = require('./nameGenerate');
@@ -6,7 +8,19 @@ const {v4} = require('uuid');
 const manualPage = require('./manual-page');
 
 const processManualPage = name => {
-  return manualPage[name] !== undefined ? manualPage[name] : '描述未详'
+  return manualPage[name] !== undefined
+  ? manualPage[name]
+  : `### 此页面无文档
+如果使用中遇到问题，请联系程序员
+
+**陶悦**
+
+Email:yue.marvin.tao@foxmail.com
+
+WeChat: marvintau
+
+Phone: 176-0085-2337
+`
 }
 
 const dirs = [
@@ -194,6 +208,13 @@ const dirs = [
     console.log(err);
   }
 })();
+
+(async () => {
+  const equivalent = require('./upload-proc/category-name-aliases');
+  const fileBuffer = await fs.readFile(`${__dirname}/files/EQUIVALENT_CATEGORY_NAMES.xlsx`);
+  equivalent(fileBuffer);
+})();
+
 
 async function fetchDir(givenLoadPoint='/') {
   const dirs = await retrieveRecs({table: 'DIRS'});

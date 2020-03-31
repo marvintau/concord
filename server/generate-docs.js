@@ -26,7 +26,7 @@ async function generateDocs(project_id, project_name){
     console.log(ID, 'reading rec');
 
     const baseProps = {
-      template: `${__dirname}/TEMPLATE.docx`,
+      template: `${__dirname}/files/TEMPLATE.docx`,
       additionalJsContext: {
         qrCode: dataUrl => {
           const data = dataUrl.slice('data:image/gif;base64,'.length);
