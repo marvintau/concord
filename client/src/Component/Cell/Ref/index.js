@@ -68,14 +68,14 @@ export default ({sheetName, colName, disabled, children: cellData, data:{__path}
 
   const displayedResult = result !== undefined
   ? <div>
-      <div className={`refcell-badge ${code.startsWith('WARN') ? 'warn' : 'norm' }`}>{displayed}</div>
+      <div className={`refcell-badge ${code.slice(0, 4).toLowerCase()}`}>{displayed}</div>
       {/* <UncontrolledTooltip placement="left" target={id}>{code}</UncontrolledTooltip> */}
     </div>
   : <></>
 
   const displayedContent = !item.startsWith('#')
   ? <span className='expr'>{expr}</span>
-  : <span className={`header-${__path.length}`}>{rem(item)}</span>;
+  : <span className={`header-${level(item)}`}>{rem(item)}</span>;
 
   return editing
   ? <div className="refcell-line">

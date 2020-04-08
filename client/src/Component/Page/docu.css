@@ -19,6 +19,11 @@ p {
 }
 
 li {
+  margin-bottom: 10px;
   font-weight: lighter;
   font-size: small;
+}
+
+ol {
+  padding-inline-start: 20px;
 }

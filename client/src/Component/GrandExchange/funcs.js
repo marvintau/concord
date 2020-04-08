@@ -6,8 +6,7 @@ function sumCode(children, fieldName='ref'){
 
 function sumResult(children, fieldName='ref'){
   const result = children
-    .filter(({[fieldName]:{code, result}}) => ['NORM', 'WARN'].includes(code) ? result : 0)
-    .reduce((acc, {[fieldName]:{result}}) => acc+result, 0);
+    .reduce((acc, {[fieldName]:{result}}) => acc + (!isNaN(result) ? result: 0), 0);
   
     return parseFloat(result.toFixed(2));
 }

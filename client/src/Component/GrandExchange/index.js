@@ -52,13 +52,11 @@ export const GrandExchange = ({children}) => {
     
     const {data, indexColumn} = Sheets[sheetName];
     add(data, newRec, {path:newPath, indexColumn, atIndex});
-    pathify(data);
   }
 
   const addChildRec = (sheetName, path, newRec) => {
     const {data, indexColumn} = Sheets[sheetName];
     add(data, newRec, {path, indexColumn});
-    pathify(data);
   }
 
   const remRec = (sheetName, path) => {
@@ -67,13 +65,12 @@ export const GrandExchange = ({children}) => {
 
     const {data, indexColumn} = Sheets[sheetName];
     del(data, {path: newPath, indexColumn, atIndex});
-    pathify(data);
   }
 
   const evalSheet = (sheetName) => {
 
     const categoryAliases = {};
-    if (Sheets.__PATH_ALIASES === undefined){
+    if (Sheets.__PATH_ALIASES === undefined || Object.keys(Sheets.__PATH_ALIASES).length === 0){
       if (Sheets.CATEGORY_NAME_ALIASES) {
         const {data: aliasData} = Sheets.CATEGORY_NAME_ALIASES;
         
@@ -83,9 +80,11 @@ export const GrandExchange = ({children}) => {
           }
         }
         
+        
         Sheets.__PATH_ALIASES = categoryAliases;
       }
     }
+    console.log(Sheets.__PATH_ALIASES, 'aliases');
 
     const evalRecord = (rec) => {
       for (let key of Object.keys(rec)){

@@ -58,6 +58,10 @@
   background-color: var(--yellow);
 }
 
+.info {
+  background-color: var(--info);
+}
+
 .succ {
   background-color: var(--green);
 }

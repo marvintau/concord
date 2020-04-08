@@ -46,10 +46,8 @@ export default ({sheetName, data, attr, disabled}) => {
 
   return disabled ? <></> : <div className="edit">
     {removeEnabled && <div className="remove edit-hover" onClick={() => rem()} />}
-    {insertEnabled && ((__children !== undefined)
-      ? <div className="insert-child edit-hover" onClick={() => addChild()} />
-      : <div className="insert-sibly edit-hover" onClick={() => addSibly()} />
-    )}
+    {insertEnabled && <div className="insert-sibly edit-hover" onClick={() => addSibly()} />}
+    {insertEnabled && <div className="insert-child edit-hover" onClick={() => addChild()} />}
     {navigateEnabled && <div className="link edit-hover" onClick={() => fore(data.link, data)} />}
   </div>
   
