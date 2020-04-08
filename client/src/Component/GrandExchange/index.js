@@ -1,56 +1,7 @@
 import React, {useState, createContext} from 'react';
 import Agnt from 'superagent';
-import {evalTable} from './evals';
-
-const outer = (listOfLists) => {
-
-  if (listOfLists.some(elem => !Array.isArray(elem))){
-    throw Error('outer必须得用在list of lists上')
-  }
-
-  if (listOfLists.length === 0){
-    return [];
-  }
-
-  let [first, ...rest] = listOfLists,
-    res = first.map(e => [e]);
-
-  for (let list of rest){
-    res = res.map(e => list.map(l => e.concat(l))).flat();
-  }
-
-  return res;
-}
-
-const dupRec = (rec, init=true) => {
-  let {__children, __path, ...newRec} = rec;
-  newRec = JSON.parse(JSON.stringify(newRec));
-  
-  if (init){
-    for (let key in newRec) switch (typeof key){
-      case 'number':
-        newRec[key] = 0; break;
-      case 'string':
-        newRec[key] = ""; break;
-      case 'undefined':
-        newRec[key] = ''; break;
-      default:
-        newRec[key] = {}; break;
-    }
-  }
-
-  return newRec;
-}
-
-const resetPath = (list, currPath=[]) => {
-  for (let [index, rec] of list.entries()){
-    const nextPath = [...currPath, index];
-    rec.__path = nextPath;
-    if(rec.__children !== undefined){
-      resetPath(rec.__children, nextPath);
-    }
-  }
-}
+import {add, del, set, trav, parse, pathify} from '@marvintau/chua';
+import func from './funcs';
 
 export const GrandExchangeContext = createContext({
   Sheets: {},
@@ -59,12 +10,10 @@ export const GrandExchangeContext = createContext({
   refreshSheet: () => {},
   evalSheet: () => {},
 
-  getChildren: () => {},
-
-  addRec: () => {},
-  addChild: () => {},
+  getSuggs: () => {},
+  addSiblyRec: () => {},
+  addChildRec: () => {},
   remRec: () => {},
-  getRec: () => {},
   setField: () => {},
 
   pull: () => {},
@@ -90,122 +39,76 @@ export const GrandExchange = ({children}) => {
     setSheets({...Sheets, [sheetName]: {...Sheets[sheetName]}});
   }
 
-  // Find specific record on a recursive data sheet.
-  const getSingleRec = (sheetName, path) => {
-    let {data:list, pathColumn} = Sheets[sheetName], rec;
-    for (let i = 0; i < path.length; i++){
-
-      rec = (path.every(e => typeof e === 'number')) 
-      ? list[path[i]]
-      : list.find(({[pathColumn]:col}) => col === path[i])
-
-      if ((rec === undefined) || (i === path.length - 1)) break;
-
-      list = rec.__children;
-    }
-    return {rec, list};
-  }
-
-  const getRec = (sheetName, path) => {
-
-    const {__PATH_ALIASES:aliases} = Sheets;
-
-    if (path === undefined || path.length === 0){
-      const {data} = Sheets[sheetName];
-      return {rec:undefined, list:data, path:undefined};
-    }
-
-    const candidatePaths = outer(path.map(seg => (seg in aliases) ? aliases[seg] : [seg] ));
-
-    for (let candiPath of candidatePaths){
-      const {rec, list} = getSingleRec(sheetName, candiPath);
-      if (rec !== undefined){
-        return {rec, list, path:candiPath}
-      }
-    }
-
-    return {rec: undefined, list:[], path: undefined}
-
-  }
-
-  const getChildren = (sheetName, path) => {
-    const {pathColumn, data} = Sheets[sheetName];
-    const {rec} = getRec(sheetName, path);
-    if (path.length === 0){
-      console.log('here')
-      return data.map(({[pathColumn]:pathCol}) => pathCol);
-    } else if (rec !== undefined){
-      return rec.__children.map(({[pathColumn]:pathCol}) => pathCol);
-    } else {
-      return [];
-    }
-  }
-
   const setField = (sheetName, path, fieldName, value) => {
-    const {rec} = getRec(sheetName, path);
-    if (rec !== undefined){
-      if (typeof rec[fieldName] === 'object'){
-        Object.assign(rec[fieldName], value)
-      } else {
-        rec[fieldName] = value;
-      }
-    }
+    const {data, indexColumn} = Sheets[sheetName];
+    const kvs = {[fieldName]: value};
+    set(data, kvs, {path, indexColumn});
+  }
+
+  const addSiblyRec = (sheetName, path, newRec) => {
+    
+    const newPath = path.slice();
+    const atIndex = newPath.pop();
+    
+    const {data, indexColumn} = Sheets[sheetName];
+    add(data, newRec, {path:newPath, indexColumn, atIndex});
+    pathify(data);
+  }
+
+  const addChildRec = (sheetName, path, newRec) => {
+    const {data, indexColumn} = Sheets[sheetName];
+    add(data, newRec, {path, indexColumn});
+    pathify(data);
+  }
+
+  const remRec = (sheetName, path) => {
+    const newPath = path.slice();
+    const atIndex = newPath.pop();
+
+    const {data, indexColumn} = Sheets[sheetName];
+    del(data, {path: newPath, indexColumn, atIndex});
+    pathify(data);
   }
 
   const evalSheet = (sheetName) => {
 
     const categoryAliases = {};
-    if (Sheets.CATEGORY_NAME_ALIASES) {
-      const {data: aliasData} = Sheets.CATEGORY_NAME_ALIASES;
-      
-      for (let {alias} of aliasData){
-        for (let name of alias){
-          categoryAliases[name] = alias;
+    if (Sheets.__PATH_ALIASES === undefined){
+      if (Sheets.CATEGORY_NAME_ALIASES) {
+        const {data: aliasData} = Sheets.CATEGORY_NAME_ALIASES;
+        
+        for (let {alias} of aliasData){
+          for (let name of alias){
+            categoryAliases[name] = alias;
+          }
         }
+        
+        Sheets.__PATH_ALIASES = categoryAliases;
       }
-      
-      Sheets.__PATH_ALIASES = categoryAliases;
     }
 
-    evalTable(Sheets[sheetName].data, Sheets.__VARS, Sheets.__COL_ALIASES, getRec);
+    const evalRecord = (rec) => {
+      for (let key of Object.keys(rec)){
+        const {expr} = rec[key];
+        if (typeof expr === 'string'){
+          try {
+            const {result, code} = parse(expr, {func, tables: Sheets, self: rec});
+            Object.assign(rec[key], {result, code});
+          } catch(err){
+            console.warn(expr);
+            console.error(err);
+          }
+        }      
+      }  
+    }
+
+    trav(Sheets[sheetName].data, evalRecord, 'POST');
     refreshSheet(sheetName);
   }
 
-  const addRec = (sheetName, path, newRec) => {
-
-    const {list, rec} = getRec(sheetName, path);
-
-    if (path.length === 0){
-      list.unshift(newRec);
-      resetPath(list, []);
-    } else {
-      const index = path.pop();
-      const insertRec = newRec === undefined ? dupRec(rec) : newRec;
-      list.splice(index, 0, insertRec);
-      resetPath(list, path);
-    }
-  }
-  
-  const remRec = (sheetName, path) => {
-
-    if (path === undefined || path.length === 0){
-      return;      
-    }
-
-    const {list} = getRec(sheetName, path);
-    const index = path.slice(-1)[0];
-    list.splice(index, 1);
-
-    resetPath(list);
-  }
-
-  const addChild = (sheetName, path) => {
-    const {rec} = getRec(sheetName, path);
-    if (rec.__children === undefined || rec.__children.length === 0){
-      let newRec = dupRec(rec);
-      newRec.__path = [...path, 0]
-      rec.__children = [newRec];
-    }
+  const getSuggs = (expr) => {
+    const {suggs=[]} = parse(expr, {func, tables: Sheets});
+    return suggs;
   }
 
   const fetchURL = async (url) => {
@@ -234,14 +137,14 @@ export const GrandExchange = ({children}) => {
       for (let sheetName of sheetNameList){
   
         try{
-          const {body:{data, pathColumn, error}} = await Agnt.post(`/pull/${sheetName}`).send(currPage);
+          const {body:{data, indexColumn, error}} = await Agnt.post(`/pull/${sheetName}`).send(currPage);
           console.log(data, 'pull')
           if (error) {
             setStatus(error);
             return;
           }
 
-          pulledSheets[sheetName] = {data, pathColumn};
+          pulledSheets[sheetName] = {data, indexColumn};
 
         } catch(e){
           console.error(e);
@@ -279,8 +182,8 @@ export const GrandExchange = ({children}) => {
   }
 
   return <GrandExchangeContext.Provider value={{
-      Sheets, status, addSheets, refreshSheet, evalSheet, getChildren,
-      getRec, setField, addRec, addChild, remRec,
+      Sheets, status, addSheets, refreshSheet, evalSheet,
+      setField, addSiblyRec, addChildRec, remRec, getSuggs,
       pull, push, fetchURL,
     }}>
     {children}

@@ -49,7 +49,7 @@ async function balance(fileBuffer, context){
   console.log(data.length, 'processed');
   // await fs.writeFile(path.resolve(`./file_store/PROJECT/${pid}/BALANCE`), JSON.stringify(data));
 
-  const entry = {data, pathColumn:'ccode_name'};
+  const entry = {data, indexColumn:'ccode_name'};
   await setTable({project_id}, 'BALANCE', entry)
 
   return entry;

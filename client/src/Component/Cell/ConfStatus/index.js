@@ -7,7 +7,7 @@ import './conf-status.css';
 
 export default ({sheetName, colName, data:{__path:path, __children, ...restRec}, children={}, isMobile=false}) => {
 
-  const {setField, push, pull} = useContext(GrandExchangeContext);
+  const {push, pull} = useContext(GrandExchangeContext);
 
   const {status: initStatus='BEFORE_SEND'} = children;
 

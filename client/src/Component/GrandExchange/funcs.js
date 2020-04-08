@@ -1,6 +1,7 @@
 
 function sumCode(children, fieldName='ref'){
-  return children.some(({[fieldName]:{code}}) => code !== 'NORM') ? 'WARN' : 'NORM';
+  const result = children.some(({[fieldName]:{code}}) => code !== 'NORM') ? 'WARN' : 'NORM';
+  return result;
 }
 
 function sumResult(children, fieldName='ref'){
@@ -19,14 +20,13 @@ export default {
   SUMSUB(rec, fieldName='ref'){
     const {__children} = rec;
 
-    if(__children === undefined){
+    if(__children !== undefined){
+      const code = sumCode(__children, fieldName);
+      const result = sumResult(__children, fieldName);
+      return { code, result }
+    } else {
       return {code: 'NORM', result: 0};
     }
-
-    return {
-      code: sumCode(__children, fieldName),
-      result: sumResult(__children, fieldName)
-    };
   },
   SUB1(rec, fieldName='ref'){
     if (rec.__children && rec.__children.length > 0){

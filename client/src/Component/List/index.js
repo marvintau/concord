@@ -90,7 +90,7 @@ export default ({sheet, status, name, desc, colSpecs}) => {
       </button>)
     }
     if (tool === 'SaveRemote'){
-      toolElems.push(<button
+      toolElems.push(<button key="saveRemote"
         className='button warning'
         onClick={() => save()}
       >保存至服务器</button>)

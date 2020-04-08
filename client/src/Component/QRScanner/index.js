@@ -1,4 +1,4 @@
-import React, {useState, useEffect, createRef, useRef} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {Button} from 'reactstrap';
 
 import { BrowserMultiFormatReader } from '@zxing/library';

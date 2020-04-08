@@ -1,11 +1,9 @@
 import React, {useState} from 'react';
-import {Input, Button, Col} from 'reactstrap';
+import {Input, Col} from 'reactstrap';
 
 import './filter.css'
 
 const HIST_LINE_HEIGHT = 30;
-
-const ident = e => e;
 
 const FilterContainer = ({children, topLength}) => {
   

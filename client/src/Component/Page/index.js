@@ -23,7 +23,7 @@ const qrLinkContent = (name, dict) => {
   return encoded;
 }
 
-const BrowserPage = ({}) => {
+const BrowserPage = () => {
   const {currPage, currArgs} = useContext(DepRouterContext);
   const {Sheets, status} = useContext(GrandExchangeContext);
 
@@ -85,7 +85,7 @@ const MobilePage = () => {
 
   const {fetchURL} = useContext(GrandExchangeContext);
   const {currPage} = useContext(DepRouterContext);
-  const {sheetName, name, desc, colSpecs} = currPage;
+  const {sheetName, desc, colSpecs} = currPage;
 
   const [stage, setStage] = useState('RETRIEVING_DOC');
   const [doc, setDoc] = useState({});

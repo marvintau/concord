@@ -18,7 +18,7 @@ export const DepRouterContext = createContext({
 })
 
 const SideNavigationBar = ({directories, isHidden, children}) => {
-  const {currPath, currSubs, fore, back, jump} = useContext(DepRouterContext);
+  const {currPath, currSubs, fore, back} = useContext(DepRouterContext);
 
   const style = {
     height:'100%',

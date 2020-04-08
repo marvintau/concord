@@ -3,7 +3,7 @@ import React, {useState, useContext} from 'react';
 import Autosuggest from 'react-autosuggest';
 import {GrandExchangeContext} from '../../GrandExchange';
 
-import {Input} from 'reactstrap';
+import {Input, UncontrolledTooltip} from 'reactstrap';
 
 import Check from './check.svg';
 
@@ -18,8 +18,8 @@ const rem = (header) => {
   return header.replace(/#/g, '');
 }
 
-const getSuggValue = (inputPath, sugg) => {
-  return inputPath.replace(/(?<=[$:/])([^$:/]*)$/, sugg);
+const getSuggValue = (input, sugg) => {
+  return input.replace(/(?<=[$:/])([^$:/]*)$/, sugg);
 }
 
 export default ({sheetName, colName, disabled, children: cellData, data:{__path}}) => {
@@ -31,39 +31,14 @@ export default ({sheetName, colName, disabled, children: cellData, data:{__path}
   const [value, setValue] = useState(expr);
   const [suggestions, setSugg] = useState([]);
 
-  const {getChildren, setField, evalSheet} = useContext(GrandExchangeContext);
-
-  // This handles auto-completing path
-  const getPathSugg = (input) => {
-    let [sheetName, path] = input.split(':');
-    const splitted = path ? path.split('/') : [];
-    
-    console.log(sheetName, splitted, 'path sugg');
-    
-    return getChildren(sheetName, splitted);
-  }
-
-  const getSugg = (input) => {
-    // if the input matches the non-slash-non-semicolon substring in the end,
-    // this is an incomplete path, so we remove the last incomplete segment
-    // of path, and get the possible candidates.
-    if (input.match(/[:/][^$/]*$/)) {
-      const lastSeg = input.split(/[:/]/).slice(-1)[0];
-      const mostPart = input.replace(/[:/][^$/]*$/, '');
-      const cands = getPathSugg(mostPart);
-      const filtered = cands.filter(cand => cand.includes(lastSeg));
-      return (filtered.length === 0) ? cands : filtered;
-    }
-    return [];
-  }
-
+  const {getSuggs, setField, evalSheet} = useContext(GrandExchangeContext);
 
   // the method below will be directly used by Autosuggest
   // check: https://github.com/moroshko/react-autosuggest
   const funcs = {
     getSuggestionValue : (sugg) => getSuggValue(value, sugg),
     renderSuggestion : (sugg) => <div>{sugg.toString()}</div>,
-    onSuggestionsFetchRequested : ({ value }) => setSugg(getSugg(value)),
+    onSuggestionsFetchRequested : ({ value }) => setSugg(getSuggs(value)),
     onSuggestionsClearRequested : () => setSugg([]),
     onSuggestionSelected : (e, {suggestionValue}) => {
       console.log(suggestionValue, 'select');
@@ -89,17 +64,18 @@ export default ({sheetName, colName, disabled, children: cellData, data:{__path}
   ? parseFloat(result.toFixed(2)).toLocaleString('en-us', {minimumFractionDigits: 2})
   : result
 
-  const id = `ID${Math.random().toString(36).substring(2)}`
+  // const id = `ID${Math.random().toString(36).substring(2)}`
 
   const displayedResult = result !== undefined
-  ? <div className={`refcell-badge ${code.startsWith('WARN') ? 'warn' : 'norm' }`}>
-      {displayed}
+  ? <div>
+      <div className={`refcell-badge ${code.startsWith('WARN') ? 'warn' : 'norm' }`}>{displayed}</div>
+      {/* <UncontrolledTooltip placement="left" target={id}>{code}</UncontrolledTooltip> */}
     </div>
   : <></>
 
   const displayedContent = !item.startsWith('#')
   ? <span className='expr'>{expr}</span>
-  : <span className={`header-${level(item)}`}>{rem(item)}</span>;
+  : <span className={`header-${__path.length}`}>{rem(item)}</span>;
 
   return editing
   ? <div className="refcell-line">
@@ -114,12 +90,12 @@ export default ({sheetName, colName, disabled, children: cellData, data:{__path}
       {displayedResult}
     </div>
 
-  // return <div className={`refcell-line ${editing ? "refcell-line-editing" : ''}`}>
-  //   <div className="react-autosuggest__input refcell-text"
-  //     onClick={() => {(!disabled) && setEditing(true)}}
-  //   >{displayedContent}</div>
-  //   {displayedResult}
-  // </div>
+  // // return <div className={`refcell-line ${editing ? "refcell-line-editing" : ''}`}>
+  // //   <div className="react-autosuggest__input refcell-text"
+  // //     onClick={() => {(!disabled) && setEditing(true)}}
+  // //   >{displayedContent}</div>
+  // //   {displayedResult}
+  // // </div>
 
-  return <></>
+  // return <></>
 }

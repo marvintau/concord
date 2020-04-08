@@ -7,24 +7,30 @@ import './edit.css';
 
 export default ({sheetName, data, attr, disabled}) => {
 
-  const {push, pull, addRec, remRec, addChild, evalSheet} = useContext(GrandExchangeContext);
+  const {push, pull, addChildRec, remRec, addSiblyRec, evalSheet} = useContext(GrandExchangeContext);
   const {fore} = useContext(DepRouterContext);
   
   const {__path:path, __children, ...rec} = data;
 
   const {isSync=false, removeEnabled, insertEnabled, navigateEnabled} = attr;
 
-  const add = () => {
+  const addSibly = () => {
     if (isSync === false){
-      if (__children !== undefined){
-        addRec(sheetName, path);
-      } else {
-        addChild(sheetName, path);
-      }
+      addSiblyRec(sheetName, path);
       evalSheet(sheetName);
     } else {
       push(sheetName, {type: 'ADD_REC', rec})
       pull([sheetName], {}, true);  
+    }
+  }
+
+  const addChild = () => {
+    if (isSync === false){
+      addChildRec(sheetName, path);
+      evalSheet(sheetName);
+    } else {
+      // addChild is not supported by sync operation. Sync operation is used for
+      // adding single document (record), rather than deep (structured) document.
     }
   }
 
@@ -40,7 +46,10 @@ export default ({sheetName, data, attr, disabled}) => {
 
   return disabled ? <></> : <div className="edit">
     {removeEnabled && <div className="remove edit-hover" onClick={() => rem()} />}
-    {insertEnabled && <div className="insert edit-hover" onClick={() => add()} />}
+    {insertEnabled && ((__children !== undefined)
+      ? <div className="insert-child edit-hover" onClick={() => addChild()} />
+      : <div className="insert-sibly edit-hover" onClick={() => addSibly()} />
+    )}
     {navigateEnabled && <div className="link edit-hover" onClick={() => fore(data.link, data)} />}
   </div>
   

@@ -1,11 +1,9 @@
-import React, {useContext, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import Agnt from 'superagent';
-
-import { GrandExchangeContext } from '../../GrandExchange';
 
 import './file-input.css';
 
-export default ({sheetName, colName, data, attr, disabled}) => {
+export default ({sheetName, colName, data}) => {
 
   const {__children, __path, ...rec} = data;
   const [stage, setStage] = useState('READY');
@@ -39,9 +37,12 @@ export default ({sheetName, colName, data, attr, disabled}) => {
     .send(form)
     .then((res) => {
       setStage('READY');
-      const {ok, error, data} = (res.body);
+      const {ok, error} = (res.body);
       if(ok){
         console.log('ok!')
+      }
+      if(error){
+        console.error(error);
       }
     });
   }

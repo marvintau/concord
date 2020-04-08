@@ -1,7 +1,7 @@
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import './qr.css';
 
-export default ({data, children, disabled}) => {
+export default ({children, disabled}) => {
 
   const [isShowing, setShowing] = useState(false);
 
@@ -9,7 +9,7 @@ export default ({data, children, disabled}) => {
     setShowing(!isShowing);
   }
 
-  const qrImage = <img className="qr-image" src={children} />;
+  const qrImage = <img alt="qr-entrance" className="qr-image" src={children} />;
 
   return (disabled || (children===undefined)) ? <></> : <div>
     {isShowing 
