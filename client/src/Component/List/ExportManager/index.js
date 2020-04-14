@@ -1,8 +1,8 @@
 import React, {useState, useEffect, useContext} from 'react';
 import saveAs from 'file-saver';
 import Agnt from 'superagent';
-
-import {DataFetchContext} from '../DataFetch';
+import {flat} from '@marvintau/chua';
+import{GrandExchangeContext} from '../../GrandExchange';
 
 function s2ab(s) { 
   var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
@@ -11,22 +11,26 @@ function s2ab(s) {
   return buf;    
 }
 
-export default ({name, cols}) => {
+export default ({name, colSpecs}) => {
 
   const [status, setStatus] = useState('DONE');
-  const {data} = useContext(DataFetchContext);
+  const {Sheets} = useContext(GrandExchangeContext);
 
   useEffect(() => {
     if(status === 'PULL'){
       (async() => {
         try {
-          const res = await Agnt.post('/export').send({cols, data});
+          let {data} = Sheets[name];
+          console.log(data)
+          data = flat(data);
+
+          const res = await Agnt.post('/export').send({colSpecs, data});
           const buffer = s2ab(res.text);
           console.log(res);
           saveAs(new Blob([buffer],{type:"application/octet-stream"}), `导出-${name}.xlsx`);
           setStatus('DONE');
         } catch (err) {
-          console.log(err);
+          console.error(err);
           setStatus('DEAD');
         }
       })();
@@ -37,5 +41,5 @@ export default ({name, cols}) => {
     setStatus('PULL');
   }
 
-  return <button className="button" onClick={() => getExport()}>导出至Excel文件</button>
+  return <button className="button" onClick={() => getExport()}>导出至Excel工作表</button>
 }

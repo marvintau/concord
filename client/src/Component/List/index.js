@@ -6,6 +6,7 @@ import FlatList from './FlatList';
 import UploadManager from './UploadManager';
 import GenerateTemplate from './GenerateTemplate';
 import useCreateManager from './useCreateManager';
+import ExportManager from './ExportManager';
 import Header from './Header';
 import {GrandExchangeContext} from '../GrandExchange';
 import { DepRouterContext } from '../DepRouter';
@@ -111,6 +112,9 @@ export default ({sheet, status, name, desc, colSpecs}) => {
         onClick={() => save()}
       >保存至服务器</button>)
     }
+    if (tool === 'ExportExcel'){
+      toolElems.push(<ExportManager {...{name, colSpecs}}/>);
+    }
     if (tool === 'GenerateTemplate') {
       toolElems.push(<GenerateTemplate key={tool} {...currArgs} />)
     }
@@ -124,7 +128,7 @@ export default ({sheet, status, name, desc, colSpecs}) => {
     <div className="upload-file-bar">
       {isCascaded && <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>}
       {toolElems}
-      {/* <ExportManager name={name} cols={cols}/> */}
+
     </div>
     <div>
       {createManager}
