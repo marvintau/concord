@@ -161,10 +161,11 @@ const dirs = [
     type: 'DATA',
     sheetName: 'CASHFLOW_WORKSHEET',
     isCascaded: true,
-    tools: ['ImportExcel', 'SaveRemote'],
+    tools: ['ImportExcel', 'SaveRemote', 'ExportExcel'],
     referredSheetNames: ['BALANCE', 'CATEGORY_NAME_ALIASES'],
     colSpecs: {
-      ref: {desc: '条目', width: 10, isFilterable: true, cellType:'Ref'},
+      desc: {desc: '题目', width: 5, isFilerable: true},
+      ref:  {desc: '条目', width: 5, isFilterable: true, cellType:'Ref'},
       edit: {desc: '编辑', width: 2, isFilterable: false, cellType:'Edit', attr:{isSync:false, insertEnabled:true, removeEnabled: true}},
     }      
   }

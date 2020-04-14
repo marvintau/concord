@@ -1,4 +1,4 @@
-const parse = (sheetName, [first, ...restTable], {delim="#", col='ref', children='__children', path='__path'}={}) => {
+const parse = ([first, ...restTable], {delim="#", col='ref', children='__children', path='__path'}={}) => {
 
   const cascadedTable = [];
   const stack = [{[col]:first, [children]:[], [path]:[0]}];
@@ -23,13 +23,13 @@ const parse = (sheetName, [first, ...restTable], {delim="#", col='ref', children
 
   const pop = (recLevel) => {
     let popped;
-    while (stack.length > 0 && count(top()[col].item) >= recLevel) {
+    while (stack.length > 0 && count(top()[col]) >= recLevel) {
       popped = stack.pop()
     };
     return popped;
   }
 
-  if (count(top()[col].item) !== 1){
+  if (count(top()[col]) !== 1){
     throw Error('parseTable: 表的第一行记录必须得是一级标题');
   }
 
@@ -37,16 +37,7 @@ const parse = (sheetName, [first, ...restTable], {delim="#", col='ref', children
 
     const wrapRec = {[col]: rec};
 
-    if (rec.expr.split(':').length === 2){
-
-      if (rec.expr.startsWith('/')){
-        rec.expr = rec.expr.slice(1);
-      }
-
-      rec.expr = `${sheetName}:${rec.expr}`
-    }
-
-    const currLevel = count(wrapRec[col].item);
+    const currLevel = count(wrapRec[col]);
     if (currLevel === 0){
       add(wrapRec);
     } else {

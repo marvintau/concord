@@ -84,19 +84,8 @@ router.post('/push/:data_name', async ctx => {
 })
 
 router.post('/export', ctx => {
-  const {cols, data} = ctx.request.body;
-
-  const keys = Object.keys(cols);
-  let prunedData = data.map(rec => {
-    let newRec = {};
-    for (let k of keys){
-      newRec[cols[k]] = rec[k];
-    }
-    return newRec;
-  })
-
-  const exported = exportExcel(prunedData);
-  // console.log(exported);
+  const {colSpecs, data} = ctx.request.body;
+  const exported = exportExcel(colSpecs, data);
   ctx.body = exported;
 })
 
