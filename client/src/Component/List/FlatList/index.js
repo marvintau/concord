@@ -1,5 +1,5 @@
-import React, { createContext, useState, forwardRef} from "react";
-import {DynamicSizeList as List} from 'react-window'
+import React, { memo, createContext, useState, forwardRef} from "react";
+import {DynamicSizeList as List, areEqual} from 'react-window'
 import AutoSizer from "react-virtualized-auto-sizer";
 import {Col} from 'reactstrap';
 
@@ -78,6 +78,7 @@ const FlatList = function({data, children, filterRowRenderer, ...rest}){
       itemData={{ ItemRenderer: children, entries}}
       itemCount={entries.length}
       innerElementType={StickTopContainer(filterRowRenderer, filter)}
+      overscanCount={20}
       {...rest}
     >
       {ItemWrapper}
@@ -118,35 +119,32 @@ export const Column = ({children}) => {
 
 const Row = (colSpecs, sheetName) => {
 
-  return forwardRef(({ data, style, select}, ref) => {
+  return memo(forwardRef(({ data, style, select}, ref) => {
   
     const cols = [];
     for (let key in colSpecs){
       const {width, cellType:type='Text', noBackground, attr} = colSpecs[key];
       const ColRenderer = Cell[type];
-      cols.push(<Col className={noBackground ? 'clear-back' : ''} md={width} key={key}>
+      cols.push(<div className={noBackground ? 'clear-back' : ''} key={key} style={{width, height:'100%', flexShrink: 0}}>
         <ColRenderer data={data} sheetName={sheetName} colName={key} attr={attr}>{data[key]}</ColRenderer>
-      </Col>)
+      </div>)
     }
     
     return <div ref={ref} className='flatlist-row hovered' style={style} onClick={select}>
       {cols}
     </div>
-  });
+  }), areEqual);
 }
 
 export default ({colSpecs, sheetName, data, sort, filter}) =>
-  <div style={{flex:1, width:'100%'}}>
-    <AutoSizer>
-      {({height, width}) => {
-        return <FlatList
-          height={height}
-          width={width}
-          data={data}
-          filterRowRenderer={FilterRow(colSpecs, filter, sort)}
-        >
-          {Row(colSpecs, sheetName)}
-        </FlatList>
-      }}
-    </AutoSizer>
-  </div>
+  <AutoSizer disableWidth={true}>
+    {({height}) => {
+      return <FlatList
+        height={height}
+        data={data}
+        filterRowRenderer={FilterRow(colSpecs, filter, sort)}
+      >
+        {Row(colSpecs, sheetName)}
+      </FlatList>
+    }}
+  </AutoSizer>

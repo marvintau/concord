@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^7.1.2",
     "bootstrap": "^4.4.1",
     "github-markdown-css": "^4.0.0",
+    "re-resizable": "^6.3.2",
     "react": "^16.12.0",
     "react-autosuggest": "^9.4.3",
     "react-circular-progressbar": "^2.0.3",
@@ -18,6 +19,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "latest",
     "react-sidebar": "^3.0.2",
+    "react-use-context-menu": "^0.1.4",
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.6.0-alpha.1",
     "reactstrap": "^8.4.1"
@@ -26,7 +28,9 @@
     "start": "react-scripts start",
     "build": "react-scripts --max_old_space_size=4096 build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "storybook": "start-storybook -p 9009 -s public",
+    "build-storybook": "build-storybook -s public"
   },
   "eslintConfig": {
     "extends": "react-app"

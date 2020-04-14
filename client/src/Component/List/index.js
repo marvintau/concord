@@ -54,9 +54,24 @@ export default ({sheet, status, name, desc, colSpecs}) => {
   const {toggleCreate, isCreating, createManager} = useCreateManager(name, colSpecs);
 
   const {isCascaded, tools} = currPage;
-
   const [folded, setFold] = useState(true);
   
+  // Due to the legacy code and convention (bootstrap grid), the width is represented
+  // in twelfths. However, as long as we are not going to give exact column width (in
+  // pixels), the conversion here is mandatory. Or the width "1" will be considered as 
+  // one twelfth pixel.
+  const newCols = Object.fromEntries(Object.entries(colSpecs).map(([k, v]) => {
+    const {width} = v;
+    return [k, {...v, width:`${(width/12*100)}%`}]
+  }))
+  const [cols, setCols] = useState(newCols);
+
+  const setColWidth = (key, width) => {
+    console.log(Object.values(cols).map(({width}) => width), 'widths');
+    const col = {...cols[key], width};
+    setCols({...cols, [key]: col})
+  }
+
   let content;
   if (status.startsWith('DEAD')){
     content = <ErrorIndicator {...{status}} />
@@ -66,11 +81,11 @@ export default ({sheet, status, name, desc, colSpecs}) => {
     const {data} = sheet;
 
     if (!isCascaded){
-      content = <FlatList {...{sheetName:name, data:flatten(data), status, colSpecs}} />;
+      content = <FlatList {...{sheetName:name, data:flatten(data), status, colSpecs:cols}} />;
     } else if (folded){
-      content = <TreeList {...{sheetName:name, data, status, colSpecs}} />;
+      content = <TreeList {...{sheetName:name, data, status, colSpecs:cols}} />;
     } else {
-      content = <FlatList {...{sheetName:name, data:flatten(data), status, colSpecs}} />;
+      content = <FlatList {...{sheetName:name, data:flatten(data), status, colSpecs:cols}} />;
     }
   }
 
@@ -104,9 +119,7 @@ export default ({sheet, status, name, desc, colSpecs}) => {
     push(name, {type:'DATA', data: sheet.data, ...currArgs});
   }
 
-
-
-  return <div style={{display:'flex', flexDirection:"column", height:'100%', width:'100%'}}>
+  return <div style={{display:'flex', flexDirection:"column", height:'100%', width:'100%', overflowX:'scroll'}}>
     <div className="upload-file-bar">
       {isCascaded && <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>}
       {toolElems}
@@ -115,7 +128,7 @@ export default ({sheet, status, name, desc, colSpecs}) => {
     <div>
       {createManager}
     </div>
-    <Header {...{colSpecs, hidden: !status.startsWith('DONE')}} />
+    <Header {...{setColWidth, colSpecs, hidden: !status.startsWith('DONE')}} />
     {content}
   </div>
 }

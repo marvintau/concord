@@ -74,25 +74,3 @@
   background-color: var(--yellow) !important;
   opacity: 1;
 }
-
-.header-1 {
-  font-weight: 900;
-  font-size: 130%;
-  letter-spacing: -0.01rem;
-  border-bottom: 1px solid black;
-}
-
-.header-2 {
-  font-weight: 700;
-  font-size: 110%;
-  margin-left: 5px;
-}
-
-.header-3{
-  font-weight: 700;
-  margin-left: 10px;
-}
-
-.expr{
-  margin-left: 20px;
-}

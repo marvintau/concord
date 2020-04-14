@@ -3,3 +3,21 @@
   font-weight: bold;
   letter-spacing: -0.02rem;
 }
+
+.text-header-1 {
+  font-weight: 900;
+  font-size: 130%;
+  letter-spacing: -0.01rem;
+  border-bottom: 1px solid black;
+}
+
+.text-header-2 {
+  font-weight: 700;
+  font-size: 110%;
+  margin-left: 5px;
+}
+
+.text-header-3{
+  font-weight: 700;
+  margin-left: 10px;
+}

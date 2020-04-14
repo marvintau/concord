@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, forwardRef, useEffect} from "react";
-import {DynamicSizeList as List} from 'react-window'
+import React, { memo, createContext, useContext, useState, forwardRef, useEffect} from "react";
+import {DynamicSizeList as List, areEqual} from 'react-window'
 import AutoSizer from "react-virtualized-auto-sizer";
 
 import FilterRow from '../FilterRow';
@@ -152,6 +152,7 @@ const TreeList = function({data, children, historyRowHeight, historyRowRenderer,
     <List
       itemData={{ ItemRenderer: children, entries}}
       itemCount={entries.length}
+      overscanCount={20}
       innerElementType={HistoryContainer(historyRowRenderer, filterRowRenderer, historyRowHeight, history, pop, filter)}
       {...rest}
     >
@@ -204,21 +205,21 @@ const HIST_LINE_HEIGHT = 30;
 
 const Row = (colSpecs, sheetName) => {
 
-  return forwardRef(({ data, style, select}, ref) => {
+  return memo(forwardRef(({ data, style, select}, ref) => {
   
     const cols = [];
     for (let key in colSpecs){
-      const {width, cellType:type='Text', attr} = colSpecs[key];
+      const {width, cellType:type='Text', noBackground, attr} = colSpecs[key];
       const ColRenderer = Cell[type];
-      cols.push(<Col md={width} key={key}>
-        <ColRenderer sheetName={sheetName} colName={key} data={data} attr={attr}>{data[key]}</ColRenderer>
-      </Col>)
+      cols.push(<div className={noBackground ? 'clear-back' : ''} key={key} style={{width, height:'100%', flexShrink: 0}}>
+        <ColRenderer data={data} sheetName={sheetName} colName={key} attr={attr}>{data[key]}</ColRenderer>
+      </div>)
     }
     
-    return <div ref={ref} className='treelist-row hovered' style={style} onClick={select}>
+    return <div ref={ref} className='flatlist-row hovered' style={style} onClick={select}>
       {cols}
     </div>
-  });
+  }), areEqual);
 }
 
 const HistoryRow = (colSpecs) => {
@@ -239,19 +240,16 @@ const HistoryRow = (colSpecs) => {
 };
 
 export default ({data, colSpecs, sheetName}) => 
-  <div style={{flex:1, width:'100%'}}>
-    <AutoSizer>
-    {({height, width}) => {
-      return <TreeList
-        height={height}
-        width={width}
-        data={data}
-        historyRowRenderer={HistoryRow(colSpecs)}
-        historyRowHeight={HIST_LINE_HEIGHT}
-        filterRowRenderer={FilterRow(colSpecs)}
-      >
-        {Row(colSpecs, sheetName)}
-      </TreeList>
-    }}
-    </AutoSizer>
-  </div>
+  <AutoSizer disableWidth={true}>
+  {({height}) => {
+    return <TreeList
+      height={height}
+      data={data}
+      historyRowRenderer={HistoryRow(colSpecs)}
+      historyRowHeight={HIST_LINE_HEIGHT}
+      filterRowRenderer={FilterRow(colSpecs)}
+    >
+      {Row(colSpecs, sheetName)}
+    </TreeList>
+  }}
+  </AutoSizer>

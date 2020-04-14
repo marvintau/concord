@@ -1,16 +1,8 @@
-.treelist-header {
-  /* font-size: 80%; */
-  height: 2.5rem;
-  display: flex;
-  user-select: none;
-  align-items: center;
-  background-color: #343a40;
-  color: #f8f9fa;
-}
 
 .treelist-row {
   font-size: 80%;
   display: flex;
+  overflow-x: visible;
   user-select: none;
   cursor: pointer;
   align-items: center;

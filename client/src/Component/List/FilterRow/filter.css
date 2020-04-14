@@ -1,6 +1,8 @@
 .filter-row {
   /* font-size: 80%; */
   display: flex;
+  width: 100%;
+  overflow-x: visible;
   align-items: center;
 }
 

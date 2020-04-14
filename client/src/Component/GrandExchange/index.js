@@ -67,10 +67,9 @@ export const GrandExchange = ({children}) => {
     del(data, {path: newPath, indexColumn, atIndex});
   }
 
-  const evalSheet = (sheetName) => {
-
-    const categoryAliases = {};
+  const initPathAliases = () => {
     if (Sheets.__PATH_ALIASES === undefined || Object.keys(Sheets.__PATH_ALIASES).length === 0){
+      const categoryAliases = {};
       if (Sheets.CATEGORY_NAME_ALIASES) {
         const {data: aliasData} = Sheets.CATEGORY_NAME_ALIASES;
         
@@ -80,23 +79,20 @@ export const GrandExchange = ({children}) => {
           }
         }
         
-        
         Sheets.__PATH_ALIASES = categoryAliases;
       }
     }
-    console.log(Sheets.__PATH_ALIASES, 'aliases');
+  }
 
+  const evalSheet = (sheetName) => {
+
+    initPathAliases();
     const evalRecord = (rec) => {
       for (let key of Object.keys(rec)){
         const {expr} = rec[key];
         if (typeof expr === 'string'){
-          try {
-            const {result, code} = parse(expr, {func, tables: Sheets, self: rec});
-            Object.assign(rec[key], {result, code});
-          } catch(err){
-            console.warn(expr);
-            console.error(err);
-          }
+          const {result, code} = parse(expr, {func, tables: Sheets, self: rec});
+          Object.assign(rec[key], {result, code});
         }      
       }  
     }
