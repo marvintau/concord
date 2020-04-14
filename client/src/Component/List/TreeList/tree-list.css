@@ -1,21 +1,3 @@
-
-.treelist-row {
-  font-size: 80%;
-  display: flex;
-  overflow-x: visible;
-  user-select: none;
-  cursor: pointer;
-  align-items: center;
-}
-
-.treelist-history-row {
-  font-size: 80%;
-  background-color: #f8f9fa;
-  display: flex;
-  user-select: none;
-  align-items: center;
-}
-
 .sticky {
   position: sticky !important;
   position: -webkit-sticky !important;
@@ -28,4 +10,13 @@
 
 .hovered:active{
   background-color: lightgray;
+}
+
+
+.hidden-scroll {
+  overflow: auto;
+}
+
+.hidden-scroll::-webkit-scrollbar {
+  display:none;
 }

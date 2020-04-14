@@ -64,15 +64,6 @@
   margin: 5px;
 }
 
-.upload-file-bar {
-  display: flex;
-  flex-direction: row;
-}
-
-.upload-file-bar > * {
-  margin: 5px 5px 5px 0px;
-}
-
 .bad-icon {
   width: 32px;
   height: 32px;

@@ -10,6 +10,7 @@ import Header from './Header';
 import {GrandExchangeContext} from '../GrandExchange';
 import { DepRouterContext } from '../DepRouter';
 
+import './list.css';
 
 const LoadIndicator = ({status}) => {
   const text = {
@@ -119,7 +120,7 @@ export default ({sheet, status, name, desc, colSpecs}) => {
     push(name, {type:'DATA', data: sheet.data, ...currArgs});
   }
 
-  return <div style={{display:'flex', flexDirection:"column", height:'100%', width:'100%', overflowX:'scroll'}}>
+  return <div className="list-wrapper">
     <div className="upload-file-bar">
       {isCascaded && <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>}
       {toolElems}

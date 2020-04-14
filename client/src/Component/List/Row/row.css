@@ -1,0 +1,30 @@
+.list-row {
+  font-size: 80%;
+  display: flex;
+  width: 100%;
+  overflow-x: visible;
+  user-select: none;
+  align-items: center;
+}
+
+.list-col {
+  height:100%;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.sticky {
+  position: sticky !important;
+  position: -webkit-sticky !important;
+  z-index: 2;
+}
+
+.hovered:hover{
+  background-color: whitesmoke;
+}
+
+.menu {
+  position: absolute !important;
+  top: 20px !important;
+  z-index: 3;
+}

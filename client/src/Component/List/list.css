@@ -1,0 +1,15 @@
+.list-wrapper {
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  width:100%;
+}
+
+.upload-file-bar {
+  display: flex;
+  flex-direction: row;
+}
+
+.upload-file-bar > * {
+  margin: 5px 5px 5px 0px;
+}

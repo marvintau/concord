@@ -3,7 +3,8 @@
   display: flex;
   user-select: none;
   align-items: center;
-  margin: 0 -1px;
+  margin: 0 -5px;
+  overflow: hidden;
 }
 
 .list-header-col {

@@ -6,8 +6,7 @@
 .page-right-side {
   height: auto;
   overflow-y: scroll;
-  margin-top: 35px;
-  padding:0 20px;
+  margin:35px 20px 0;
   min-width: 400px;
   flex: 1;
 }
@@ -17,6 +16,7 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
+  overflow-y:hidden;
 }
 
 .mobile-container{

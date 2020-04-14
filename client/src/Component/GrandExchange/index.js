@@ -1,6 +1,6 @@
 import React, {useState, createContext} from 'react';
 import Agnt from 'superagent';
-import {add, del, set, trav, parse, pathify} from '@marvintau/chua';
+import {add, del, set, trav, parse} from '@marvintau/chua';
 import func from './funcs';
 
 export const GrandExchangeContext = createContext({
