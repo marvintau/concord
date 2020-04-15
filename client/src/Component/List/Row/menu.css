@@ -1,11 +1,4 @@
-.edit {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-}
-
 .insert-sibly {
-  margin-left: 5px;
   height: 1.5rem;
   width: 1.5rem;
   background-size: 1.5rem;
@@ -13,7 +6,6 @@
 }
 
 .insert-child {
-  margin-left: 5px;
   height: 1.5rem;
   width: 1.5rem;
   background-size: 1.5rem;
@@ -27,17 +19,24 @@
   background-image: url('./cross.svg');
 }
 
-.link {
-  height: 1.5rem;
-  width: 1.5rem;
-  background-size: 1.5rem;
-  background-image: url('./right-arrow.svg');
+.item {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: 3px;
+}
+.item:hover {
+  background: #AAAAAA;
 }
 
-.edit-hover {
-  opacity: 0.3;
+.margin:{
+  margin-right: 10px;
 }
 
-.edit-hover:hover{
-  opacity: 1 !important;
+.menu {
+  background: #EFEFEF;
+  border-radius: 4px;
+  border: 0.5px solid gray;
+  padding: 10px;
+  min-width:160px;
 }

@@ -1,4 +1,9 @@
-.text {
+.text-cell{
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-plain {
   margin: 0.5rem;
   font-weight: bold;
   letter-spacing: -0.02rem;

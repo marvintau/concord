@@ -1,15 +1,19 @@
-import React, { memo, forwardRef } from "react";
+import React, { memo, forwardRef, useContext } from "react";
 import {areEqual} from 'react-window';
 import useContextMenu from 'react-use-context-menu'
+
+import {DepRouterContext} from '../../DepRouter';
 
 import Menu from './Menu';
 import Cell from '../../Cell';
 
 import './row.css'
 
-export default (colSpecs, sheetName, {sticky=false}={}) => {
+export default (colSpecs, rowEdit, sheetName, {sticky=false, editable=true}={}) => {
   
   return memo(forwardRef(({ data, style, select}, ref) => {
+
+    const {fore} = useContext(DepRouterContext);
 
     const [
       bindMenu,
@@ -30,9 +34,19 @@ export default (colSpecs, sheetName, {sticky=false}={}) => {
       </div>)
     }
     
-    return <div {...bindTrigger} ref={ref} className={`list-row hovered ${sticky ? 'sticky' : ''}`} style={style} onClick={select}>
-      {cols}
-      <Menu {...{bindMenu, bindMenuItems, hideMenu, data}} />
-    </div>
+    const {link} = data;
+    const navigate = () => fore(link, data);
+
+    const className = `list-row hovered ${sticky ? 'sticky' : ''} ${link ? 'row-cursor-pointer' : ''}`;
+    const onClick = link ? navigate : select;
+
+    return (rowEdit && editable)
+    ? <div {...bindTrigger} {...{ref, className, style, onClick}}>
+        {cols}
+        <Menu {...{bindMenu, bindMenuItems, hideMenu, sheetName, data, rowEdit}} />
+      </div>
+    :  <div {...{ref, className, style, onClick}}>
+        {cols}
+      </div>
   }), areEqual);
 }

@@ -3,9 +3,6 @@ import {DynamicSizeList as List} from 'react-window'
 import AutoSizer from "react-virtualized-auto-sizer";
 import { OverlayScrollbarsComponent as ScrollDiv } from 'overlayscrollbars-react';
 
-import Row from '../Row';
-import FilterRow from '../FilterRow';
-
 import './flat-list.css';
 
 const DEFAULT_FILTER_HEIGHT = 3;
@@ -142,15 +139,15 @@ export const Column = ({children}) => {
   : <div style={{margin:'0.5rem'}}>{children}</div>;
 }
 
-export default ({colSpecs, sheetName, data, sort, filter}) =>
+export default ({colSpecs, sheetName, data, CreateRow, CreateFilterRow, rowEdit}) =>
   <AutoSizer disableWidth={true}>
     {({height}) => {
       return <FlatList
         height={height}
         data={data}
-        filterRowRenderer={FilterRow(colSpecs, filter, sort)}
+        filterRowRenderer={CreateFilterRow(colSpecs)}
       >
-        {Row(colSpecs, sheetName)}
+        {CreateRow(colSpecs, rowEdit, sheetName)}
       </FlatList>
     }}
   </AutoSizer>

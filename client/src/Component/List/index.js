@@ -11,6 +11,9 @@ import Header from './Header';
 import {GrandExchangeContext} from '../GrandExchange';
 import { DepRouterContext } from '../DepRouter';
 
+import CreateRow from './Row';
+import CreateFilterRow from './FilterRow';
+
 import './list.css';
 
 const LoadIndicator = ({status}) => {
@@ -49,7 +52,7 @@ const flatten = (data) => {
   return res;
 }
 
-export default ({sheet, status, name, desc, colSpecs}) => {
+export default ({sheet, status, name, desc, colSpecs, rowEdit}) => {
   
   const {addSheets, setStatus, push} = useContext(GrandExchangeContext);
   const {currPage, currArgs} = useContext(DepRouterContext);
@@ -82,12 +85,14 @@ export default ({sheet, status, name, desc, colSpecs}) => {
   } else if (status.startsWith('DONE')){
     const {data} = sheet;
 
+    const rowProps = {CreateRow, CreateFilterRow, rowEdit, status};
+
     if (!isCascaded){
-      content = <FlatList {...{sheetName:name, data:flatten(data), status, colSpecs:cols}} />;
+      content = <FlatList {...{...rowProps, sheetName:name, data:flatten(data), colSpecs:cols}} />;
     } else if (folded){
-      content = <TreeList {...{sheetName:name, data, status, colSpecs:cols}} />;
+      content = <TreeList {...{...rowProps, sheetName:name, data, colSpecs:cols}} />;
     } else {
-      content = <FlatList {...{sheetName:name, data:flatten(data), status, colSpecs:cols}} />;
+      content = <FlatList {...{...rowProps, sheetName:name, data:flatten(data), colSpecs:cols}} />;
     }
   }
 
@@ -113,7 +118,7 @@ export default ({sheet, status, name, desc, colSpecs}) => {
       >保存至服务器</button>)
     }
     if (tool === 'ExportExcel'){
-      toolElems.push(<ExportManager {...{name, colSpecs}}/>);
+      toolElems.push(<ExportManager key={tool} {...{name, colSpecs}}/>);
     }
     if (tool === 'GenerateTemplate') {
       toolElems.push(<GenerateTemplate key={tool} {...currArgs} />)

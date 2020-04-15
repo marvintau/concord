@@ -65,11 +65,11 @@ const BrowserPage = () => {
 
   if (type === 'DATA'){
 
-    const {sheetName, name, desc, colSpecs} = currPage;
+    const {sheetName, name, desc, colSpecs, rowEdit} = currPage;
     
     return <ScrollDiv style={{height: '100%'}} options={{scrollbars: {autoHide:'move'}}}>
       <div className="table-container">
-        <List sheet={Sheets[sheetName]} {...{name: sheetName, desc, status, colSpecs}} />
+        <List sheet={Sheets[sheetName]} {...{name: sheetName, desc, status, colSpecs, rowEdit}} />
         <ScrollDiv className="page-right-side" options={{scrollbars: {autoHide:'move'}}}>
           {qrLink && <div className="qr-block">
             <h3>手机扫码处</h3>

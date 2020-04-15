@@ -13,6 +13,6 @@ const rem = (header) => {
 export default ({children}) => {
 
   return (typeof children ==='string' && children.startsWith('#'))
-  ? <div className={`text-header-${level(children)}`}>{rem(children)}</div>
-  : <div className="text">{children}</div>;
+  ? <div className={`text-cell text-header-${level(children)}`}>{rem(children)}</div>
+  : <div className="text-cell text-plain">{children}</div>;
 }

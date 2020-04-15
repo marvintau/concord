@@ -1,7 +1,6 @@
 import QR from './QR';
 import Ref from './Ref';
 import Text from './Text';
-import Edit from './Edit';
 import Labels from './Labels';
 import Number from './Number';
 import Address from './Address';
@@ -12,7 +11,6 @@ export default {
   QR,
   Ref,
   Text,
-  Edit,
   Labels,
   Number,
   Address,

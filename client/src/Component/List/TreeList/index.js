@@ -5,9 +5,6 @@ import { OverlayScrollbarsComponent as ScrollDiv } from 'overlayscrollbars-react
 
 import {get} from '@marvintau/chua';
 
-import Row from '../Row';
-import FilterRow from '../FilterRow';
-
 import './tree-list.css';
 
 const DEFAULT_FILTER_HEIGHT = 3;
@@ -84,9 +81,10 @@ const TreeList = function({data, children, historyRowHeight, historyRowRenderer,
   const select = (path) => {
 
     const {record, list} = get(data, {path, withList:true});
-
-    setHistory(list);
-    setSublist(record.__children);
+    if (record.__children !== undefined){
+      setHistory(list);
+      setSublist(record.__children);
+    }
   }
 
   const pop = (path) => {
@@ -165,17 +163,17 @@ const HistoryContainer = (HistRowRenderer, FilterRowRenderer, historyRowHeight, 
 }
 
 
-export default ({data, colSpecs, sheetName}) => 
+export default ({colSpecs, sheetName, data, CreateRow, CreateFilterRow, rowEdit}) => 
   <AutoSizer disableWidth={true}>
   {({height}) => {
     return <TreeList
       height={height}
       data={data}
-      historyRowRenderer={Row(colSpecs, sheetName, {sticky:true})}
+      historyRowRenderer={CreateRow(colSpecs, rowEdit, sheetName, {sticky:true, editable: false})}
       historyRowHeight={HIST_LINE_HEIGHT}
-      filterRowRenderer={FilterRow(colSpecs)}
+      filterRowRenderer={CreateFilterRow(colSpecs)}
     >
-      {Row(colSpecs, sheetName)}
+      {CreateRow(colSpecs, rowEdit, sheetName)}
     </TreeList>
   }}
   </AutoSizer>

@@ -55,6 +55,8 @@ export default ({sheetName, colName, disabled, children: cellData, data:{__path}
   }
 
   const saveEdit = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     setField(sheetName, __path, colName, {expr:value});
     evalSheet(sheetName);
     setEditing(false);
@@ -79,7 +81,11 @@ export default ({sheetName, colName, disabled, children: cellData, data:{__path}
     </div>
   : <div className={`refcell-line ${editing ? "refcell-line-editing" : ''}`}>
       <div className="react-autosuggest__input refcell-text"
-        onClick={() => {(!disabled) && setEditing(true)}}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          (!disabled) && setEditing(true)
+        }}
       >{expr}</div>
       {displayedResult}
     </div>

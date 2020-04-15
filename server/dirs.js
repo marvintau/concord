@@ -75,10 +75,10 @@ const dirs = [
     sheetName: 'PROJECT',
     tools: ['HeaderCreate'],
     colSpecs: {
-      year: {desc: '年度', width: 1, isFilterable: true},
-      companyName: {desc: '项目（企业）名称', width: 9, isFilterable: true},
-      manage: {desc: '-', width: 2, cellType:'Edit', attr:{isSync: true, removeEnabled: true, navigateEnabled: true}}
+      year: {desc: '年度', width: 2, isFilterable: true},
+      companyName: {desc: '项目（企业）名称', width: 10, isFilterable: true},
     },
+    rowEdit: {isSync: true, removeEnabled: true},
     children: ['PROJECT'],
   },
   {
@@ -125,8 +125,8 @@ const dirs = [
       tempName: {desc: '模版名称', width: 4, isFilerable: true},
       tempType: {desc: '模版类型', width: 4, isFilerable: true},
       fileInput: {desc:'上传', width: 2, cellType: 'FileInput'},
-      manage: {desc: '管理', width: 2, cellType:'Edit', attr:{isSync: true, removeEnabled: true, insertEnabled: false}}
     },
+    rowEdit: {isSync: true, removeEnabled: true, insertEnabled: false}
   },
   {
     loadPoint: '/',
@@ -165,9 +165,9 @@ const dirs = [
     referredSheetNames: ['BALANCE', 'CATEGORY_NAME_ALIASES'],
     colSpecs: {
       desc: {desc: '题目', width: 5, isFilerable: true},
-      ref:  {desc: '条目', width: 5, isFilterable: true, cellType:'Ref'},
-      edit: {desc: '编辑', width: 2, isFilterable: false, cellType:'Edit', attr:{isSync:false, insertEnabled:true, removeEnabled: true}},
-    }      
+      ref:  {desc: '条目', width: 7, isFilterable: true, cellType:'Ref'},
+    },
+    rowEdit: {isSync:false, insertEnabled:true, removeEnabled: true},
   }
 ];
 

@@ -10,8 +10,8 @@ function exportExcel(colSpecs, data){
         case 'Edit': break;
         case 'Ref':
           const {expr, result, code} = rec[key];
-          newRec[`${desc}-结果`] = result;
           newRec[`${desc}-输入`] = expr;
+          newRec[`${desc}-结果`] = result;
           newRec[`${desc}-备注`] = code;
           break;
         default:
