@@ -67,16 +67,21 @@ export default ({sheetName, colName, disabled, children: cellData, data:{__path}
   : result
 
   // const id = `ID${Math.random().toString(36).substring(2)}`
-
-  const displayedResult = result !== undefined
-  ? <div>
-      <div className={`refcell-badge ${code.slice(0, 4).toLowerCase()}`}>{displayed}</div>
-    </div>
-  : <></>
+  const codeStyle = code ? code.slice(0, 4).toLowerCase() : 'NORM'
+  const displayedResult = <div className={`refcell-badge ${codeStyle}`}>{displayed}</div>
 
   return editing
   ? <div className="refcell-line">
-      <Autosuggest {...{...funcs, suggestions, inputProps}} />
+      <div className="react-autosuggest__input refcell-text"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          (!disabled) && setEditing(true)
+        }}
+      >{expr}</div>
+      <div style={{position:'absolute'}}>
+        <Autosuggest {...{...funcs, suggestions, inputProps}} />
+      </div>
       <img className='refcell-button' src={Check} onClick={saveEdit} />
     </div>
   : <div className={`refcell-line ${editing ? "refcell-line-editing" : ''}`}>
