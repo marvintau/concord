@@ -18,7 +18,8 @@ export default ({sheetName, colName, disabled, children: cellData, data:{__path}
   const {expr="", result, code} = cellData;
   
   const [editing, setEditing] = useState()
-  const [value, setValue] = useState(expr);
+  const [explained, setExplained] = useState();
+  const [value, setValue] = useState(expr.toString());
   const [delayed, setDelayed] = useState(false);
   const [suggestions, setSugg] = useState([]);
 
@@ -67,31 +68,47 @@ export default ({sheetName, colName, disabled, children: cellData, data:{__path}
   : result
 
   // const id = `ID${Math.random().toString(36).substring(2)}`
-  const codeStyle = code ? code.slice(0, 4).toLowerCase() : 'NORM'
-  const displayedResult = <div className={`refcell-badge ${codeStyle}`}>{displayed}</div>
+  const displayedResult = (result !== undefined)
+    ? <div className={`refcell-badge ${code.slice(0, 4).toLowerCase()}`}
+        onClick={(e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+          setExplained(!explained)
+        }}
+      >
+        {displayed}
+      </div>
+    : <></>
+
+  const expln = {
+    WARN_UNDEFINED_FUNC:              '函数没有定义',
+    WARN_INCOMPLETE_REFERENCE_FORMAT: '不是一个完整的引用（可能是没写取哪个数？）',
+    WARN_SHEET_NOT_EXISTS:            '被引用的表没找到（再确认下名称）',
+    WARN_RECORD_NOT_FOUND:            '按给定的路径没找到对应条目',
+    WARN_NOT_EQUAL:                   '校验结果不相等',
+    WARN_VAR_NOT_FOUND:               '要取的数或变量不存在',
+    WARN:                             '请参考子项中的错误信息',
+    INFO_ALTER_PATH:                  '此结果是通过等效的路径名称得到的',
+    SUCC:                             '成功!',
+    FAIL:                             '失败...',
+    NORM:                             '正常'
+  }
 
   return editing
   ? <div className="refcell-line">
-      <div className="react-autosuggest__input refcell-text"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          (!disabled) && setEditing(true)
-        }}
-      >{expr}</div>
-      <div style={{position:'absolute'}}>
-        <Autosuggest {...{...funcs, suggestions, inputProps}} />
-      </div>
+      <Autosuggest {...{...funcs, suggestions, inputProps}} />
       <img className='refcell-button' src={Check} onClick={saveEdit} />
     </div>
   : <div className={`refcell-line ${editing ? "refcell-line-editing" : ''}`}>
-      <div className="react-autosuggest__input refcell-text"
+      <div className="refcell-text"
         onClick={(e) => {
+          console.log(value,' before ');
           e.preventDefault();
           e.stopPropagation();
           (!disabled) && setEditing(true)
         }}
       >{expr}</div>
       {displayedResult}
+      {explained && <div className="refcell-result-tip">{expln[code] || '不解释'}</div>}
     </div>
 }

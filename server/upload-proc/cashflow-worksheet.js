@@ -22,7 +22,7 @@ async function CASHFLOW_WORKSHEET(fileBuffer, context){
   data = columnNameRemap(data, header);
   for (let i = 0; i < data.length; i++){
     if (data[i].desc === undefined) data[i].desc = '';
-    data[i].ref = {expr: data[i].ref};
+    data[i].ref = {expr: data[i].ref.toString()};
   }
 
   data = read(data, {indexColumn:'desc'})

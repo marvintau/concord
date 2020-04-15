@@ -6,6 +6,20 @@
   justify-content: space-between;
   align-items: center;
   line-height: normal;
+
+  padding: 0 5px;
+}
+
+.refcell-result-tip {
+  background: white;
+  position: absolute;
+  bottom: -25px;
+  right: 10px;
+  width: 300px;
+  border: 0.5px solid black;
+  padding: 5px;
+  border-radius: 3px;
+  z-index: 999;
 }
 
 .refcell-text {
@@ -16,6 +30,8 @@
   text-overflow: ellipsis;
   overflow: hidden;
   border-radius: 5px;
+  line-height: 2em;
+  padding-left: 5px;
 }
 
 .refcell-text:hover {

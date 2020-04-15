@@ -90,10 +90,10 @@ export const GrandExchange = ({children}) => {
     const evalRecord = (rec) => {
       for (let key of Object.keys(rec)){
         const {expr} = rec[key];
-        if (typeof expr === 'string'){
-          const {result, code} = parse(expr, {func, tables: Sheets, self: rec});
+        if (expr !== undefined){
+          const {result, code} = parse(expr.toString(), {func, tables: Sheets, self: rec});
           Object.assign(rec[key], {result, code});
-        }      
+        }
       }  
     }
 
