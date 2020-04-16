@@ -29,7 +29,9 @@ export const GrandExchange = ({children}) => {
   const [status, setStatus] = useState('INIT');
   
   const addSheets = (newSheets) => {
+    console.log('add sheet called');
     setSheets({...Sheets, ...newSheets});
+    setStatus('DONE_ADDED');
   }
 
   // When refreshing sheets, a new instance of sheet collection
