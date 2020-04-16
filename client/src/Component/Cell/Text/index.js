@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useState, useContext} from 'react';
+import Check from './check.svg';
 
 import './text.css'
 
