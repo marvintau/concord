@@ -196,8 +196,8 @@ const dirs = [
 
     if (retrieved.length === 0){
       let records = [];
-      for (let i = 0; i < 15; i++){
-        records.push({companyName: `${genName()} Inc.`, project_id:v4(), year:1990+Math.floor(Math.random()*30), link:'PROJECT'});
+      for (let i = 0; i < 10; i++){
+        records.push({companyName: `${genName()} Inc.`, project_id:v4(), year:1990+Math.floor(Math.random()*30), link:'PROJECT', date:Date.now()});
       }
       createRecs('PROJECT', records);
     }

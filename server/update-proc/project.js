@@ -4,7 +4,7 @@ const {v4} = require('uuid');
 const update = async (args) => {
   const {type, rec} = args;
   if (type === 'ADD_REC'){
-    await insertRec('PROJECT', {...rec, project_id:v4(), link:'PROJECT'})
+    await insertRec('PROJECT', {...rec, project_id:v4(), link:'PROJECT', date: Date.now()})
   }
   if (type === 'REM_REC'){
     console.log('removing project rec', args);
