@@ -111,6 +111,7 @@ export function DepRouter({children}) {
 
   useEffect(() => {
     if (status === 'DONE_PULL') {
+      console.log(currPage, 'dep router pull');
       evalSheet(currPage.sheetName);
     }
   }, [status])

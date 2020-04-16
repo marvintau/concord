@@ -11,7 +11,10 @@ const Menu = ({ sheetName, data, bindMenu, bindMenuItem, hideMenu, rowEdit}) => 
 
   const {__path:path, __children, ...rec} = data;
 
-  const addSibly = () => {
+  const addSibly = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     if (isSync === false){
       addChildRec(sheetName, path);
       evalSheet(sheetName);
@@ -22,7 +25,10 @@ const Menu = ({ sheetName, data, bindMenu, bindMenuItem, hideMenu, rowEdit}) => 
     hideMenu();
   }
 
-  const addChild = () => {
+  const addChild = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     if (isSync === false){
       addSiblyRec(sheetName, path);
       evalSheet(sheetName);
@@ -33,7 +39,9 @@ const Menu = ({ sheetName, data, bindMenu, bindMenuItem, hideMenu, rowEdit}) => 
     hideMenu();
   }
 
-  const remove = () => {
+  const remove = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (isSync === false){
       remRec(sheetName, path);
       evalSheet(sheetName);
