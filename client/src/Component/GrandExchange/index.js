@@ -64,6 +64,7 @@ export const GrandExchange = ({children}) => {
     const atIndex = newPath.pop();
 
     const {data, indexColumn} = Sheets[sheetName];
+    console.log(newPath, indexColumn, 'del');
     del(data, {path: newPath, indexColumn, atIndex});
   }
 
