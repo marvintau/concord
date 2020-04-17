@@ -21,7 +21,7 @@ export default ({sheetName, colName, data}) => {
     form.append('type', 'UPDATE');
     form.append('key', colName);
 
-    for (let col in rec){
+    for (let col in rec) if (!col.startsWith('__')){
       form.append(col, rec[col]);
     }
 
