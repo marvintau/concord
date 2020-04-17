@@ -76,9 +76,11 @@ router.post('/fetch/:data_name', async ctx => {
 router.post('/push/:data_name', async ctx => {
   const {data_name} = ctx.params;
   try {
-    await updateProc[data_name](ctx.request.body);
+    const res = await updateProc[data_name](ctx.request.body);
+    console.log(res, 'push')
     ctx.body = {result: 'DONE'};
   } catch (error) {
+    console.log(error, 'push');
     ctx.body = {error: error.code}
   }
 })

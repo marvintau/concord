@@ -127,7 +127,7 @@ export const GrandExchange = ({children}) => {
     }
   }
 
-  const pull = (sheetNameList, currPage, forceUpdate=false) => {
+  const pull = (sheetNameList, currPage) => {
     console.log(sheetNameList, 'pull');
     (async() => {
       setStatus('PULL');

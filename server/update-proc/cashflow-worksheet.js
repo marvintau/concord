@@ -1,8 +1,10 @@
+const {setTable} = require('../database');
+
 const update = (args) => {
-  console.log(args, 'update, cashflow');
   const {type, data, project_id} = args;
   if (type === 'DATA'){
-    setTable({project_id}, 'CASHFLOW_WORKSHEET', {data});
+    console.log(type, data[0], 'update, cashflow really');
+    return setTable({project_id}, 'CASHFLOW_WORKSHEET', {data});
   }
 }
 
