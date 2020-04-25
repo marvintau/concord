@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 
 const hasNativePerformanceNow =
   typeof performance === 'object' && typeof performance.now === 'function';
@@ -7,11 +7,7 @@ const now = hasNativePerformanceNow
   ? () => performance.now()
   : () => Date.now();
 
-const DEBOUNCE_INTERVAL = 150;
-
-const clip = (number, minBound, maxBound) => {
-  return Math.max(minBound, Math.min(maxBound, number));
-}
+const DEBOUNCE_INTERVAL = 1000;
 
 export default () => {
 
@@ -40,18 +36,12 @@ export default () => {
     event.stopPropagation();
     event.preventDefault();
     // console.log('scroll fired');
-    const { clientHeight, scrollHeight, scrollTop } = event.currentTarget;
-    console.log('newOffset', scrollTop)
-
+    const { scrollTop } = event.currentTarget;
+    console.log('top', scrollTop);
     if (scrollOffset !== scrollTop) {
-      // if (Math.abs(scrollOffset - scrollTop) > 50){
-      //   return;
-      // }
-      const newOffset = clip(scrollTop, 0, scrollHeight - clientHeight);
-      // const newOffset = scrollTop;
       setScrolling(true);
-      setOffsetDelta(newOffset - scrollOffset);
-      setOffset(newOffset);
+      setOffsetDelta(scrollTop - scrollOffset);
+      setOffset(scrollTop);
     }
   }
 

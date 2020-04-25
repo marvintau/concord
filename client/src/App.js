@@ -7,13 +7,11 @@ import { GrandExchange } from "./Component/GrandExchange";
 
 const App = () => {
 
-  return  <div style={{height:'100vh', width:'100vw'}}>
-    <GrandExchange>
-      <DepRouter {...{directories:undefined}}>
-        <Page />
-      </DepRouter>
-    </GrandExchange>
-  </div>
+  return <GrandExchange>
+    <DepRouter {...{directories:undefined}}>
+      <Page />
+    </DepRouter>
+  </GrandExchange>
 };
 
 export default App;

@@ -3,18 +3,6 @@ import {Input} from 'reactstrap';
 
 import './filter.css'
 
-const HIST_LINE_HEIGHT = 30;
-
-const FilterContainer = ({children, topLength}) => {
-  
-  const style = {
-    top: topLength * HIST_LINE_HEIGHT,
-    height: 40,
-  }
-  
-  return <div className="filter-row sticky" style={style}>{children}</div>
-}
-
 const FilterCol = ({colKey, isFilterable, filterCol, width, ...colProps}) => {
 
   const [inputVal, setInputVal] = useState('');
@@ -35,7 +23,7 @@ export default (colSpecs) => {
     return undefined;
   }
 
-  return ({topLength, filterCol}) => {
+  return ({filterCol}) => {
 
     const cols = [];
     for (let key in colSpecs){
@@ -43,8 +31,6 @@ export default (colSpecs) => {
       cols.push(<FilterCol key={key} {...{colKey:key, isFilterable, filterCol, width}} />)
     }
   
-    return <FilterContainer topLength={topLength}>
-      {cols}
-    </FilterContainer>
+    return <div className="filter-row">{cols}</div>
   }
 }

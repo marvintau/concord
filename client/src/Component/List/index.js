@@ -2,7 +2,6 @@ import React, {useContext, useState} from 'react';
 
 import {Spinner} from 'reactstrap';
 import TreeList from './TreeList';
-import FlatList from './FlatList';
 import UploadManager from './UploadManager';
 import GenerateTemplate from './GenerateTemplate';
 import useCreateManager from './useCreateManager';
@@ -87,45 +86,40 @@ export default ({sheet, status, sheetName, desc, colSpecs, rowEdit}) => {
 
     const Row = CreateRow(cols, rowEdit, sheetName);
     const FilterRow = CreateFilterRow(cols)
-    const HistRow = CreateRow(cols, rowEdit, sheetName, {sticky:true, editable: false})
+    const HistRow = CreateRow(cols, rowEdit, sheetName, {editable: false})
 
-    content = <TreeList {...{Row, FilterRow, HistRow, data: (!isCascaded || !folded) ? flatten(data) : data}} />;
+    content = <TreeList {...{Row, FilterRow, HistRow, itemData: (!isCascaded || !folded) ? flatten(data) : data}} />;
 
-    // if (!isCascaded || !folded){
-    //   content = <T {...{Row, FilterRow, data:flatten(data)}} />;
-    // } else {
-    //   content = <TreeList {...{Row, FilterRow, HistRow, data}} />;
-    // } 
   }
 
   let toolElems = [];
-  // for (let tool of tools){
-  //   if (tool === 'ImportExcel'){
-  //     let props = {name, refresh:addSheets, setStatus, context:{...currPage, ...currArgs}};
-  //     toolElems.push(<UploadManager key={tool}
-  //       title={`上传${desc}Excel文件`}
-  //     {...props} />);
-  //   }
-  //   if (tool === 'HeaderCreate'){
-  //     toolElems.push(<button key={tool}
-  //       className='button'
-  //       onClick={() => toggleCreate()}
-  //     >{`${isCreating ? '取消' : ''}创建${desc}条目`}
-  //     </button>)
-  //   }
-  //   if (tool === 'SaveRemote'){
-  //     toolElems.push(<button key="saveRemote"
-  //       className='button warning'
-  //       onClick={() => save()}
-  //     >保存至服务器</button>)
-  //   }
-  //   if (tool === 'ExportExcel'){
-  //     toolElems.push(<ExportManager key={tool} {...{name, colSpecs}}/>);
-  //   }
-  //   if (tool === 'GenerateTemplate') {
-  //     toolElems.push(<GenerateTemplate key={tool} {...currArgs} />)
-  //   }
-  // }
+  for (let tool of tools){
+    if (tool === 'ImportExcel'){
+      let props = {name:sheetName, refresh:addSheets, setStatus, context:{...currPage, ...currArgs}};
+      toolElems.push(<UploadManager key={tool}
+        title={`上传${desc}Excel文件`}
+      {...props} />);
+    }
+    if (tool === 'HeaderCreate'){
+      toolElems.push(<button key={tool}
+        className='button'
+        onClick={() => toggleCreate()}
+      >{`${isCreating ? '取消' : ''}创建${desc}条目`}
+      </button>)
+    }
+    if (tool === 'SaveRemote'){
+      toolElems.push(<button key="saveRemote"
+        className='button warning'
+        onClick={() => save()}
+      >保存至服务器</button>)
+    }
+    if (tool === 'ExportExcel'){
+      toolElems.push(<ExportManager key={tool} {...{name:sheetName, colSpecs}}/>);
+    }
+    if (tool === 'GenerateTemplate') {
+      toolElems.push(<GenerateTemplate key={tool} {...currArgs} />)
+    }
+  }
 
   const save = () => {
     push(sheetName, {type:'DATA', data: sheet.data, ...currArgs});
@@ -142,4 +136,5 @@ export default ({sheet, status, sheetName, desc, colSpecs, rowEdit}) => {
     <Header {...{setColWidth, colSpecs, hidden: !status.startsWith('DONE')}} />
     {content}
   </div>
+  // return content
 }

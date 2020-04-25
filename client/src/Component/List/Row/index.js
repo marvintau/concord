@@ -1,5 +1,4 @@
-import React, { memo, forwardRef, useContext } from "react";
-import {areEqual} from 'react-window';
+import React, { forwardRef, useContext } from "react";
 import useContextMenu from 'react-use-context-menu'
 
 import {DepRouterContext} from '../../DepRouter';
@@ -11,7 +10,7 @@ import './row.css'
 
 export default (colSpecs, rowEdit, sheetName, {sticky=false, editable=true}={}) => {
   
-  return memo(forwardRef(({ data, style, select}, ref) => {
+  return forwardRef(({ data, style, select}, ref) => {
 
     const {fore} = useContext(DepRouterContext);
 
@@ -41,12 +40,13 @@ export default (colSpecs, rowEdit, sheetName, {sticky=false, editable=true}={}) 
     const onClick = link ? navigate : select;
 
     return (rowEdit && editable)
-    ? <div {...bindTrigger} {...{ref, className, style, onClick}}>
+    ? <div style={style} {...bindTrigger} {...{className, ref, onClick}}>
         {cols}
         <Menu {...{bindMenu, bindMenuItems, hideMenu, sheetName, data, rowEdit}} />
       </div>
-    :  <div {...{ref, className, style, onClick}}>
+    : <div style={style} {...{className, ref, onClick}}>
         {cols}
       </div>
-  }), areEqual);
+      
+  });
 }

@@ -56,9 +56,16 @@ const SideNavigationBar = ({directories, isHidden, children}) => {
   return <Sidebar
     sidebar={innerSidebar}
     docked={currSubs !== undefined && !isHidden}
-    styles={{sidebar: {background: 'white'}}}
+    styles={{
+      sidebar: {background: 'white', overflow:'hidden'},
+      content: {
+        overflow:'hidden',
+        display:'flex',
+        flexDirection:'column',
+      }
+    }}
   >
-    <div className="sidebar-content-wrapper">{children}</div>
+    {children}
   </Sidebar>
 }
 
