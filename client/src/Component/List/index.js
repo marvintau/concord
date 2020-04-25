@@ -89,11 +89,13 @@ export default ({sheet, status, sheetName, desc, colSpecs, rowEdit}) => {
     const FilterRow = CreateFilterRow(cols)
     const HistRow = CreateRow(cols, rowEdit, sheetName, {sticky:true, editable: false})
 
-    if (!isCascaded || !folded){
-      content = <FlatList {...{Row, FilterRow, data:flatten(data)}} />;
-    } else {
-      content = <TreeList {...{Row, FilterRow, HistRow, data}} />;
-    } 
+    content = <TreeList {...{Row, FilterRow, HistRow, data: (!isCascaded || !folded) ? flatten(data) : data}} />;
+
+    // if (!isCascaded || !folded){
+    //   content = <T {...{Row, FilterRow, data:flatten(data)}} />;
+    // } else {
+    //   content = <TreeList {...{Row, FilterRow, HistRow, data}} />;
+    // } 
   }
 
   let toolElems = [];
