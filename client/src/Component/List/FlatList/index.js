@@ -1,7 +1,6 @@
 import React, { createContext, useState, forwardRef, useCallback} from "react";
 import {DynamicSizeList as List} from 'react-window'
 import AutoSizer from "react-virtualized-auto-sizer";
-import { OverlayScrollbarsComponent as ScrollDiv } from 'overlayscrollbars-react';
 
 import './flat-list.css';
 
@@ -139,15 +138,15 @@ export const Column = ({children}) => {
   : <div style={{margin:'0.5rem'}}>{children}</div>;
 }
 
-export default ({colSpecs, sheetName, data, CreateRow, CreateFilterRow, rowEdit}) =>
+export default ({data, Row, FilterRow}) =>
   <AutoSizer disableWidth={true}>
     {({height}) => {
       return <FlatList
         height={height}
         data={data}
-        filterRowRenderer={CreateFilterRow(colSpecs)}
+        filterRowRenderer={FilterRow}
       >
-        {CreateRow(colSpecs, rowEdit, sheetName)}
+        {Row}
       </FlatList>
     }}
   </AutoSizer>

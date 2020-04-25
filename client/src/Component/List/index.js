@@ -52,11 +52,11 @@ const flatten = (data) => {
   return res;
 }
 
-export default ({sheet, status, name, desc, colSpecs, rowEdit}) => {
+export default ({sheet, status, sheetName, desc, colSpecs, rowEdit}) => {
   
   const {addSheets, setStatus, push} = useContext(GrandExchangeContext);
   const {currPage, currArgs} = useContext(DepRouterContext);
-  const {toggleCreate, isCreating, createManager} = useCreateManager(name, colSpecs);
+  const {toggleCreate, isCreating, createManager} = useCreateManager(sheetName, colSpecs);
 
   const {isCascaded, tools} = currPage;
   const [folded, setFold] = useState(true);
@@ -85,55 +85,54 @@ export default ({sheet, status, name, desc, colSpecs, rowEdit}) => {
   } else if (status.startsWith('DONE')){
     const {data} = sheet;
 
-    const rowProps = {CreateRow, CreateFilterRow, rowEdit, status};
+    const Row = CreateRow(cols, rowEdit, sheetName);
+    const FilterRow = CreateFilterRow(cols)
+    const HistRow = CreateRow(cols, rowEdit, sheetName, {sticky:true, editable: false})
 
-    if (!isCascaded){
-      content = <FlatList {...{...rowProps, sheetName:name, data:flatten(data), colSpecs:cols}} />;
-    } else if (folded){
-      content = <TreeList {...{...rowProps, sheetName:name, data, colSpecs:cols}} />;
+    if (!isCascaded || !folded){
+      content = <FlatList {...{Row, FilterRow, data:flatten(data)}} />;
     } else {
-      content = <FlatList {...{...rowProps, sheetName:name, data:flatten(data), colSpecs:cols}} />;
-    }
+      content = <TreeList {...{Row, FilterRow, HistRow, data}} />;
+    } 
   }
 
   let toolElems = [];
-  for (let tool of tools){
-    if (tool === 'ImportExcel'){
-      let props = {name, refresh:addSheets, setStatus, context:{...currPage, ...currArgs}};
-      toolElems.push(<UploadManager key={tool}
-        title={`上传${desc}Excel文件`}
-      {...props} />);
-    }
-    if (tool === 'HeaderCreate'){
-      toolElems.push(<button key={tool}
-        className='button'
-        onClick={() => toggleCreate()}
-      >{`${isCreating ? '取消' : ''}创建${desc}条目`}
-      </button>)
-    }
-    if (tool === 'SaveRemote'){
-      toolElems.push(<button key="saveRemote"
-        className='button warning'
-        onClick={() => save()}
-      >保存至服务器</button>)
-    }
-    if (tool === 'ExportExcel'){
-      toolElems.push(<ExportManager key={tool} {...{name, colSpecs}}/>);
-    }
-    if (tool === 'GenerateTemplate') {
-      toolElems.push(<GenerateTemplate key={tool} {...currArgs} />)
-    }
-  }
+  // for (let tool of tools){
+  //   if (tool === 'ImportExcel'){
+  //     let props = {name, refresh:addSheets, setStatus, context:{...currPage, ...currArgs}};
+  //     toolElems.push(<UploadManager key={tool}
+  //       title={`上传${desc}Excel文件`}
+  //     {...props} />);
+  //   }
+  //   if (tool === 'HeaderCreate'){
+  //     toolElems.push(<button key={tool}
+  //       className='button'
+  //       onClick={() => toggleCreate()}
+  //     >{`${isCreating ? '取消' : ''}创建${desc}条目`}
+  //     </button>)
+  //   }
+  //   if (tool === 'SaveRemote'){
+  //     toolElems.push(<button key="saveRemote"
+  //       className='button warning'
+  //       onClick={() => save()}
+  //     >保存至服务器</button>)
+  //   }
+  //   if (tool === 'ExportExcel'){
+  //     toolElems.push(<ExportManager key={tool} {...{name, colSpecs}}/>);
+  //   }
+  //   if (tool === 'GenerateTemplate') {
+  //     toolElems.push(<GenerateTemplate key={tool} {...currArgs} />)
+  //   }
+  // }
 
   const save = () => {
-    push(name, {type:'DATA', data: sheet.data, ...currArgs});
+    push(sheetName, {type:'DATA', data: sheet.data, ...currArgs});
   }
 
   return <div className="list-wrapper">
     <div className="upload-file-bar">
       {isCascaded && <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>}
       {toolElems}
-
     </div>
     <div>
       {createManager}

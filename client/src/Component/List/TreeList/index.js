@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, forwardRef, useEffect, useCallback} from "react";
 import {DynamicSizeList as List} from 'react-window'
 import AutoSizer from "react-virtualized-auto-sizer";
-import { OverlayScrollbarsComponent as ScrollDiv } from 'overlayscrollbars-react';
 
 import {get} from '@marvintau/chua';
 
@@ -163,17 +162,21 @@ const HistoryContainer = (HistRowRenderer, FilterRowRenderer, historyRowHeight, 
 }
 
 
-export default ({colSpecs, sheetName, data, CreateRow, CreateFilterRow, rowEdit}) => 
+export default ({data, Row, HistRow, FilterRow}) => 
   <AutoSizer disableWidth={true}>
   {({height}) => {
     return <TreeList
       height={height}
       data={data}
-      historyRowRenderer={CreateRow(colSpecs, rowEdit, sheetName, {sticky:true, editable: false})}
+      historyRowRenderer={HistRow}
       historyRowHeight={HIST_LINE_HEIGHT}
-      filterRowRenderer={CreateFilterRow(colSpecs)}
+      filterRowRenderer={FilterRow}
     >
-      {CreateRow(colSpecs, rowEdit, sheetName)}
+      {Row}
     </TreeList>
   }}
   </AutoSizer>
+
+// HistRow = CreateRow(colSpecs, rowEdit, sheetName, {sticky:true, editable: false})
+// Row = CreateRow(colSpecs, rowEdit, sheetName)
+// FilterRow = CreateFilterRow(colSpecs)

@@ -2,8 +2,6 @@ import React, {useContext, useState} from 'react';
 import QRCode from 'qrcode.react';
 import {BrowserView, MobileOnlyView} from 'react-device-detect';
 
-import { OverlayScrollbarsComponent as ScrollDiv } from 'overlayscrollbars-react';
-
 import {DepRouterContext} from '../DepRouter';
 import {GrandExchangeContext} from '../GrandExchange';
 import ReactMarkdown from 'react-markdown/with-html';
@@ -67,18 +65,16 @@ const BrowserPage = () => {
 
     const {sheetName, name, desc, colSpecs, rowEdit} = currPage;
     
-    return <ScrollDiv style={{height: '100%'}} options={{scrollbars: {autoHide:'move'}}}>
-      <div className="table-container">
-        <List sheet={Sheets[sheetName]} {...{name: sheetName, desc, status, colSpecs, rowEdit}} />
-        <ScrollDiv className="page-right-side" options={{scrollbars: {autoHide:'move'}}}>
-          {qrLink && <div className="qr-block">
-            <h3>手机扫码处</h3>
-            <QRCode value={qrLinkContent(name, currArgs)} />
-          </div>}
-          {manualPage}
-        </ScrollDiv>
+    return <div className="table-container">
+      <List sheet={Sheets[sheetName]} {...{name: sheetName, desc, status, colSpecs, rowEdit}} />
+      <div className="page-right-side">
+        {qrLink && <div className="qr-block">
+          <h3>手机扫码处</h3>
+          <QRCode value={qrLinkContent(name, currArgs)} />
+        </div>}
+        {manualPage}
       </div>
-    </ScrollDiv>
+    </div>
   }
 
   return <>
