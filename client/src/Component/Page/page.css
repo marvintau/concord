@@ -4,7 +4,7 @@
 }
 
 .page-right-side {
-  height: auto;
+  height: 750px;
   overflow-y: scroll;
   margin:35px 20px 0;
   min-width: 400px;

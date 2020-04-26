@@ -59,7 +59,7 @@ const SideNavigationBar = ({directories, isHidden, children}) => {
     styles={{
       sidebar: {background: 'white', overflow:'hidden'},
       content: {
-        overflow:'hidden',
+        height: '100vh',
         display:'flex',
         flexDirection:'column',
       }

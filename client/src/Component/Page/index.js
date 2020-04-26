@@ -123,7 +123,7 @@ const MobilePage = () => {
 
 export default () => {
   return <>
-    <BrowserView style={{height: '100%'}}>
+    <BrowserView style={{height: '85%', position:'relative'}}>
       <BrowserPage />
     </BrowserView>
     <MobileOnlyView>

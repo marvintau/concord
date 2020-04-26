@@ -1,5 +1,5 @@
 import React, { useState, forwardRef, useEffect} from "react";
-import List from './List';
+import List from '@marvintau/poloscope';
 import AutoSizer from "react-virtualized-auto-sizer";
 
 import {get} from '@marvintau/chua';
@@ -62,7 +62,7 @@ export default function({itemData, Row:OrigRow, HistRow, FilterRow, overscan}){
   return <AutoSizer disableWidth={true}>
     {
       ({height}) => <List {...{itemData:displayed, Row, height, overscan}}>
-        {history.map(data => <HistRow {...{data, select:() => pop(data.__path)}} />)}
+        {history.map((data, i) => <HistRow key={i} {...{data, select:() => pop(data.__path)}} />)}
         <FilterRow filterCol={filter} />
       </List>
     }
