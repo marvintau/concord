@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import saveAs from 'file-saver';
 import Agnt from 'superagent';
 import {flat} from '@marvintau/chua';
-import{GrandExchangeContext} from '../../GrandExchange';
+import {Exchange} from '@marvintau/exchange';
 
 function s2ab(s) { 
   var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
@@ -14,7 +14,7 @@ function s2ab(s) {
 export default ({name, colSpecs}) => {
 
   const [status, setStatus] = useState('DONE');
-  const {Sheets} = useContext(GrandExchangeContext);
+  const {Sheets} = useContext(Exchange);
 
   useEffect(() => {
     if(status === 'PULL'){

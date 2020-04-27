@@ -1,5 +1,5 @@
 import React, {useContext} from "react";
-import {GrandExchangeContext} from '../../GrandExchange';
+import {Exchange} from '@marvintau/exchange';
 
 import './menu.css'
 
@@ -7,7 +7,7 @@ const Menu = ({ sheetName, data, bindMenu, bindMenuItem, hideMenu, rowEdit}) => 
 
   const {removeEnabled, insertEnabled, isSync} = rowEdit;
 
-  const {push, pull, addChildRec, remRec, addSiblyRec, evalSheet} = useContext(GrandExchangeContext);
+  const {push, pull, addChildRec, remRec, addSiblyRec, evalSheet} = useContext(Exchange);
 
   const {__path:path, __children, ...rec} = data;
 

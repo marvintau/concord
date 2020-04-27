@@ -1,7 +1,7 @@
 import React, {useState, useContext} from 'react';
 
 import Autosuggest from 'react-autosuggest';
-import {GrandExchangeContext} from '../../GrandExchange';
+import {Exchange} from '@marvintau/exchange';
 
 import Check from './check.svg';
 
@@ -23,7 +23,7 @@ export default ({sheetName, colName, disabled, children: cellData, data:{__path}
   const [delayed, setDelayed] = useState(false);
   const [suggestions, setSugg] = useState([]);
 
-  const {getSuggs, setField, evalSheet} = useContext(GrandExchangeContext);
+  const {getSuggs, setField, evalSheet} = useContext(Exchange);
 
   // the method below will be directly used by Autosuggest
   // check: https://github.com/moroshko/react-autosuggest

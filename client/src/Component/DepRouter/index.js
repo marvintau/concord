@@ -2,7 +2,7 @@ import React, {createContext, useState, useContext, useEffect} from 'react';
 import {Breadcrumb, BreadcrumbItem, ListGroup, ListGroupItem, Spinner} from 'reactstrap';
 import Sidebar from 'react-sidebar';
 
-import {GrandExchangeContext} from '../GrandExchange';
+import {Exchange} from '@marvintau/exchange';
 
 import './dep-router.css';
 
@@ -84,7 +84,7 @@ const NavigationBar = ({directories}) => {
 
 export function DepRouter({children}) {
 
-  const {pull, status, evalSheet} = useContext(GrandExchangeContext);
+  const {pull, status, evalSheet} = useContext(Exchange);
 
   const [dirs, setDirs] = useState({});
   const [currArgs, setArgs] = useState({});

@@ -1,13 +1,13 @@
 import React, {useState, useContext} from 'react';
 import TagInput from "@pathofdev/react-tag-input";
-import { GrandExchangeContext } from '../../GrandExchange';
+import { Exchange } from '@marvintau/exchange';
 
 import "@pathofdev/react-tag-input/build/index.css";
 import "./labels.css";
 
 export default ({colName, path, children}) => {
 
-  const {setField} = useContext(GrandExchangeContext);
+  const {setField} = useContext(Exchange);
 
   const [editing, setEditing] = useState(false);
   const [tags, setTags] = useState(children);

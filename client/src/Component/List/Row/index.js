@@ -8,7 +8,7 @@ import Cell from '../../Cell';
 
 import './row.css'
 
-export default (colSpecs, rowEdit, sheetName, {sticky=false, editable=true}={}) => {
+export default (colSpecs, rowEdit, sheetName, {sticky=false, editable=true, push=e=>e, pull=e=>e}={}) => {
   
   return forwardRef(({ data, style, select}, ref) => {
 
@@ -29,7 +29,7 @@ export default (colSpecs, rowEdit, sheetName, {sticky=false, editable=true}={}) 
       const {width, cellType:type='Text', attr} = colSpecs[key];
       const ColRenderer = Cell[type];
       cols.push(<div className='list-col' key={key} style={{width}}>
-        <ColRenderer data={data} sheetName={sheetName} colName={key} attr={attr}>{data[key]}</ColRenderer>
+        <ColRenderer {...{data, sheetName, colName:key, attr}} >{data[key]}</ColRenderer>
       </div>)
     }
     
@@ -42,7 +42,7 @@ export default (colSpecs, rowEdit, sheetName, {sticky=false, editable=true}={}) 
     return (rowEdit && editable)
     ? <div style={style} {...bindTrigger} {...{className, ref, onClick}}>
         {cols}
-        <Menu {...{bindMenu, bindMenuItems, hideMenu, sheetName, data, rowEdit}} />
+        <Menu {...{bindMenu, bindMenuItems, hideMenu, sheetName, data, rowEdit, push, pull}} />
       </div>
     : <div style={style} {...{className, ref, onClick}}>
         {cols}

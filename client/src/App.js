@@ -3,15 +3,15 @@ import {DepRouter} from './Component/DepRouter';
 import Page from './Component/Page';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import { GrandExchange } from "./Component/GrandExchange";
+import { ExchangeProvider } from "@marvintau/exchange";
 
 const App = () => {
 
-  return <GrandExchange>
+  return <ExchangeProvider>
     <DepRouter {...{directories:undefined}}>
       <Page />
     </DepRouter>
-  </GrandExchange>
+  </ExchangeProvider>
 };
 
 export default App;

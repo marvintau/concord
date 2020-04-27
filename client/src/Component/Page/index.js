@@ -3,7 +3,7 @@ import QRCode from 'qrcode.react';
 import {BrowserView, MobileOnlyView} from 'react-device-detect';
 
 import {DepRouterContext} from '../DepRouter';
-import {GrandExchangeContext} from '../GrandExchange';
+import {Exchange} from '@marvintau/exchange';
 import ReactMarkdown from 'react-markdown/with-html';
 import List from '../List';
 import Doc from '../Doc';
@@ -25,7 +25,7 @@ const qrLinkContent = (name, dict) => {
 
 const BrowserPage = () => {
   const {currPage, currArgs} = useContext(DepRouterContext);
-  const {Sheets, status} = useContext(GrandExchangeContext);
+  const {Sheets, status} = useContext(Exchange);
 
   const {type, name, children, qrLink, manual} = currPage;
 
@@ -83,7 +83,7 @@ const BrowserPage = () => {
 
 const MobilePage = () => {
 
-  const {fetchURL} = useContext(GrandExchangeContext);
+  const {fetchURL} = useContext(Exchange);
   const {currPage} = useContext(DepRouterContext);
   const {sheetName, desc, colSpecs} = currPage;
 

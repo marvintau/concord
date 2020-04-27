@@ -7,7 +7,7 @@ import GenerateTemplate from './GenerateTemplate';
 import useCreateManager from './useCreateManager';
 import ExportManager from './ExportManager';
 import Header from './Header';
-import {GrandExchangeContext} from '../GrandExchange';
+import {Exchange} from '@marvintau/exchange';
 import { DepRouterContext } from '../DepRouter';
 
 import CreateRow from './Row';
@@ -53,7 +53,7 @@ const flatten = (data) => {
 
 export default ({sheet, status, sheetName, desc, colSpecs, rowEdit}) => {
   
-  const {addSheets, setStatus, push} = useContext(GrandExchangeContext);
+  const {addSheets, setStatus, pull, push} = useContext(Exchange);
   const {currPage, currArgs} = useContext(DepRouterContext);
   const {toggleCreate, isCreating, createManager} = useCreateManager(sheetName, colSpecs);
 
@@ -86,7 +86,7 @@ export default ({sheet, status, sheetName, desc, colSpecs, rowEdit}) => {
 
     const Row = CreateRow(cols, rowEdit, sheetName);
     const FilterRow = CreateFilterRow(cols)
-    const HistRow = CreateRow(cols, rowEdit, sheetName, {editable: false})
+    const HistRow = CreateRow(cols, rowEdit, sheetName, {editable: false, push, pull})
 
     content = <TreeList {...{Row, FilterRow, HistRow, itemData: (!isCascaded || !folded) ? flatten(data) : data}} />;
 

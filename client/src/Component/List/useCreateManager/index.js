@@ -1,6 +1,6 @@
 import React, {useRef, useContext, useState} from 'react';
 
-import {GrandExchangeContext} from '../../GrandExchange';
+import {Exchange} from '@marvintau/exchange';
 import {DepRouterContext} from '../../DepRouter';
 
 import './create-manager.css'
@@ -9,7 +9,7 @@ export default (sheetName, colSpecs) => {
 
   const [isCreating, setCreating] = useState(false);
 
-  const {push, pull} = useContext(GrandExchangeContext);
+  const {push, pull} = useContext(Exchange);
   const {currPage} = useContext(DepRouterContext);
 
   const formElem = useRef(null);
