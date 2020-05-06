@@ -1,15 +1,16 @@
 .list-row {
+  position: relative;
   font-size: 80%;
   display: flex;
   width: 100%;
-  min-height: 35px;
+  height: 100%;
+  min-height: 40px;
   overflow-x: visible;
   user-select: none;
   align-items: center;
 }
 
 .list-col {
-  height:100%;
   flex-shrink: 0;
   align-items: center;
 }

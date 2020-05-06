@@ -64,7 +64,7 @@ const dirs = [
     sheetName: 'COLUMN_NAME_ALIASES',
     tools: ['HeaderCreate'],
     colSpecs: {
-      aliases: {desc: '等价的科目名称', width: 12, cellType: 'Labels'},
+      aliases: {desc: '表头别名', width: 12, cellType: 'Labels'},
     },
   },
   {

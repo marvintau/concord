@@ -20,7 +20,7 @@ const FilterComp = <div style={{display:'flex', width: '100%'}}>
 
 export default (colSpecs) => {
   if(Object.values(colSpecs).every(({isFilterable}) => !isFilterable)){
-    return undefined;
+    return () => <div className="filter-row"></div>;
   }
 
   return ({filterCol}) => {

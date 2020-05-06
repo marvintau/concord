@@ -65,7 +65,7 @@ const BrowserPage = () => {
 
     const {sheetName, pageName, desc, colSpecs, rowEdit} = currPage;
     console.log(`${pageName} yeah`);
-    return <div className="table-container">
+    return <div className="content-container">
       <List sheet={Sheets[sheetName]} {...{sheetName, desc, status, colSpecs, rowEdit}} />
       <div className="page-right-side">
         {qrLink && <div className="qr-block">
