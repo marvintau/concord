@@ -26,28 +26,28 @@ Phone: 176-0085-2337
 const dirs = [
   {
     loadPoint: '/',
-    name: 'Home',
+    pageName: 'Home',
     desc: '首页',
     type: 'TEXT',
     children: ['ProjectList', 'GeneralConfigure'],
   },
   {
     loadPoint: '/',
-    name: 'GeneralConfigure',
+    pageName: 'GeneralConfigure',
     desc: '通用配置',
     type: 'TEXT',
     children: ['CategoryNameAliases', 'ColAliases', 'PageConfiguration'],
   },
   {
     loadPoint: '/',
-    name: 'PageConfiguration',
+    pageName: 'PageConfiguration',
     desc: '页面导航',
     type: 'TEXT',
     children: ['']
   },
   {
     loadPoint: '/',
-    name: 'CategoryNameAliases',
+    pageName: 'CategoryNameAliases',
     desc: '科目别名',
     type: 'DATA',
     sheetName: 'CATEGORY_NAME_ALIASES',
@@ -58,7 +58,7 @@ const dirs = [
   },
   {
     loadPoint: '/',
-    name: 'ColAliases',
+    pageName: 'ColAliases',
     desc: '表头别名',
     type: 'DATA',
     sheetName: 'COLUMN_NAME_ALIASES',
@@ -69,7 +69,7 @@ const dirs = [
   },
   {
     loadPoint: '/',
-    name: 'ProjectList',
+    pageName: 'ProjectList',
     desc: '项目列表',
     type: 'DATA',
     sheetName: 'PROJECT',
@@ -83,7 +83,7 @@ const dirs = [
   },
   {
     loadPoint: '/',
-    name: 'PROJECT',
+    pageName: 'PROJECT',
     desc: '项目页',
     type: 'TEXT',
     refreshData: true,
@@ -93,14 +93,14 @@ const dirs = [
   },
   {
     loadPoint: '/',
-    name: 'Confirmation',
+    pageName: 'Confirmation',
     desc: '函证管理',
     type: 'TEXT',
     children: ['ConfirmationManagement', 'ConfirmationTemplateManagement'],
   },
   {
     loadPoint: '/',
-    name: 'ConfirmationManagement',
+    pageName: 'ConfirmationManagement',
     desc: '函证状态管理',
     type: 'DATA',
     sheetName: 'CONFIRMATION_MANAGEMENT',
@@ -116,7 +116,7 @@ const dirs = [
   },
   {
     loadPoint: '/',
-    name: 'ConfirmationTemplateManagement',
+    pageName: 'ConfirmationTemplateManagement',
     desc: '询证函模版管理',
     type: 'DATA',
     sheetName: 'CONFIRMATION_TEMPLATE',
@@ -130,7 +130,7 @@ const dirs = [
   },
   {
     loadPoint: '/',
-    name: 'Finance',
+    pageName: 'Finance',
     desc: '财务与报表管理',
     type: 'TEXT',
     sheetName: undefined,
@@ -139,7 +139,7 @@ const dirs = [
   },
   {
     loadPoint: '/',
-    name: 'Balance',
+    pageName: 'Balance',
     desc: '余额表',
     type: 'DATA',
     isCascaded: true,
@@ -156,7 +156,7 @@ const dirs = [
   },
   {
     loadPoint: '/',
-    name: 'CashflowStatement',
+    pageName: 'CashflowStatement',
     desc: '现金流量表',
     type: 'DATA',
     sheetName: 'CASHFLOW_WORKSHEET',
@@ -175,8 +175,8 @@ const dirs = [
 (async () => {
 
   for (let dir of dirs) {
-    let {name} = dir;
-    dir.manual = processManualPage(name);
+    let {pageName} = dir;
+    dir.manual = processManualPage(pageName);
   }
 
   try {
@@ -222,7 +222,7 @@ async function fetchDir(givenLoadPoint='/') {
 
   const loaded = dirs.filter(({loadPoint}) => loadPoint === givenLoadPoint);
 
-  return Object.fromEntries(loaded.map(({loadPoint, name, ...rest}) => [name, {name, ...rest}]))
+  return Object.fromEntries(loaded.map(({loadPoint, pageName, ...rest}) => [pageName, {pageName, ...rest}]))
 }
 
 module.exports = {fetchDir}

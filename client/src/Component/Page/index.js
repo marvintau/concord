@@ -27,7 +27,7 @@ const BrowserPage = () => {
   const {currPage, currArgs} = useContext(DepRouterContext);
   const {Sheets, status} = useContext(Exchange);
 
-  const {type, name, children, qrLink, manual} = currPage;
+  const {type, pageName, children, qrLink, manual} = currPage;
 
   const manualPage = <ReactMarkdown
     source={manual}
@@ -46,7 +46,7 @@ const BrowserPage = () => {
       <div className="content">此页无描述</div>
       {qrLink && <div className="qr-block">
         <h3>手机扫码处</h3>
-        <QRCode value={qrLinkContent(name, currArgs)} />
+        <QRCode value={qrLinkContent(pageName, currArgs)} />
       </div>}
     </div>
   }
@@ -56,21 +56,21 @@ const BrowserPage = () => {
       {manualPage}
       {qrLink && <div className="qr-block">
         <h3>手机扫码处</h3>
-        <QRCode value={qrLinkContent(name, currArgs)} />
+        <QRCode value={qrLinkContent(pageName, currArgs)} />
       </div>}
     </div>
   }
 
   if (type === 'DATA'){
 
-    const {sheetName, name, desc, colSpecs, rowEdit} = currPage;
-    
+    const {sheetName, pageName, desc, colSpecs, rowEdit} = currPage;
+    console.log(`${pageName} yeah`);
     return <div className="table-container">
-      <List sheet={Sheets[sheetName]} {...{name: sheetName, desc, status, colSpecs, rowEdit}} />
+      <List sheet={Sheets[sheetName]} {...{sheetName, desc, status, colSpecs, rowEdit}} />
       <div className="page-right-side">
         {qrLink && <div className="qr-block">
           <h3>手机扫码处</h3>
-          <QRCode value={qrLinkContent(name, currArgs)} />
+          <QRCode value={qrLinkContent(pageName, currArgs)} />
         </div>}
         {manualPage}
       </div>

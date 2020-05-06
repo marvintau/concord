@@ -18,6 +18,7 @@ async function dataProc(fileBuffer, dataName, context){
   console.log('retrieving', dataName)
 
   if (!(dataName in uploadDict)){
+    console.error(`Upload handler not implemented. Did nothing.`)
     return {error: 'DEAD_NOT_IMPL'}
   }
 
@@ -26,6 +27,7 @@ async function dataProc(fileBuffer, dataName, context){
     return {ok: 'DONE', data:result}
   } catch (er) {
     console.log(er);
+    console.error('The error above comes from the upload handler');
     return {error: 'DEAD_PROC_ERROR'}
   }
 }

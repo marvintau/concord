@@ -95,10 +95,9 @@ export default ({sheet, status, sheetName, desc, colSpecs, rowEdit}) => {
   let toolElems = [];
   for (let tool of tools){
     if (tool === 'ImportExcel'){
+      console.log(`${sheetName} before passing into upload manager`)
       let props = {name:sheetName, refresh:addSheets, setStatus, context:{...currPage, ...currArgs}};
-      toolElems.push(<UploadManager key={tool}
-        title={`上传${desc}Excel文件`}
-      {...props} />);
+      toolElems.push(<UploadManager key={tool} title={`上传${desc}Excel文件`} {...props} />);
     }
     if (tool === 'HeaderCreate'){
       toolElems.push(<button key={tool}
