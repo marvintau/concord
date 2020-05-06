@@ -25,7 +25,7 @@
     "debug": "~2.6.9",
     "del": "^5.1.0",
     "docx-templates": "^3.1.1",
-    "easyqrcodejs-nodejs": "^3.5.1",
+    "easyqrcodejs-nodejs": "^3.5.4",
     "file-saver": "^2.0.2",
     "http-errors": "~1.6.3",
     "koa": "^2.11.0",
