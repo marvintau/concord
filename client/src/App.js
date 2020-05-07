@@ -5,9 +5,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { ExchangeProvider } from "@marvintau/exchange";
 
+const defaultColumnAliases = {
+  借方 : 'md',
+  贷方 : 'mc',
+  期初 : 'mb',
+  期末 : 'me'
+}
+
 const App = () => {
 
-  return <ExchangeProvider>
+  return <ExchangeProvider {...{defaultColumnAliases}}>
     <DepRouter {...{directories:undefined}}>
       <Page />
     </DepRouter>

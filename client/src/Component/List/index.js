@@ -92,6 +92,10 @@ export default ({sheet, status, sheetName, desc, colSpecs, rowEdit}) => {
 
   }
 
+  const save = () => {
+    push(sheetName, {type:'DATA', data: sheet.data, ...currArgs});
+  }
+
   let toolElems = [];
   for (let tool of tools){
     if (tool === 'ImportExcel'){
@@ -118,10 +122,6 @@ export default ({sheet, status, sheetName, desc, colSpecs, rowEdit}) => {
     if (tool === 'GenerateTemplate') {
       toolElems.push(<GenerateTemplate key={tool} {...currArgs} />)
     }
-  }
-
-  const save = () => {
-    push(sheetName, {type:'DATA', data: sheet.data, ...currArgs});
   }
 
   return <div className="list-wrapper">

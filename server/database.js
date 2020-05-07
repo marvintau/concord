@@ -25,7 +25,6 @@ function setTable(crit, table, doc) {
   return db.update(crit, {$set: {[table]: doc}}, {upsert: true});
 }
 
-
 function insertRec (table, rec) {
   if (table === undefined){
     throw {error: 'DEAD_TABLE_NOT_SPECIFIED'}

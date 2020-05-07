@@ -5,7 +5,7 @@ import { Exchange } from '@marvintau/exchange';
 import "@pathofdev/react-tag-input/build/index.css";
 import "./labels.css";
 
-export default ({colName, path, children}) => {
+export default ({sheetName, colName, data:{__path:path}, children}) => {
 
   const {setField} = useContext(Exchange);
 
@@ -14,7 +14,7 @@ export default ({colName, path, children}) => {
 
   const set = (newTags) => {
     setTags(newTags);
-    setField(path, colName, newTags);
+    setField(sheetName, path, colName, newTags);
   }
 
   return <div className='labels-wrapper'>

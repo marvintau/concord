@@ -51,7 +51,7 @@ const dirs = [
     desc: '科目别名',
     type: 'DATA',
     sheetName: 'CATEGORY_NAME_ALIASES',
-    tools: ['HeaderCreate', 'ImportExcel'],
+    tools: ['ImportExcel', 'SaveRemote'],
     colSpecs: {
       alias: {desc: '科目别名', width: 12, cellType:'Labels'},
     },
@@ -120,7 +120,7 @@ const dirs = [
     desc: '询证函模版管理',
     type: 'DATA',
     sheetName: 'CONFIRMATION_TEMPLATE',
-    tools: ['ImportExcel', 'HeaderCreate'],
+    tools: ['HeaderCreate'],
     colSpecs: {
       tempName: {desc: '模版名称', width: 4, isFilerable: true},
       tempType: {desc: '模版类型', width: 4, isFilerable: true},
@@ -209,13 +209,6 @@ const dirs = [
     console.log(err);
   }
 })();
-
-(async () => {
-  const equivalent = require('./upload-proc/category-name-aliases');
-  const fileBuffer = await fs.readFile(`${__dirname}/files/EQUIVALENT_CATEGORY_NAMES.xlsx`);
-  equivalent(fileBuffer);
-})();
-
 
 async function fetchDir(givenLoadPoint='/') {
   const dirs = await retrieveRecs({table: 'DIRS'});

@@ -32,12 +32,21 @@ export default ({sheetName, colName, disabled, children: cellData, data:{__path}
     renderSuggestion : (sugg) => <div>{sugg.toString()}</div>,
     onSuggestionsFetchRequested : ({ value }) => {
       if (!delayed){
-        console.log('inputing ');
         setDelayed(true);
         setTimeout(() => {
           setDelayed(false);
-          setSugg(getSuggs(value))
-        }, 500);
+
+          const curr = value.split(':')[1].split('/').slice(-1)[0];
+          const suggs = getSuggs(value);
+          const transSuggs = suggs.every(sugg => typeof sugg === 'string')
+                ? suggs
+                : suggs.map((sugg) => sugg.ccode_name ? sugg.ccode_name : sugg.toString());
+
+          console.log(transSuggs, curr);
+          const filteredSuggs = transSuggs.filter(sugg => sugg.includes(curr));
+
+          setSugg(filteredSuggs.length > 0 ? filteredSuggs : transSuggs)
+        }, 100);
       }
     },
     onSuggestionsClearRequested : () => setSugg([]),
