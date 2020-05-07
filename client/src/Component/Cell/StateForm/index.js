@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect} from 'react';
 import {Input} from 'reactstrap';
 import QRScanner from '../../QRScanner';
 
-import { Exchange } from '@marvintau/exchange';
+import { Exchange } from '../../Exchange';
 import './conf-status.css';
 
 export default ({sheetName, colName, data:{__path:path, __children, ...restRec}, children={}, isMobile=false}) => {

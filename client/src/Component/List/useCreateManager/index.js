@@ -1,6 +1,6 @@
 import React, {useRef, useContext, useState} from 'react';
 
-import {Exchange} from '@marvintau/exchange';
+import {Exchange} from '../../Exchange';
 import {DepRouterContext} from '../../DepRouter';
 
 import './create-manager.css'

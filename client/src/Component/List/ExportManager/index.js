@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import saveAs from 'file-saver';
 import Agnt from 'superagent';
 import {flat} from '@marvintau/chua';
-import {Exchange} from '@marvintau/exchange';
+import {Exchange} from '../../Exchange';
 
 function s2ab(s) { 
   var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer

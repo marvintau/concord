@@ -3,7 +3,7 @@ import QRCode from 'qrcode.react';
 import {BrowserView, MobileOnlyView} from 'react-device-detect';
 
 import {DepRouterContext} from '../DepRouter';
-import {Exchange} from '@marvintau/exchange';
+import {Exchange} from '../Exchange';
 import ReactMarkdown from 'react-markdown/with-html';
 import List from '../List';
 import Doc from '../Doc';

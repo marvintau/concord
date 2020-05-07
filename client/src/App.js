@@ -3,7 +3,7 @@ import {DepRouter} from './Component/DepRouter';
 import Page from './Component/Page';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import { ExchangeProvider } from "@marvintau/exchange";
+import { ExchangeProvider } from "./Component/Exchange";
 
 const defaultColumnAliases = {
   借方 : 'md',

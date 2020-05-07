@@ -1,6 +1,6 @@
 import React, {useState, useContext} from 'react';
 import TagInput from "@pathofdev/react-tag-input";
-import { Exchange } from '@marvintau/exchange';
+import { Exchange } from '../../Exchange';
 
 import "@pathofdev/react-tag-input/build/index.css";
 import "./labels.css";

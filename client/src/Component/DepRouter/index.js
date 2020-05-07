@@ -2,7 +2,7 @@ import React, {createContext, useState, useContext, useEffect} from 'react';
 import {Breadcrumb, BreadcrumbItem, ListGroup, ListGroupItem, Spinner} from 'reactstrap';
 import Sidebar from 'react-sidebar';
 
-import {Exchange} from '@marvintau/exchange';
+import {Exchange} from '../Exchange';
 
 import './dep-router.css';
 

@@ -1,7 +1,7 @@
 import React, {useState, useContext} from 'react';
 
 import Autosuggest from 'react-autosuggest';
-import {Exchange} from '@marvintau/exchange';
+import {Exchange} from '../../Exchange';
 
 import Check from './check.svg';
 
@@ -30,7 +30,10 @@ export default ({sheetName, colName, disabled, children: cellData, data:{__path}
   const funcs = {
     getSuggestionValue : (sugg) => getSuggValue(value, sugg),
     renderSuggestion : (sugg) => <div>{sugg.toString()}</div>,
-    onSuggestionsFetchRequested : ({ value }) => {
+    onSuggestionsFetchRequested : ({ value:rawValue }) => {
+
+      const value = rawValue.replace('\n', '');
+
       if (!delayed){
         setDelayed(true);
         setTimeout(() => {

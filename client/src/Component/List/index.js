@@ -7,7 +7,7 @@ import GenerateTemplate from './GenerateTemplate';
 import useCreateManager from './useCreateManager';
 import ExportManager from './ExportManager';
 import Header from './Header';
-import {Exchange} from '@marvintau/exchange';
+import {Exchange} from '../Exchange';
 import { DepRouterContext } from '../DepRouter';
 
 import CreateRow from './Row';

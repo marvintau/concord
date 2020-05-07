@@ -1,5 +1,5 @@
 import React, {useContext} from "react";
-import {Exchange} from '@marvintau/exchange';
+import {Exchange} from '../../Exchange';
 
 import './menu.css'
 
