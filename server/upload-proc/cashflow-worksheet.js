@@ -7,8 +7,10 @@ const {columnNameRemap, readSingleSheet} = require('./utils');
 
 let header = [
   ['条目', 'desc'],
+  ['题目', 'desc'],
   ['项目', 'desc'],
   ['item', 'desc'],
+  ['条目-输入', 'ref'],
   ['取值', 'ref'],
   ['expr', 'ref'],
   ['value', 'ref']
