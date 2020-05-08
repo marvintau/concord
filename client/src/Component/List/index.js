@@ -117,7 +117,7 @@ export default ({sheet, status, sheetName, desc, colSpecs, rowEdit}) => {
       >保存至服务器</button>)
     }
     if (tool === 'ExportExcel'){
-      toolElems.push(<ExportManager key={tool} {...{name:sheetName, colSpecs}}/>);
+      toolElems.push(<ExportManager key={tool} {...{name:sheetName, colSpecs, ...currPage, ...currArgs}}/>);
     }
     if (tool === 'GenerateTemplate') {
       toolElems.push(<GenerateTemplate key={tool} {...currArgs} />)

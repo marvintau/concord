@@ -11,7 +11,7 @@ function s2ab(s) {
   return buf;    
 }
 
-export default ({name, colSpecs}) => {
+export default ({name, colSpecs, desc, companyName}) => {
 
   const [status, setStatus] = useState('DONE');
   const {Sheets} = useContext(Exchange);
@@ -27,7 +27,7 @@ export default ({name, colSpecs}) => {
           const res = await Agnt.post('/export').send({colSpecs, data});
           const buffer = s2ab(res.text);
           console.log(res);
-          saveAs(new Blob([buffer],{type:"application/octet-stream"}), `导出-${name}.xlsx`);
+          saveAs(new Blob([buffer],{type:"application/octet-stream"}), `导出-${companyName}-${desc}.xlsx`);
           setStatus('DONE');
         } catch (err) {
           console.error(err);
