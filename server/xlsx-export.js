@@ -15,7 +15,7 @@ function exportExcel(colSpecs, data){
           newRec[`${desc}-备注`] = code;
           break;
         default:
-          newRec[desc] = rec[key].replace(/#/g, '')
+          newRec[desc] = rec[key];
       }
     }
     return newRec;
