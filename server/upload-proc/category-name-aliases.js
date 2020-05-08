@@ -13,7 +13,7 @@ const EQUIVALENT = async (buffer) => {
     }
   }
 
-  data = data.filter(e => e.length > 1).map(e => ({alias: e.slice(1)}));
+  data = data.filter(e => e.length > 1).map(alias => ({alias}));
 
   createRecs('CATEGORY_NAME_ALIASES', data);
 

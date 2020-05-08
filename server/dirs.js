@@ -51,7 +51,7 @@ const dirs = [
     desc: '科目别名',
     type: 'DATA',
     sheetName: 'CATEGORY_NAME_ALIASES',
-    tools: ['ImportExcel', 'SaveRemote'],
+    tools: ['ImportExcel', 'HeaderCreate', 'SaveRemote'],
     colSpecs: {
       alias: {desc: '科目别名', width: 12, cellType:'Labels'},
     },
