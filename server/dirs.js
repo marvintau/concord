@@ -167,15 +167,15 @@ const dirs = [
     colSpecs: {
       ccode_name: {desc: '科目名称', width: 2, isFilterable: true},
       // iyear: {desc:'会计年', width: 1, isFilerable: true},
-      iperiod: {desc:'会计月', width: 1, isFilerable: true},
+      // iperiod: {desc:'会计月', width: 1, isFilerable: true},
       // dbill_date: {desc:'记账时间', width: 1, isFilerable: true},
-      voucher_id: {desc:'凭证编号', width: 1, isFilerable: true},
-      voucher_line_num: {desc:'行号', width: 1, isFilerable: true},
+      digest: {desc:'摘要', width: 4, isFilerable: true},
+      // voucher_line_num: {desc:'行号', width: 1, isFilerable: true},
       // ccode: {desc: '编码', width: 1, isFilterable: true},
-      ccode_dest: {desc: '对方科目', width: 1, isFilterable: true},
       md: {desc: '借方发生', width: 1, isFilterable: true, cellType:'Number'},
       mc: {desc: '贷方发生', width: 1, isFilterable: true, cellType:'Number'},
-      digest: {desc:'摘要', width: 4, isFilterable: true}
+      dest_ccode_name: {desc: '对方科目', width: 2, isFilterable: true},
+      analyzed: {desc:'已分析', width: 1}
     },
   },
   {

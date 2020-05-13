@@ -6,7 +6,7 @@
 
 .text-plain {
   margin: 0.5rem;
-  font-weight: bold;
+  /* font-weight: bold; */
   letter-spacing: -0.02rem;
 }
 
@@ -26,4 +26,29 @@
 .text-header-3{
   font-weight: 700;
   margin-left: 10px;
+}
+
+.text-badge {
+  min-width: 100px;
+  text-align: right;
+  font-family: 'Avenir Next Condensed', 'Arial Narrow';
+  border-radius: 3px;
+  padding: 3px 7px;
+  margin: 0px 5px;
+  font-weight: 700;
+}
+
+.warn { 
+  color: black;
+  background-color: var(--yellow);
+}
+
+.info {
+  color: white;
+  background-color: var(--info);
+}
+
+.succ {
+  color: white;
+  background-color: var(--green);
 }

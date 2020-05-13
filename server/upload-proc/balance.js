@@ -19,8 +19,8 @@ let header = [
   ['期初余额借方' , 'mbd'],
   ['期初余额贷方' , 'mbc'],
   
-  ['本期发生借方', 'md'],
   ['账面借方发生额' , 'md'],
+  ['本期发生借方', 'md'],
   ['未审借方发生额' , 'md'],
   ['借方发生额', 'md'],
 
@@ -43,10 +43,10 @@ async function balance(fileBuffer, context){
   const {project_id} = context;
 
   let data = readSingleSheet(fileBuffer);
+  console.log(data, 'processed');
   data = columnNameRemap(data, header);
   data = uniq(data, 'ccode');
   data = cascade(data, 'ccode');
-  console.log(data.length, 'processed');
   // await fs.writeFile(path.resolve(`./file_store/PROJECT/${pid}/BALANCE`), JSON.stringify(data));
 
   const entry = {data, indexColumn:'ccode_name'};

@@ -23,12 +23,12 @@ async function dataProc(fileBuffer, dataName, context){
     throw {code: 'DEAD_NOT_IMPL'}
   }
 
-  try {
+  // try {
     const result = await uploadDict[dataName](fileBuffer, context);
     return {ok: 'DONE', data:result}
-  } catch ({code}) {
-    throw {code}
-  }
+  // } catch ({code}) {
+  //   throw {code}
+  // }
 }
 
 module.exports = dataProc
