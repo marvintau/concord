@@ -5,7 +5,7 @@ async function retrieve() {
   const data = await retrieveRecs({table: 'CATEGORY_NAME_ALIASES'});
   console.log('category name aliases', data.length);
   if (data.length === 0){
-    throw {code: 'NOT_FOUND'};
+    throw {code: 'DEAD_NOT_FOUND'};
   }
   return {data};
 }

@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import QRCode from 'qrcode.react';
 import {BrowserView, MobileOnlyView} from 'react-device-detect';
 
@@ -26,8 +26,14 @@ const qrLinkContent = (name, dict) => {
 const BrowserPage = () => {
   const {currPage, currArgs} = useContext(DepRouterContext);
   const {Sheets, status} = useContext(Exchange);
+  
+  const [, forceUpdate] = useState();
+  useEffect(() => {
+    console.log(status, 'changed')
+    forceUpdate();
+  }, [status])
 
-  const {type, pageName, children, qrLink, manual} = currPage;
+  const {type, pageName, children, qrLink, manual, isHidingManual} = currPage;
 
   const manualPage = <ReactMarkdown
     source={manual}
@@ -53,7 +59,7 @@ const BrowserPage = () => {
 
   if (type === 'TEXT') {
     return <div className="page-text">
-      {manualPage}
+      {!isHidingManual && manualPage}
       {qrLink && <div className="qr-block">
         <h3>手机扫码处</h3>
         <QRCode value={qrLinkContent(pageName, currArgs)} />
@@ -67,13 +73,13 @@ const BrowserPage = () => {
     console.log(`${pageName} yeah`);
     return <div className="content-container">
       <List sheet={Sheets[sheetName]} {...{sheetName, desc, status, colSpecs, rowEdit}} />
-      <div className="page-right-side">
+      {!isHidingManual && <div className="page-right-side">
         {qrLink && <div className="qr-block">
           <h3>手机扫码处</h3>
           <QRCode value={qrLinkContent(pageName, currArgs)} />
         </div>}
         {manualPage}
-      </div>
+      </div>}
     </div>
   }
 

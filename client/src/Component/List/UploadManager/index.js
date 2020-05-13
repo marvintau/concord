@@ -40,6 +40,7 @@ export default function({title="上传文件", name, context={}, refresh=ident, 
                     console.log('uploaded ok!')
                     refresh({[name]:data});
                 } else {
+                    console.log(error, 'upload error');
                     setStatus(error);
                 }
             });

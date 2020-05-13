@@ -39,18 +39,12 @@ router.post('/pull/:data_name', async ctx => {
   const {data_name} = ctx.params;
   try {
     if (retrieveProc[data_name] === undefined){
-      throw {code: 'NO_HANDLER'}
+      throw {code: 'DEAD_NOT_IMPL_PULL'}
     }
     ctx.body = await retrieveProc[data_name](ctx.request.body);
-  } catch (error) {
-    console.log('error on pull', data_name, error)
+  } catch ({code}) {
+    ctx.body = {error: code || 'DEAD_UNKNOWN_FETCH_ERROR'}
 
-    const msgs ={
-      'NOT_FOUND' : 'DEAD_NOT_FOUND',
-      'NO_HANDLER' : 'DEAD_NOT_IMPL'
-    }
-
-    ctx.body = {error: msgs[error.code], data_name}
   }
 })
 
@@ -58,30 +52,24 @@ router.post('/fetch/:data_name', async ctx => {
   const {data_name} = ctx.params;
   try {
     if (retrieveProc[data_name] === undefined){
-      throw {code: 'NO_HANDLER'}
+      throw {code: 'DEAD_NOT_IMPL_PULL'}
     }
     ctx.body = await retrieveProc[data_name](ctx.request.body, 'fetch');
-  } catch (error) {
-    console.log('error on fetch', data_name, error)
-
-    const msgs ={
-      'NOT_FOUND' : 'DEAD_NOT_FOUND',
-      'NO_HANDLER' : 'DEAD_NOT_IMPL'
-    }
-
-    ctx.body = {error: msgs[error.code]}
+  } catch ({code}) {
+    ctx.body = {error: code || 'DEAD_UNKNOWN_FETCH_ERROR'}
   }
 })
 
 router.post('/push/:data_name', async ctx => {
   const {data_name} = ctx.params;
   try {
-    const res = await updateProc[data_name](ctx.request.body);
-    console.log(res, 'push')
+    if (updateProc[data_name] === undefined){
+      throw {code: 'DEAD_NOT_IMPL_PUSH'}
+    }
+    await updateProc[data_name](ctx.request.body);
     ctx.body = {result: 'DONE'};
-  } catch (error) {
-    console.log(error, 'push');
-    ctx.body = {error: error.code}
+  } catch ({code}) {
+    ctx.body = {error: code || 'DEAD_UNKNOWN_PUSH_ERROR'}
   }
 })
 
@@ -109,8 +97,15 @@ router.post('/upload/:data_name', upload.single('file'), async ctx => {
   console.log(ctx.request.body, 'uploaded form');
   const file = ctx.request.file;
   console.log(file, 'uploaded file');
-  const res = await uploadProc(file.buffer, data_name, ctx.request.body);
-  ctx.body = res;
+  try{
+    const res = await uploadProc(file.buffer, data_name, ctx.request.body);
+    ctx.body = res;
+  } catch (error){
+
+    console.log(error, 'on upload')
+    const {code} = error;
+    ctx.body = {error: code || 'DEAD_UNKNOWN_UPLOAD_ERROR'}
+  }
 })
 
 router.post('/pages', async ctx => {

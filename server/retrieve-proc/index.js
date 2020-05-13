@@ -1,3 +1,4 @@
+const ACCRUAL_ANALYSIS = require('./accrual-analysis');
 const BALANCE = require('./balance');
 const PROJECT = require('./project');
 const CASHFLOW_WORKSHEET = require('./cashflow-worksheet');
@@ -6,6 +7,7 @@ const CONFIRMATION_MANAGEMENT = require('./confirmation-management');
 const CONFIRMATION_TEMPLATE = require('./confirmation-template');
 
 module.exports = {
+  ACCRUAL_ANALYSIS,
   BALANCE,
   PROJECT,
   CASHFLOW_WORKSHEET,

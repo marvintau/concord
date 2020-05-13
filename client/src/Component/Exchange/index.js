@@ -133,6 +133,9 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
       for (let sheetName of sheetNameList){
   
         try{
+
+          console.log(currPage, 'check payload before send')
+
           const {body:{data, indexColumn, error}} = await Agnt.post(`/pull/${sheetName}`).send(currPage);
           console.log(data, 'pull')
           if (error) {
@@ -178,7 +181,7 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
   }
 
   return <Exchange.Provider value={{
-      Sheets, status, addSheets, refreshSheet, evalSheet,
+      Sheets, status, setStatus, addSheets, refreshSheet, evalSheet,
       setField, addSiblyRec, addChildRec, remRec, getSuggs,
       pull, push, fetchURL,
     }}>

@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 
 import {Spinner} from 'reactstrap';
 import TreeList from './TreeList';
@@ -27,12 +27,17 @@ const LoadIndicator = ({status}) => {
 };
 
 const ErrorIndicator = ({status}) => {
+  console.log(status, 'error indicator' )
   const text = {
     'DEAD_LOAD' : '网络错误，请刷新重试，或联系开发人员',
     'DEAD_INFO' : '未指定数据和远程地址。请联系开发人员',
     'DEAD_NOT_FOUND' : '没有找到数据，可能是您还没上传',
     'DEAD_NOT_IMPL' : '服务器上没有对应数据的处理方法，请联系开发人员',
-    'DEAD_PROC_ERROR' : '处理数据时发生了错误，请联系开发人员'
+    'DEAD_PROC_ERROR' : '处理数据时发生了错误，请联系开发人员',
+    'DEAD_BALANCE_NOT_FOUND': '需要您先上传科目余额表',
+    'DEAD_UNKNOWN_UPLOAD_ERROR': '上传时发生了错误',
+    'DEAD_UNKNOWN_FETCH_ERROR': '获取数据时发生了错误',
+    'DEAD_UNKNOWN_PUSH_ERROR': '更新数据库时发生了错误',
   }[status];
   return <div className="nodata-indicator">
     <div className="bad-icon" />
@@ -51,7 +56,7 @@ const flatten = (data) => {
   return res;
 }
 
-export default ({sheet, status, sheetName, desc, colSpecs, rowEdit}) => {
+export default ({sheet, sheetName, status, desc, colSpecs, rowEdit}) => {
   
   const {addSheets, setStatus, pull, push} = useContext(Exchange);
   const {currPage, currArgs} = useContext(DepRouterContext);
@@ -60,6 +65,12 @@ export default ({sheet, status, sheetName, desc, colSpecs, rowEdit}) => {
   const {isCascaded, tools} = currPage;
   const [folded, setFold] = useState(true);
   
+  // const [, forceUpdate] = useState();
+  // useEffect(() => {
+  //   console.log('status changed');
+  //   forceUpdate();
+  // }, [status])
+
   // Due to the legacy code and convention (bootstrap grid), the width is represented
   // in twelfths. However, as long as we are not going to give exact column width (in
   // pixels), the conversion here is mandatory. Or the width "1" will be considered as 
@@ -100,6 +111,7 @@ export default ({sheet, status, sheetName, desc, colSpecs, rowEdit}) => {
   for (let tool of tools){
     if (tool === 'ImportExcel'){
       console.log(`${sheetName} before passing into upload manager`)
+      console.log(setStatus, 'setStatus')
       let props = {name:sheetName, refresh:addSheets, setStatus, context:{...currPage, ...currArgs}};
       toolElems.push(<UploadManager key={tool} title={`上传${desc}Excel文件`} {...props} />);
     }

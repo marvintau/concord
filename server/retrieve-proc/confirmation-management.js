@@ -9,7 +9,7 @@ async function retrieve(context, fetch) {
     const data = await retrieveRecs({table: 'CONFIRMATION_MANAGEMENT', project_id, ID})
     
     if (data.length === 0) {
-      throw {code: 'NOT_FOUND'};
+      throw {code: 'DEAD_NOT_FOUND'};
     } else {
       return {data: data[0]};
     }
@@ -19,7 +19,7 @@ async function retrieve(context, fetch) {
     const data = await retrieveRecs({table: 'CONFIRMATION_MANAGEMENT', project_id});
     console.log('confirmation', data);
     if (data.length === 0){
-      throw {code: 'NOT_FOUND'};
+      throw {code: 'DEAD_NOT_FOUND'};
     }
     return {data};
   }

@@ -9,7 +9,7 @@ const db = new Datastore({
 // for creating flattened data
 function createRecs(table, records) {
   if (table === undefined) {
-    throw {error: 'DEAD_TABLE_NOT_SPECIFIED'}
+    throw {code: 'DEAD_TABLE_NOT_SPECIFIED'}
   }
   const preparedRecs = records.map(rec => ({...rec, table}));
   return db.insert(preparedRecs);
@@ -20,14 +20,14 @@ function createRecs(table, records) {
 // be associated with the ID.
 function setTable(crit, table, doc) {
   if (table === undefined) {
-    throw {error: 'DEAD_TABLE_NOT_SPECIFIED'}
+    throw {code: 'DEAD_TABLE_NOT_SPECIFIED'}
   }
-  return db.update(crit, {$set: {[table]: doc}}, {upsert: true});
+  return db.update(crit, {$set: {[`data.${table}`]: doc}}, {upsert: true});
 }
 
 function insertRec (table, rec) {
   if (table === undefined){
-    throw {error: 'DEAD_TABLE_NOT_SPECIFIED'}
+    throw {code: 'DEAD_TABLE_NOT_SPECIFIED'}
   } else {
     return db.insert({...rec, table})
   }
@@ -48,10 +48,12 @@ function retrieveRecs (crit) {
 async function retrieveTable (crit, table) {
   const doc = await db.findOne(crit);
   console.log(doc, 'retrieve table')
-  if (doc[table] === undefined){
-    throw {code: 'NOT_FOUND'}
+  if (doc.data === undefined){
+    throw {code: 'DEAD_NOT_FOUND'}
+  } else if (doc.data[table] === undefined){
+    throw {code: 'DEAD_NOT_FOUND'}
   } else {
-    return doc[table];
+    return doc.data[table];
   }
 }
 

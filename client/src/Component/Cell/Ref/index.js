@@ -39,7 +39,11 @@ export default ({sheetName, colName, disabled, children: cellData, data:{__path}
         setTimeout(() => {
           setDelayed(false);
 
-          const curr = value.split(':')[1].split('/').slice(-1)[0];
+          console.log(value, 'before split')
+          const exprType = value.split(':').length;
+          const curr = exprType > 1
+          ? value.split(':')[1].split('/').slice(-1)[0]
+          : value;
           const suggs = getSuggs(value);
           const transSuggs = suggs.every(sugg => typeof sugg === 'string')
                 ? suggs
