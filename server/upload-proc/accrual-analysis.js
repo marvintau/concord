@@ -1,7 +1,11 @@
 const {retrieveTable, setTable} = require('../database');
 
-const {uniq, cascade, readSingleSheet, columnNameRemap} = require('./utils');
+const {readSingleSheet, columnNameRemap} = require('./utils');
 
+const group = require('@marvintau/chua/src/group');
+const flat = require('@marvintau/chua/src/flat')
+// console.log(group);
+ 
 let header = [
   ['会计年' , 'iyear'],
   ['会计月' , 'iperiod'],
@@ -51,47 +55,41 @@ function assignDest(rec1, rec2, label='succ'){
       analyzed: {label}
     }
   };
-  // rec1.dest_ccode_name = rec2.ccode_name;
-  // rec1.dest_ccode = rec2.ccode;
-  // rec2.dest_ccode_name = rec1.ccode_name;
-  // rec2.dest_ccode = rec1.ccode;
-  // rec1.analyzed = {label};
-  // rec2.analyzed = {label};
   Object.assign(rec1, getNewVal(rec2));
   Object.assign(rec2, getNewVal(rec1));
 }
 
-function clear(group){
-  while(group.length > 0){
-    group.pop();
+function clear(groupEntries){
+  while(groupEntries.length > 0){
+    groupEntries.pop();
   }
 }
 
-function handleSingleDrMultiCr(group, label) {
-  const dr = group.shift();
-  const brokenDrs = group.map(({mc}) => ({...dr, md: mc}));
-  for (let i = 0; i < group.length; i++){
-    assignDest(group[i], brokenDrs[i], label);
+function handleSingleDrMultiCr(groupEntries, label) {
+  const dr = groupEntries.shift();
+  const brokenDrs = groupEntries.map(({mc}) => ({...dr, md: mc}));
+  for (let i = 0; i < groupEntries.length; i++){
+    assignDest(groupEntries[i], brokenDrs[i], label);
   }
-  group.unshift(...brokenDrs);
+  groupEntries.unshift(...brokenDrs);
 }
 
-function handleMultiDrSingleCr(group, label) {
-  const cr = group.pop();
-  const brokenCrs = group.map(({md}) => ({...cr, mc: md}));
-  for (let i = 0; i < group.length; i++){
-    assignDest(group[i], brokenCrs[i], label);
+function handleMultiDrSingleCr(groupEntries, label) {
+  const cr = groupEntries.pop();
+  const brokenCrs = groupEntries.map(({md}) => ({...cr, mc: md}));
+  for (let i = 0; i < groupEntries.length; i++){
+    assignDest(groupEntries[i], brokenCrs[i], label);
   }
-  group.push(...brokenCrs);
+  groupEntries.push(...brokenCrs);
 }
 
-function handleMultiDrMultiCr(group){
+function handleMultiDrMultiCr(groupEntries){
 
-  const drRecs = group.filter(isDr);
+  const drRecs = groupEntries.filter(isDr);
   for (let rec of drRecs){
     rec.analyzed = {label:'warn'};
   }
-  const crRecs = group.filter(isCr);
+  const crRecs = groupEntries.filter(isCr);
   for (let rec of crRecs){
     rec.analyzed = {label:'warn'};
   }
@@ -104,7 +102,7 @@ function handleMultiDrMultiCr(group){
   findNextPair: while (crs.length > 1 && drs.length > 1) {
 
     // extract the dr and cr records with same amount from
-    // original group. and update the index.
+    // original groupEntries. and update the index.
     for (let cri = 0; cri < crs.length; cri++)
       for (let dri = 0; dri < drs.length; dri++)
         if (Math.abs(crs[cri] - drs[dri]) < 1e-4){
@@ -125,8 +123,8 @@ function handleMultiDrMultiCr(group){
     // 
     // typically the unbreakable multi-dr-multi-cr will be
     // found at the first run of the outer while loop.
-    clear(group);
-    group.push(...newGroup, ...drRecs, ...crRecs);
+    clear(groupEntries);
+    groupEntries.push(...newGroup, ...drRecs, ...crRecs);
     return;
   }
 
@@ -145,8 +143,8 @@ function handleMultiDrMultiCr(group){
     }
     newGroup.push(...restGroup);
   }
-  clear(group);
-  group.push(...newGroup);
+  clear(groupEntries);
+  groupEntries.push(...newGroup);
 }
 
 async function accrual_analysis(fileBuffer, context){
@@ -164,10 +162,10 @@ async function accrual_analysis(fileBuffer, context){
     }
   }
 
-  let newBalance = balance.data.map(({ccode, ccode_name}) => {
+  let flattenedBalance = flat(balance.data);
+  let newBalance = Object.fromEntries(flattenedBalance.map(({ccode, ccode_name}) => {
     return [ccode, {ccode, ccode_name, __children:[]}]
-  });
-  console.log(Object.keys(newBalance))
+  }));
 
   let data = readSingleSheet(fileBuffer);
   data = columnNameRemap(data, header);
@@ -213,54 +211,63 @@ async function accrual_analysis(fileBuffer, context){
 
     // Case 1), the simplest one.
     if (isCr(data[end]) && isDr(data[end+1])){
-      const group = data.slice(start, end+1);
+      const groupEntries = data.slice(start, end+1);
       
       let type;
-      if (group.length === 2){
+      if (groupEntries.length === 2){
         type = '1DR-1CR';
-      } else if (isCr(group[1])){
+      } else if (isCr(groupEntries[1])){
         type = '1DR-nCR';
-      } else if (isDr(group.slice(-2)[0])){
+      } else if (isDr(groupEntries.slice(-2)[0])){
         type = 'nDR-1CR'
       } else {
         type = 'nDR-nCR'
       }
 
       groups.push( {
-        group,
+        groupEntries,
         type,
-        start_id: group[0].id
+        start_id: groupEntries[0].id
       })
 
       start = end + 1;
     }
   }
 
-  // console.log(groups.map(({start_id, group, type}) => {
-  //   const joined = group.map(rec => {
+  // console.log(groups.map(({start_id, groupEntries, type}) => {
+  //   const joined = groupEntries.map(rec => {
   //     return isCr(rec) ? 'cr' : isDr(rec) ? 'dr' : 'non';
   //   }).join(' ');
   //   return `${start_id}: ${joined} ${type}`
   // }))
 
-  for (let {type, group} of groups) {
+  for (let {type, groupEntries} of groups) {
     switch(type){
       case '1DR-1CR':
-        assignDest(group[0], group[1]);
+        assignDest(groupEntries[0], groupEntries[1]);
         break;
       case '1DR-nCR':
-        handleSingleDrMultiCr(group);
+        handleSingleDrMultiCr(groupEntries);
         break;
       case 'nDR-1CR':
-        handleMultiDrSingleCr(group);
+        handleMultiDrSingleCr(groupEntries);
         break;
       case 'nDR-nCR':
-        handleMultiDrMultiCr(group);
+        handleMultiDrMultiCr(groupEntries);
         break;
     }
   }
 
-  data = groups.map(({group}) => group).flat();
+  data = groups.map(({groupEntries}) => groupEntries).flat();
+
+  const groupedAccruals = Object.entries(group(data, 'ccode'));
+  for (let [ccode, group] of groupedAccruals){
+    // if (!(ccode in newBalance)){
+    //   console.log(ccode, group[0].ccode_name);
+    // }
+    console.log(ccode, ccode in newBalance);
+  }
+  
 
   // console.log(groups);
 
