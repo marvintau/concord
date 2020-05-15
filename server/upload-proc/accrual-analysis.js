@@ -4,6 +4,7 @@ const {readSingleSheet, columnNameRemap} = require('./utils');
 
 const group = require('@marvintau/chua/src/group');
 const flat = require('@marvintau/chua/src/flat')
+// const {group, flat} = require('@marvintau/chua');
 // console.log(group);
  
 let header = [
@@ -131,7 +132,7 @@ function handleMultiDrMultiCr(groupEntries){
   // after extracting possible records, we check if the 1Dr-nCr
   // or nDr-1Cr cases still apply to the remaining records.
   if (drs.length === 1 && crs.length === 1){
-    console.log(newGroup, '1-1');
+    // console.log(newGroup, '1-1');
     assignDest(drRecs[0], crRecs[0], 'info')
     newGroup.push(drRecs[0], crRecs[0]);
   } else {
@@ -190,6 +191,16 @@ async function accrual_analysis(fileBuffer, context){
     : vlnP - vlnN
   })
 
+  // const groupedByVoucher = Object.values(group(data, ({iperiod, voucher_id}) => `${iperiod}-${voucher_id}`));
+  // for (let groupEntries of groupedByVoucher){
+  //   const drRecs = groupEntries.filter(isDr);
+  //   const crRecs = groupEntries.filter(isCr);
+  //   clear(groupEntries);
+  //   groupEntries.push(...drRecs);
+  //   groupEntries.push(...crRecs);
+  // }
+  // data = groupedByVoucher.flat();
+
   data = data.map(({iperiod, voucher_id, voucher_line_num, digest, ...rest}) => {
     return {digest:`${iperiod}-${voucher_id}-${voucher_line_num}: ${digest}`, ...rest};
   })
@@ -207,18 +218,21 @@ async function accrual_analysis(fileBuffer, context){
 
   const groups = [];
 
-  for (let end = 1, start = 0; end < data.length - 1; end++){
+  let mc = 0, md = 0;
+  for (let start = 0, end = 0; end < data.length - 1; end++){
 
-    // Case 1), the simplest one.
-    if (isCr(data[end]) && isDr(data[end+1])){
+    mc += data[end].mc || 0;
+    md += data[end].md || 0;
+
+    if (Math.abs(mc - md) < 1e-4){
       const groupEntries = data.slice(start, end+1);
       
       let type;
       if (groupEntries.length === 2){
         type = '1DR-1CR';
-      } else if (isCr(groupEntries[1])){
+      } else if (groupEntries.filter(isCr).length === 1){
         type = '1DR-nCR';
-      } else if (isDr(groupEntries.slice(-2)[0])){
+      } else if (groupEntries.filter(isDr).length === 1){
         type = 'nDR-1CR'
       } else {
         type = 'nDR-nCR'
@@ -260,13 +274,13 @@ async function accrual_analysis(fileBuffer, context){
 
   data = groups.map(({groupEntries}) => groupEntries).flat();
 
-  const groupedAccruals = Object.entries(group(data, 'ccode'));
-  for (let [ccode, group] of groupedAccruals){
-    // if (!(ccode in newBalance)){
-    //   console.log(ccode, group[0].ccode_name);
-    // }
-    console.log(ccode, ccode in newBalance);
-  }
+  // const groupedAccruals = Object.entries(group(data, 'ccode'));
+  // for (let [ccode, group] of groupedAccruals){
+  //   // if (!(ccode in newBalance)){
+  //   //   console.log(ccode, group[0].ccode_name);
+  //   // }
+  //   console.log(ccode, ccode in newBalance);
+  // }
   
 
   // console.log(groups);
