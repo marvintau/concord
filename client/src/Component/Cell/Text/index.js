@@ -11,7 +11,7 @@ const rem = (header) => {
   return header.replace(/#/g, '');
 }
 
-export default ({children}) => {
+export default ({children, select}) => {
 
   if (typeof children === 'string'){
     if (children.startsWith('#')){
@@ -29,7 +29,12 @@ export default ({children}) => {
     } 
 
     if (path !== undefined && desc !== undefined){
-      return <div className={`text-path`}>{desc}</div>
+      const onClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        select(path);
+      }
+      return <div className={`text-path`} onClick={onClick}>{desc}</div>
     }
   }
 

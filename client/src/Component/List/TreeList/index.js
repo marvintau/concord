@@ -56,7 +56,7 @@ export default function({itemData, Row:OrigRow, HistRow, FilterRow, overscan}){
   }
 
   const Row = forwardRef(({data, style}, ref) => 
-    <OrigRow {...{ref, data, style, select:() => select(data.__path)}} />
+    <OrigRow {...{ref, data, style, select}} />
   )
 
   return <AutoSizer disableWidth={true}>

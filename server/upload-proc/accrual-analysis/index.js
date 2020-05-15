@@ -61,8 +61,10 @@ async function accrual_analysis(fileBuffer, context){
   addJournalEntries(cascadedCategories, journals);
 
   await setTable({project_id}, 'ACCRUAL_ANALYSIS', {data: cascadedCategories})
+  // await setTable({project_id}, 'ACCRUAL_ANALYSIS', {data: journals})
 
   return {data: cascadedCategories};
+  // return {data: journals};
 }
 
 module.exports = accrual_analysis;

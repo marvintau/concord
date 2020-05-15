@@ -10,7 +10,7 @@ import './row.css'
 
 export default (colSpecs, rowEdit, sheetName, {sticky=false, editable=true, push=e=>e, pull=e=>e}={}) => {
   
-  return forwardRef(({ data, style, select}, ref) => {
+  return forwardRef(({data, style, select}, ref) => {
 
     const {fore} = useContext(DepRouterContext);
 
@@ -29,7 +29,7 @@ export default (colSpecs, rowEdit, sheetName, {sticky=false, editable=true, push
       const {width, cellType:type='Text', attr} = colSpecs[key];
       const ColRenderer = Cell[type];
       cols.push(<div className='list-col' key={key} style={{width}}>
-        <ColRenderer {...{data, sheetName, colName:key, attr}} >{data[key]}</ColRenderer>
+        <ColRenderer {...{data, sheetName, colName:key, attr, select}} >{data[key]}</ColRenderer>
       </div>)
     }
     
@@ -37,7 +37,7 @@ export default (colSpecs, rowEdit, sheetName, {sticky=false, editable=true, push
     const navigate = () => fore(link, data);
 
     const className = `list-row hovered ${sticky ? 'sticky' : ''} ${link ? 'row-cursor-pointer' : ''}`;
-    const onClick = link ? navigate : select;
+    const onClick = link ? navigate : () => select(data.__path);
 
     return (rowEdit && editable)
     ? <div style={style} {...bindTrigger} {...{className, ref, onClick}}>

@@ -37,8 +37,10 @@ const addJournalEntries = (cascaded, decomposed) => {
   // 2. 按照路径表找到所有的对方科目所在路径
   for(let i = 0; i < decomposed.length; i++){
     const {dest_ccode} = decomposed[i];
-    const dest_path = pathDict[dest_ccode];
-    decomposed[i].dest_ccode.path = dest_path;
+    if (dest_ccode){
+      const dest_path = pathDict[dest_ccode];
+      decomposed[i].dest_ccode_name.path = dest_path;
+    }
   }
 
   // 3. 将已经分解的分录按照本方科目编码分组
@@ -53,7 +55,10 @@ const addJournalEntries = (cascaded, decomposed) => {
       let md = g.reduce((acc, {md}) => acc + md, 0);
       let mc = g.reduce((acc, {mc}) => acc + mc, 0);
       let __children = g;
-      let digest = `对方科目为 ${dest_ccode_name.desc} - ${dest_ccode}`;
+      let digest = dest_ccode
+      ? `对方科目为 ${dest_ccode_name && dest_ccode_name.desc || dest_ccode_name} - ${dest_ccode}`
+      : '未归类';
+      
       return {ccode, ccode_name, dest_ccode, dest_ccode_name, mc, md, __children, digest};
     })
   }
