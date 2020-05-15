@@ -38,6 +38,14 @@
   font-weight: 700;
 }
 
+.text-path {
+  transition: font-weight;
+}
+.text-path:hover{
+  font-weight: 900;
+  text-decoration-line: underline;
+}
+
 .warn { 
   color: black;
   background-color: var(--yellow);

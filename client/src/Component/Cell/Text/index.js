@@ -21,16 +21,17 @@ export default ({children}) => {
     }
   }
 
-  if (typeof children === "object" && children.label){
+  if (typeof children === "object"){
 
-    const res = {
-      succ: '正常',
-      info: '注意',
-      warn: '未通过'
-    }[children.label]
+    const {label, path, desc} = children;
+    if (label !== undefined && desc !== undefined){
+      return <div className={`text-badge ${label}`}>{desc}</div>
+    } 
 
-    return <div className={`text-badge ${children.label}`}>{res}</div>
+    if (path !== undefined && desc !== undefined){
+      return <div className={`text-path`}>{desc}</div>
+    }
   }
 
-  return <div className="text-cell text-plain">{children}</div>
+  return <div className="text-cell text-plain">{children ? children.toString() : ''}</div>
 }
