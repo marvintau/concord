@@ -8,7 +8,6 @@ const FilterCol = ({colKey, isFilterable, isSortable, filterCol, sortCol, width,
   const [inputVal, setInputVal] = useState('');
 
   const SortComp = <div className="sort-button" onClick={() => sortCol(colKey)}>排序</div>;
-  console.log(isSortable, 'isSortable')
 
   const FilterComp = <Input className="filter-input" bsSize="sm" value={inputVal} onChange={(e) => setInputVal(e.target.value)} onKeyPress={(e) => {
     if (e.key === 'Enter') filterCol(colKey, inputVal);

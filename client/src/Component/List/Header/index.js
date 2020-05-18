@@ -8,7 +8,6 @@ const HeaderCol = ({colKey, width:initWidth, children, setColWidth=e=>e}) =>{
   const [width, setHeaderWidth] = useState(`${(initWidth/12*100)}%`);
 
   return <Resz
-    style={{height: '100%'}}
     size={{width}}
     className={`list-header-col`}
     onResizeStop={(e, direction, ref, d) => {
@@ -17,7 +16,7 @@ const HeaderCol = ({colKey, width:initWidth, children, setColWidth=e=>e}) =>{
       setColWidth(colKey, width);
     }}
     enable={{ top:false, right:true, bottom:false, left:false, topRight:false, bottomRight:false, bottomLeft:false, topLeft:false}}
-  >{children}
+  ><div className="list-header-col-inner">{children}</div>
   </Resz>;
 }
 export default ({colSpecs, hidden, setColWidth}) => {

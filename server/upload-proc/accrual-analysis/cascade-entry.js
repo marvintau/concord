@@ -67,6 +67,25 @@ const addJournalEntries = (cascaded, decomposed) => {
   for (let [ccode, entries] of Object.entries(groupedJournal)){
     add(cascaded, entries, {path: pathDict[ccode]});
   }
+
+  trav(cascaded, (rec) => {
+    // console.log(rec);
+    if (rec.__children === undefined || rec.__children.length === 0){
+      rec.descendant_num = 1;
+    } else {
+      rec.descendant_num = rec.__children.reduce((acc, {descendant_num}) => acc + descendant_num, 0);
+    }
+
+    if (rec.md === undefined){
+      rec.md = rec.__children.reduce((acc, {md}) => acc + md, 0);
+    }
+
+    if (rec.mc === undefined){
+      rec.mc = rec.__children.reduce((acc, {mc}) => acc + mc, 0);
+    }
+
+  }, 'POST')
+
 }
 
 module.exports = {

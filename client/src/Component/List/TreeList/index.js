@@ -46,7 +46,6 @@ export default function({itemData, Row:OrigRow, HistRow, FilterRow, overscan}){
 
   const sort = (key) => {
     const order = colSorts[key];
-    console.log(colSorts, 'sort order of', key);
     const nextOrder = order === 'ascending'
     ? 'descending'
     : order === 'descending'

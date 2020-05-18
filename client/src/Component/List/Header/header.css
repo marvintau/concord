@@ -3,16 +3,23 @@
   display: flex;
   user-select: none;
   align-items: center;
-  margin: 0 -5px;
   overflow: hidden;
 }
+/* .list-header > * {
+  margin: 0 -1px;
+} */
 
 .list-header-col {
   background-color: #343a40;
   color: #f8f9fa;
   padding: 0.5rem 0.5rem;
-  margin: 0 1px;
   overflow: hidden;
   white-space:nowrap;
   text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+}
+
+.list-header-col-inner {
+  padding: 0 3px;
 }
