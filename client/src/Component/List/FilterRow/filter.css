@@ -26,3 +26,23 @@
   background-size: 1rem;
   background-position: right 5px bottom 50%;
 }
+
+.sort-button {
+  border: 0.5px solid lightgray;
+  border-radius: 3px;
+  margin-left: 3px;
+  min-width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  cursor: pointer;
+  background-color: white;
+  font-weight: 400;
+  transition-property: background-color 0 ease-in-out 0.5s, font-weight 0 ease-in-out 0.5s;
+}
+
+.sort-button:hover{
+  background-color: var(--yellow);
+  font-weight: 900;
+}

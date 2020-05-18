@@ -12,6 +12,7 @@ export default function({itemData, Row:OrigRow, HistRow, FilterRow, overscan}){
   const [sublist, setSublist] = useState(itemData);
 
   const [colFilters, setColFilters] = useState({});
+  const [colSorts, setColSorts] = useState({});
 
   useEffect(() => {
     setSublist(itemData);
@@ -39,8 +40,20 @@ export default function({itemData, Row:OrigRow, HistRow, FilterRow, overscan}){
   }
 
   const filter = (key, pattern) => {
-    console.log('filtered')
+    console.log('filtered by', pattern);
     setColFilters({...colFilters, [key]: pattern});
+  }
+
+  const sort = (key) => {
+    const order = colSorts[key];
+    console.log(colSorts, 'sort order of', key);
+    const nextOrder = order === 'ascending'
+    ? 'descending'
+    : order === 'descending'
+    ? undefined
+    : 'ascending'
+    
+    setColSorts({[key]: nextOrder})
   }
 
   let displayed = [...sublist];
@@ -53,6 +66,13 @@ export default function({itemData, Row:OrigRow, HistRow, FilterRow, overscan}){
     if (filtered.length > 0){
       displayed = filtered;
     }
+
+  }
+
+  for (let key in colSorts){
+    if (colSorts[key]){
+      displayed.sort(({[key]:valA}, {[key]:valB}) => colSorts[key] === 'descending' ? valB - valA : valA - valB);
+    }
   }
 
   const Row = forwardRef(({data, style}, ref) => 
@@ -63,7 +83,7 @@ export default function({itemData, Row:OrigRow, HistRow, FilterRow, overscan}){
     {
       ({height}) => <List {...{itemData:displayed, Row, height, overscan}}>
         {history.map((data, i) => <HistRow key={i} {...{data, select:() => pop(data.__path)}} />)}
-        <FilterRow filterCol={filter} />
+        <FilterRow filterCol={filter} sortCol={sort} />
       </List>
     }
   </AutoSizer>

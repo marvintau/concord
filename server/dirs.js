@@ -171,8 +171,8 @@ const dirs = [
       // dbill_date: {desc:'记账时间', width: 1, isFilerable: true},
       digest: {desc:'摘要', width: 4, isFilerable: true},
       // voucher_line_num: {desc:'行号', width: 1, isFilerable: true},
-      md: {desc: '借方发生', width: 1, isFilterable: true, cellType:'Number'},
-      mc: {desc: '贷方发生', width: 1, isFilterable: true, cellType:'Number'},
+      md: {desc: '借方发生', width: 1, isFilterable: true, isSortable: true, cellType:'Number'},
+      mc: {desc: '贷方发生', width: 1, isFilterable: true, isSortable: true, cellType:'Number'},
       dest_ccode_name: {desc: '对方科目', width: 2, isFilterable: true},
       // dest_ccode: {desc: '对方编码', width: 1, isFilterable: true},
       analyzed: {desc:'已分析', width: 1}
