@@ -1,3 +1,4 @@
+const now = require('performance-now');
 const {retrieveTable, setTable} = require('../../database');
 
 const {readSingleSheet, columnNameRemap, uniq} = require('../utils');
@@ -29,11 +30,15 @@ let header = [
   ['业务说明', 'digest'],
 
   ['凭证编号', 'voucher_id'],
+  ['凭证号数', 'voucher_id'],
   ['编号', 'voucher_line_num'],
   ['行号', 'voucher_line_num'],
 
   ['对方科目', 'dest_ccode_name'],
   ['对方科目名称', 'dest_ccode_name'],
+
+  ['方向', 'dir'],
+  ['金额', 'amount']
 ]
 
 async function accrual_analysis(fileBuffer, context){
@@ -53,10 +58,20 @@ async function accrual_analysis(fileBuffer, context){
 
   const cascadedCategories = getCascadedCategories(balance.data, {cascCol:'ccode'});
 
+  const startT = now();
   let journals = readSingleSheet(fileBuffer);
+  const readT = now();
   journals = columnNameRemap(journals, header);
+  const remapT = now();
   journals = normalize(journals);
+  const normT = now();
   journals = decompose(journals);
+  const decomT = now();
+
+  console.log(readT - startT, 'reading');
+  console.log(remapT - readT, 'remapping');
+  console.log(normT - remapT, 'normalizing');
+  console.log(decomT - normT, 'decomposing');
 
   addJournalEntries(cascadedCategories, journals);
 

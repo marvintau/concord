@@ -98,8 +98,6 @@ export function DepRouter({children}) {
   useEffect(() => {
     (async function(){
 
-      console.log('useEffect, init');
-
       const {search, pathname} = window.location;
       const args = Object.fromEntries((new URLSearchParams(search)).entries());
       
@@ -149,7 +147,6 @@ export function DepRouter({children}) {
   }
 
   const fore = (path, args={}) => {
-    console.log(args, 'args')
 
     const page = dirs[path];
 
@@ -158,7 +155,6 @@ export function DepRouter({children}) {
     
     const newArgs = {...currArgs, ...args};
     setArgs(newArgs);
-
 
     const pathList = [...currPath, {path, args:newArgs}];
     setPath(pathList);
@@ -178,7 +174,6 @@ export function DepRouter({children}) {
     setPath([]);
 
     const {sheetName, referredSheetNames=[]} = page;
-
     if (sheetName !== undefined){
       pull([...referredSheetNames, sheetName], args);
     }
@@ -186,13 +181,18 @@ export function DepRouter({children}) {
 
   const back = (dest) => {
     const index = currPath.findIndex(({path}) => path === dest);
-    console.log('back', currPath[index], index)
 
     const pathList = currPath.slice(0, index+1);
     setPath(pathList);
     
-    setPage(Object.assign({}, ...pathList.map(({context}) => context), dirs[dest]));
-    
+    const histPage = Object.assign({}, ...pathList.map(({context}) => context), dirs[dest]);
+    setPage(histPage);
+
+    const {sheetName, referredSheetNames=[], args} = histPage;
+    if (sheetName !== undefined){
+      pull([...referredSheetNames, sheetName], args);
+    }
+
     setSubs(dirs[dest].children);
   }
 

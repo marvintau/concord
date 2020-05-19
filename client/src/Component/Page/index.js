@@ -70,9 +70,9 @@ const BrowserPage = () => {
   if (type === 'DATA'){
 
     const {sheetName, pageName, desc, colSpecs, rowEdit} = currPage;
-    console.log(`${pageName} yeah`);
+    console.log(`${pageName} switched page`);
     return <div className="content-container">
-      <List sheet={Sheets[sheetName]} {...{sheetName, desc, status, colSpecs, rowEdit}} />
+      <List {...{sheet: Sheets[sheetName], sheetName, desc, status, colSpecs, rowEdit}} />
       {!isHidingManual && <div className="page-right-side">
         {qrLink && <div className="qr-block">
           <h3>手机扫码处</h3>

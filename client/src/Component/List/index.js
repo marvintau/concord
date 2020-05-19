@@ -56,30 +56,36 @@ const flatten = (data) => {
   return res;
 }
 
+// Due to the legacy code and convention (bootstrap grid), the width is represented
+// in twelfths. However, as long as we are not going to give exact column width (in
+// pixels), the conversion here is mandatory. Or the width "1" will be considered as 
+// one twelfth pixel.
+function attachColumnsWithWidth(colSpecs) {
+  return Object.fromEntries(Object.entries(colSpecs).map(([k, v]) => {
+    const {width} = v;
+    return [k, {...v, width:`${(width/12*100)}%`}]
+  }))
+}
+
 export default ({sheet, sheetName, status, desc, colSpecs, rowEdit}) => {
-  
+
   const {addSheets, setStatus, pull, push} = useContext(Exchange);
   const {currPage, currArgs} = useContext(DepRouterContext);
   const {toggleCreate, isCreating, createManager} = useCreateManager(sheetName, colSpecs);
 
   const {isCascaded, tools} = currPage;
   const [folded, setFold] = useState(true);
-  
-  // const [, forceUpdate] = useState();
-  // useEffect(() => {
-  //   console.log('status changed');
-  //   forceUpdate();
-  // }, [status])
 
-  // Due to the legacy code and convention (bootstrap grid), the width is represented
-  // in twelfths. However, as long as we are not going to give exact column width (in
-  // pixels), the conversion here is mandatory. Or the width "1" will be considered as 
-  // one twelfth pixel.
-  const newCols = Object.fromEntries(Object.entries(colSpecs).map(([k, v]) => {
-    const {width} = v;
-    return [k, {...v, width:`${(width/12*100)}%`}]
-  }))
-  const [cols, setCols] = useState(newCols);
+  // the cols state could be updated from two source. The first is triggered
+  // by resizing the columns, and the second is when the original colSpecs
+  // changed.
+  // When using useState hook, changing the props that used for initializing
+  // state won't lead the state automatically re-initialized, we have to use
+  // an extra useEffect to reset the state.
+  const [cols, setCols] = useState(attachColumnsWithWidth(colSpecs));
+  useEffect(() => {
+    setCols(attachColumnsWithWidth(colSpecs));
+  }, [colSpecs])
 
   const setColWidth = (key, width) => {
     console.log(Object.values(cols).map(({width}) => width), 'widths');

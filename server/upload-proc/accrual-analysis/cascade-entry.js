@@ -1,3 +1,5 @@
+const now = require('performance-now');
+
 const group = require('@marvintau/chua/src/group');
 const flat = require('@marvintau/chua/src/flat');
 const casc = require('@marvintau/chua/src/casc');
@@ -32,8 +34,10 @@ const getCategoryPathDict = (cascadedCategories) => {
 const addJournalEntries = (cascaded, decomposed) => {
 
   // 1. 得到科目目录所对应的路径表
+  const cascT = now();
   const pathDict = getCategoryPathDict(cascaded);
 
+  const getDictT = now();
   // 2. 按照路径表找到所有的对方科目所在路径
   for(let i = 0; i < decomposed.length; i++){
     const {dest_ccode} = decomposed[i];
@@ -43,8 +47,12 @@ const addJournalEntries = (cascaded, decomposed) => {
     }
   }
 
+  const getDecomPathT = now();
+
   // 3. 将已经分解的分录按照本方科目编码分组
   const groupedJournal = group(decomposed, 'ccode');
+
+  const groupedT = now();
 
   // 4. 在每个本方分组内，按照对方科目编码分组
   for (let ccode in groupedJournal){
@@ -63,18 +71,33 @@ const addJournalEntries = (cascaded, decomposed) => {
     })
   }
 
+  const groupByDestT = now();
+
   // 5. 将分组后的分录填到对应的科目目录中
   for (let [ccode, entries] of Object.entries(groupedJournal)){
     add(cascaded, entries, {path: pathDict[ccode]});
   }
 
+  const addToCascT = now();
+
   trav(cascaded, (rec) => {
     // console.log(rec);
-    if (rec.__children === undefined || rec.__children.length === 0){
-      rec.descendant_num = 1;
-    } else {
-      rec.descendant_num = rec.__children.reduce((acc, {descendant_num}) => acc + descendant_num, 0);
-    }
+    // if (rec.__children === undefined || rec.__children.length === 0){
+    //   rec.descendant_num = 1;
+    // } else {
+    //   rec.descendant_num = rec.__children.reduce((acc, {descendant_num}) => acc + descendant_num, 0);
+    // }
+    rec.descendant_num = rec.__children
+    ? rec.__children.reduce((acc, {descendant_num, analyzed}) => {
+      if (analyzed){
+        return acc + 1;
+      } else if (descendant_num){
+        return acc + descendant_num;
+      } else {
+        return acc
+      }
+    }, 0)
+    : undefined
 
     if (rec.md === undefined){
       rec.md = rec.__children.reduce((acc, {md}) => acc + md, 0);
@@ -84,8 +107,22 @@ const addJournalEntries = (cascaded, decomposed) => {
       rec.mc = rec.__children.reduce((acc, {mc}) => acc + mc, 0);
     }
 
+    if (rec.__children && rec.__children.every(({digest}) => digest !== undefined)){
+      rec.dest_ccode_name = `共 ${rec.__children.length} 个对方科目`
+    }
+
   }, 'POST')
 
+  const travT = now();
+
+  console.log('====================== ADD_JOURNAL_ENTRIES ================================')
+  console.log(getDictT - cascT, 'cascading');
+  console.log(getDecomPathT - getDictT, 'get decomposed path');
+  console.log(groupedT - getDecomPathT, 'grouping');
+  console.log(groupByDestT - groupedT, 'group by dest');
+  console.log(addToCascT - groupByDestT, 'add to cascaded');
+  console.log(travT - addToCascT, 'traversing');
+  console.log(' ');
 }
 
 module.exports = {

@@ -96,6 +96,16 @@ function columnNameRemap(table, map){
     (newRec.ccode) && (newRec.ccode = newRec.ccode.toString());
     
     table[p] = newRec;
+
+    // 处理发生额按"金额-方向"形式给出的值
+    const {dir, amount} = newRec;
+    if (dir !== undefined && amount !== undefined){
+      if (dir === '借') {
+        Object.assign(newRec, {md:amount, mc: 0});
+      } else if (dir === '贷') {
+        Object.assign(newRec, {mc:amount, md: 0});
+      }
+    }
   }
 
   return table
@@ -103,7 +113,9 @@ function columnNameRemap(table, map){
 
 function readSingleSheet(buffer, withHeader=true){
   const table = XLSX.read(buffer, {type:'buffer'});
+  // console.log(table, 'table table');
   const firstSheet = table.Sheets[table.SheetNames[0]];  
+  // console.log(firstSheet, 'firstSheet');
   if (withHeader) {
     return XLSX.utils.sheet_to_json(firstSheet);
   } else {

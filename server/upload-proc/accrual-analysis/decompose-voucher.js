@@ -137,7 +137,7 @@ const normalize = (data) => {
     : vlnP - vlnN
   })
 
-  return data.map(({iperiod, voucher_id, voucher_line_num, digest, ...rest}) => {
+  return data.map(({iperiod, voucher_id, voucher_line_num=0, digest, ...rest}) => {
     return {digest:`${iperiod}-${voucher_id}-${voucher_line_num}: ${digest}`, ...rest};
   })
 }

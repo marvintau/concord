@@ -43,7 +43,7 @@ async function balance(fileBuffer, context){
   const {project_id} = context;
 
   let data = readSingleSheet(fileBuffer);
-  console.log(data, 'processed');
+  // console.log(data, 'processed');
   data = columnNameRemap(data, header);
   data = uniq(data, 'ccode');
   data = cascade(data, 'ccode');
