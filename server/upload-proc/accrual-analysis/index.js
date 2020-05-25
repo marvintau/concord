@@ -14,24 +14,30 @@ let header = [
   ['科目名称' , 'ccode_name'],
   ['科目类别' , 'cclass'],
   
+
   ['本期发生借方', 'md'],
   ['账面借方发生额' , 'md'],
   ['未审借方发生额' , 'md'],
   ['借方发生额', 'md'],
   ['借方发生', 'md'],
+  ['借方', 'md'],
 
   ['账面贷方发生额' , 'mc'],
   ['贷方发生额' , 'mc'],
   ['未审贷方发生额' , 'mc'],
   ['本期发生贷方', 'mc'],
   ['贷方发生', 'mc'],
+  ['贷方', 'mc'],
 
   ['摘要', 'digest'],
   ['业务说明', 'digest'],
 
+  ['凭证号', 'voucher_id'],
   ['凭证编号', 'voucher_id'],
   ['凭证号数', 'voucher_id'],
+
   ['编号', 'voucher_line_num'],
+  ['分录号', 'voucher_line_num'],
   ['行号', 'voucher_line_num'],
 
   ['对方科目', 'dest_ccode_name'],
@@ -66,7 +72,10 @@ async function accrual_analysis(fileBuffer, context){
   journals = normalize(journals);
   const normT = now();
   journals = decompose(journals);
+  console.log(journals.slice(0, 20), 'test journal')
+
   const decomT = now();
+
 
   console.log(readT - startT, 'reading');
   console.log(remapT - readT, 'remapping');

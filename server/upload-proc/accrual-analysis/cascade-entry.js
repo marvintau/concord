@@ -107,9 +107,9 @@ const addJournalEntries = (cascaded, decomposed) => {
       rec.mc = rec.__children.reduce((acc, {mc}) => acc + mc, 0);
     }
 
-    if (rec.__children && rec.__children.every(({digest}) => digest !== undefined)){
-      rec.dest_ccode_name = `共 ${rec.__children.length} 个对方科目`
-    }
+    // if (rec.__children && rec.__children.every(({digest}) => digest !== undefined)){
+    //   rec.dest_ccode_name = `共 ${rec.__children.length} 个对方科目`
+    // }
 
   }, 'POST')
 

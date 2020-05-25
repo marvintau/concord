@@ -106,6 +106,35 @@ function columnNameRemap(table, map){
         Object.assign(newRec, {mc:amount, md: 0});
       }
     }
+
+    const {mc, md} = newRec;
+    if (md === undefined){
+      newRec.md = 0;
+    }
+    if (typeof md === 'string'){
+      newRec.md = parseFloat(md.replace(/[\s,]/g, ''));
+      console.log(newRec.md, 'new md');
+    }
+    if (mc === undefined){
+      newRec.mc = 0;
+    }
+    if (typeof mc === 'string'){
+      newRec.mc = parseFloat(mc.replace(/[\s,]/g, ''));
+      console.log(newRec.mc, 'new mc');
+    }
+
+    if (isNaN(newRec.mc) || isNaN(newRec.md)){
+      throw {message: `found NaN value mc: ${newRec.mc} md: ${newRec.md} @ ${newRec.ccode_name}`, code:'DEAD_INVALID_NUMERIC_FORMAT'};
+    }
+
+    // 从用友NC中导出的科目名称均已形成路径，我们需要保留末级科目
+    // 并重新定义路径
+    const {ccode_name} = newRec;
+    if (ccode_name.split('\\').length > 0){
+      const last = ccode_name.split('\\').pop();
+      // console.log(ccode_name, 'path like')
+      Object.assign(newRec, {ccode_name: last})
+    }
   }
 
   return table

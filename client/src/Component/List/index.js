@@ -38,6 +38,7 @@ const ErrorIndicator = ({status}) => {
     'DEAD_UNKNOWN_UPLOAD_ERROR': '上传时发生了错误',
     'DEAD_UNKNOWN_FETCH_ERROR': '获取数据时发生了错误',
     'DEAD_UNKNOWN_PUSH_ERROR': '更新数据库时发生了错误',
+    'DEAD_INVALID_NUMERIC_FORMAT': '不支持的数字格式。通常发生在您上传的Excel中，应该是数字的单元格中包含了文本'
   }[status];
   return <div className="nodata-indicator">
     <div className="bad-icon" />

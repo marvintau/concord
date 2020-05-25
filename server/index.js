@@ -73,9 +73,10 @@ router.post('/push/:data_name', async ctx => {
   }
 })
 
-router.post('/export', ctx => {
-  const {colSpecs, data} = ctx.request.body;
-  const exported = exportExcel(colSpecs, data);
+router.post('/export/:data_name', async ctx => {
+  const {data_name} = ctx.params;
+  const {currArgs} = ctx.request.body;
+  const exported = await exportExcel(data_name, currArgs);
   ctx.body = exported;
 })
 
@@ -120,7 +121,11 @@ app.use(async (ctx, next) => {
   console.log(`${ctx.url} ${ms}ms`);
 });
 
-app.use(BodyParser());
+app.use(BodyParser({
+  formLimit: 524288000,
+  jsonLimit: 524288000,
+  textLimit: 524288000
+}));
 app.use(router.routes());
 
 app.use(Serve(publicPath));

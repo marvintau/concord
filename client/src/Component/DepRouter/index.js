@@ -71,9 +71,16 @@ const SideNavigationBar = ({directories, isHidden, children}) => {
 
 const NavigationBar = ({directories}) => {
   const {currPath, back} = useContext(DepRouterContext);
-  const pathElems = currPath.map(({path}, i) => {
+  // console.log(currPath, 'nav path');
+  const pathElems = currPath.map(({path, args}, i) => {
+
+    const {contextualPageName:ctxPageNavTitle, desc:defPageNavTitle} = directories[path];
+    const pageNavTitle = ctxPageNavTitle
+        ? args[ctxPageNavTitle]
+        : defPageNavTitle
+
     return <BreadcrumbItem key={i}>
-      <a onClick={() => back(path)} href="#">{directories[path].desc}</a>
+      <a onClick={() => back(path)} href="#">{pageNavTitle}</a>
     </BreadcrumbItem>
   })
 

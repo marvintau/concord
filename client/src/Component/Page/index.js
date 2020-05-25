@@ -1,6 +1,9 @@
 import React, {useContext, useState, useEffect} from 'react';
-import QRCode from 'qrcode.react';
 import {BrowserView, MobileOnlyView} from 'react-device-detect';
+import { TabContent, TabPane, Nav, NavItem, NavLink} from 'reactstrap';
+import classnames from 'classnames';
+
+import QRCode from 'qrcode.react';
 
 import {DepRouterContext} from '../DepRouter';
 import {Exchange} from '../Exchange';
@@ -10,6 +13,7 @@ import Doc from '../Doc';
 
 import './page.css';
 import './docu.css';
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 import QRScanner from '../QRScanner';
 
@@ -27,6 +31,12 @@ const BrowserPage = () => {
   const {currPage, currArgs} = useContext(DepRouterContext);
   const {Sheets, status} = useContext(Exchange);
   
+  const [activeTab, setActiveTab] = useState('1');
+
+  const toggle = tab => {
+    if(activeTab !== tab) setActiveTab(tab);
+  }
+
   const [, forceUpdate] = useState();
   useEffect(() => {
     console.log(status, 'changed')
@@ -80,6 +90,40 @@ const BrowserPage = () => {
         </div>}
         {manualPage}
       </div>}
+    </div>
+  }
+
+  if (type === 'MULTI-DATA'){
+
+    const {sheetName, desc, colSpecs, rowEdit} = currPage;
+
+    return <div className='page-container'>
+      <Nav tabs>
+        <NavItem>
+          <NavLink
+            className={classnames({ active: activeTab === '1' })}
+            onClick={() => { toggle('1'); }}
+          >
+            Tab1
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink
+            className={classnames({ active: activeTab === '2' })}
+            onClick={() => { toggle('2'); }}
+          >
+            More Tabs
+          </NavLink>
+        </NavItem>
+      </Nav>
+      <TabContent activeTab={activeTab} style={{width: '100%', height: '100%'}}>
+        <TabPane tabId="1"  style={{padding: '0 10px', width: '100%', height: '100%'}}>
+          <List {...{sheet: Sheets[sheetName], sheetName, desc, status, colSpecs, rowEdit}} />
+        </TabPane>
+        <TabPane tabId="2">
+          some sorta new content
+        </TabPane>
+      </TabContent>
     </div>
   }
 

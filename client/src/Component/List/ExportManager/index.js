@@ -1,8 +1,7 @@
 import React, {useState, useEffect, useContext} from 'react';
 import saveAs from 'file-saver';
 import Agnt from 'superagent';
-import {flat} from '@marvintau/chua';
-import {Exchange} from '../../Exchange';
+import { DepRouterContext } from '../../DepRouter';
 
 function s2ab(s) { 
   var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
@@ -11,22 +10,19 @@ function s2ab(s) {
   return buf;    
 }
 
-export default ({name, colSpecs, desc, companyName}) => {
+export default ({name, desc, companyName}) => {
 
   const [status, setStatus] = useState('DONE');
-  const {Sheets} = useContext(Exchange);
+
+  const {currArgs} = useContext(DepRouterContext);
 
   useEffect(() => {
     if(status === 'PULL'){
       (async() => {
         try {
-          let {data} = Sheets[name];
-          console.log(data)
-          data = flat(data);
-
-          const res = await Agnt.post('/export').send({colSpecs, data});
+          const res = await Agnt.post(`/export/${name}`).send({currArgs});
           const buffer = s2ab(res.text);
-          console.log(res);
+          console.log(res, 'result');
           saveAs(new Blob([buffer],{type:"application/octet-stream"}), `导出-${companyName}-${desc}.xlsx`);
           setStatus('DONE');
         } catch (err) {
