@@ -97,33 +97,8 @@ const BrowserPage = () => {
 
     const {sheetName, desc, colSpecs, rowEdit} = currPage;
 
-    return <div className='page-container'>
-      <Nav tabs>
-        <NavItem>
-          <NavLink
-            className={classnames({ active: activeTab === '1' })}
-            onClick={() => { toggle('1'); }}
-          >
-            Tab1
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink
-            className={classnames({ active: activeTab === '2' })}
-            onClick={() => { toggle('2'); }}
-          >
-            More Tabs
-          </NavLink>
-        </NavItem>
-      </Nav>
-      <TabContent activeTab={activeTab} style={{width: '100%', height: '100%'}}>
-        <TabPane tabId="1"  style={{padding: '0 10px', width: '100%', height: '100%'}}>
-          <List {...{sheet: Sheets[sheetName], sheetName, desc, status, colSpecs, rowEdit}} />
-        </TabPane>
-        <TabPane tabId="2">
-          some sorta new content
-        </TabPane>
-      </TabContent>
+    return <div className='content-container'>
+      <List {...{sheet: Sheets[sheetName], sheetName, desc, status, colSpecs, rowEdit}} />
     </div>
   }
 

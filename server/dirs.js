@@ -187,10 +187,10 @@ const dirs = [
     sheetName: 'CASHFLOW_WORKSHEET',
     isCascaded: true,
     tools: ['ImportExcel', 'SaveRemote', 'ExportExcel'],
-    referredSheetNames: ['BALANCE', 'CATEGORY_NAME_ALIASES'],
+    referredSheetNames: ['BALANCE'],
     colSpecs: {
       desc: {desc: '题目', width: 5, isFilerable: true},
-      ref:  {desc: '条目', width: 7, isFilterable: true, cellType:'Ref'},
+      ref:  {desc: '条目', width: 7, isFilterable: true, cellType:'FetchRef'},
     },
     rowEdit: {isSync:false, insertEnabled:true, removeEnabled: true},
   }
