@@ -135,7 +135,7 @@ const dirs = [
     type: 'TEXT',
     sheetName: undefined,
     colSpecs: undefined,
-    children: ['AccrualAnalysis', 'Balance', 'CashflowStatement'],
+    children: ['AccrualAnalysis', 'Balance', 'FinancialPositionStatement', 'CashflowStatement'],
   },
   {
     loadPoint: '/',
@@ -156,6 +156,22 @@ const dirs = [
   },
   {
     loadPoint: '/',
+    pageName: 'FinancialPositionStatement',
+    desc: '资产负债表',
+    type: 'DATA',
+    isCascaded: true,
+    tools: ['ImportExcel'],
+    sheetName: 'SOFP',
+    colSpecs: {
+      item: {desc: '条目', width: 3, isFilterable: true},
+      mb: {desc: '期初', width: 2, isFilterable: true, cellType:'Number'},
+      mc: {desc: '借方发生', width: 2, isFilterable: true, cellType:'Number'},
+      md: {desc: '贷方发生', width: 2, isFilterable: true, cellType:'Number'},
+      me: {desc: '期末', width: 2, isFilterable: true, cellType:'Number'},
+    }
+  },
+  {
+    loadPoint: '/',
     pageName: 'AccrualAnalysis',
     desc: '发生额分析',
     type: 'MULTI-DATA',
@@ -163,20 +179,16 @@ const dirs = [
     isCascaded: true,
     isHidingManual: true,
     tools: ['ImportExcel', 'SaveRemote', 'ExportExcel'],
-    // referredSheetNames: ['BALANCE'],
+    referredSheetNames: ['SOFP'],
     colSpecs: {
       ccode_name: {desc: '科目名称', width: 2, isFilterable: true},
-      // iyear: {desc:'会计年', width: 1, isFilerable: true},
-      // iperiod: {desc:'会计月', width: 1, isFilerable: true},
-      // dbill_date: {desc:'记账时间', width: 1, isFilerable: true},
-      // voucher_line_num: {desc:'行号', width: 1, isFilerable: true},
+      dest_ccode_name: {desc: '对方科目', width: 1, isFilterable: true},
       md: {desc: '借方发生', width: 1, isFilterable: true, isSortable: true, cellType:'Number'},
       mc: {desc: '贷方发生', width: 1, isFilterable: true, isSortable: true, cellType:'Number'},
-      dest_ccode_name: {desc: '对方科目', width: 2, isFilterable: true},
       descendant_num: {desc: '笔数', width: 1, isSortable: true},
-      digest: {desc:'摘要', width: 4, isFilerable: true},
-      // dest_ccode: {desc: '对方编码', width: 1, isFilterable: true},
-      analyzed: {desc:'已分析', width: 1}
+      digest: {desc:'摘要', width: 1, isFilerable: true},
+      analyzed: {desc:'已分析', width: 1},
+      categorized: {desc:'列入报表项目', width: 4, cellType:'Ref'}
     },
   },
   {
@@ -187,7 +199,7 @@ const dirs = [
     sheetName: 'CASHFLOW_WORKSHEET',
     isCascaded: true,
     tools: ['ImportExcel', 'SaveRemote', 'ExportExcel'],
-    referredSheetNames: ['BALANCE', 'CATEGORY_NAME_ALIASES'],
+    referredSheetNames: ['BALANCE'],
     colSpecs: {
       desc: {desc: '题目', width: 5, isFilerable: true},
       ref:  {desc: '条目', width: 7, isFilterable: true, cellType:'Ref'},

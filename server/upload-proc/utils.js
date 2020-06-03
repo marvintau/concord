@@ -130,7 +130,7 @@ function columnNameRemap(table, map){
     // 从用友NC中导出的科目名称均已形成路径，我们需要保留末级科目
     // 并重新定义路径
     const {ccode_name} = newRec;
-    if (ccode_name.split('\\').length > 0){
+    if (ccode_name && typeof ccode_name === 'string' && ccode_name.split('\\').length > 0){
       const last = ccode_name.split('\\').pop();
       // console.log(ccode_name, 'path like')
       Object.assign(newRec, {ccode_name: last})
@@ -150,6 +150,14 @@ function readSingleSheet(buffer, withHeader=true){
   } else {
     return XLSX.utils.sheet_to_json(firstSheet, {header: 1});
   }
+}
+
+function readSingleText(buffer) {
+
+  const table = buffer.toString().split('\n').map(line => line.trim());
+  console.log('string table');
+
+  return table;
 }
 
 const generateQR = async text => {
@@ -180,5 +188,6 @@ module.exports = {
   cascade,
   columnNameRemap,
   readSingleSheet,
+  readSingleText,
   generateQR
 }

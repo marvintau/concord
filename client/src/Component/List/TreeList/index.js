@@ -2,8 +2,6 @@ import React, { useState, forwardRef, useEffect} from "react";
 import List from '@marvintau/poloscope';
 import AutoSizer from "react-virtualized-auto-sizer";
 
-import {get} from '@marvintau/chua';
-
 import './tree-list.css';
 
 export default function({itemData, Row:OrigRow, HistRow, FilterRow, overscan}){
@@ -26,28 +24,27 @@ export default function({itemData, Row:OrigRow, HistRow, FilterRow, overscan}){
     rerenderList();
   }, [itemData])
 
-  const select = (path) => {
-    const {record, list} = get(itemData, {path, withList:true});
-
-    console.log('select', path, 'sublist:', record.__children);
+  const select = (record) => {
+  
+    console.log('select', record, 'sublist:', record.__children);
 
     if (record.__children !== undefined && record.__children.length > 0){
-      setHistory(list);
+      setHistory([...history, record]);
       setSublist(record.__children);
       rerenderList();
     }
   }
 
-  const pop = (path) => {
-    console.log('pop', path)
-    if (path.length === 1){
-      setHistory([]);
+  const pop = (index) => {
+
+    const newHist = history.slice(0, index);
+
+    setHistory(newHist);
+    if (newHist.length === 0){
       setSublist(itemData);
     } else {
-      const {record, list} = get(itemData, {path:path.slice(0, -1), withList: true});
-      console.log('popped to', record);
-      setHistory(list);
-      setSublist(record.__children);
+      const lastElem = history.slice(-1)[0];
+      setSublist(lastElem.__children);
     }
     rerenderList();
   }
@@ -94,7 +91,7 @@ export default function({itemData, Row:OrigRow, HistRow, FilterRow, overscan}){
   return <AutoSizer disableWidth={true}>
     {
       ({height}) => <List {...{key:updateKey, itemData:displayed, Row, height, overscan}}>
-        {history.map((data, i) => <HistRow key={i} {...{data, select:() => pop(data.__path)}} />)}
+        {history.map((data, i) => <HistRow key={i} {...{data, select:() => pop(i)}} />)}
         <FilterRow filterCol={filter} sortCol={sort} />
       </List>
     }

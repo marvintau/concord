@@ -1,4 +1,4 @@
-const {insertRec, remove} = require('../database');
+const {insertRec, remove, retrieveRecs} = require('../database');
 const {v4} = require('uuid');
 
 const update = async (args) => {
@@ -16,6 +16,17 @@ const update = async (args) => {
       console.error(error);
     }
   }
+
+  const orig = await retrieveRecs({table: 'PROJECT'});
+
+  const data = orig.map(({data, ...rest}) => rest);
+
+  data.sort(({date:dateA}, {date:dateB}) => {
+    return dateB - dateA;
+  })
+
+  console.log(data.length, 'items, updated projects')
+  return {data};
 }
 
 module.exports = update

@@ -2,7 +2,7 @@ var Window = require('window');
 global.window = new Window();
 
 const {setTable} = require('../database');
-const {trav, read} = require('@marvintau/chua');
+const {read} = require('@marvintau/chua');
 const {columnNameRemap, readSingleSheet} = require('./utils');
 
 let header = [
@@ -24,12 +24,12 @@ async function CASHFLOW_WORKSHEET(fileBuffer, context){
   data = columnNameRemap(data, header);
   for (let i = 0; i < data.length; i++){
     if (data[i].desc === undefined) data[i].desc = '';
-    data[i].ref = {expr: data[i].ref.toString()};
+    data[i].ref = {expr: data[i].ref.toString(), type:'fetch-ref'};
   }
 
   data = read(data, {indexColumn:'desc'})
   const entry = {data};
-  await setTable({project_id}, 'CASHFLOW_WORKSHEET', entry)
+  await setTable({project_id, table:'PROJECT'}, 'CASHFLOW_WORKSHEET', entry)
   return entry;
 }
 

@@ -37,10 +37,10 @@ export default function({title="上传文件", name, context={}, refresh=ident, 
                 setInputKey(Math.random().toString(36))
                 const {ok, error, data} = (res.body);
                 if(ok){
-                    console.log('uploaded ok!')
+                    console.log('Uploaded done!')
                     refresh({[name]:data});
                 } else {
-                    console.log(error, 'upload error');
+                    console.log(error, 'Upload error');
                     setStatus(error);
                 }
             });

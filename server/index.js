@@ -37,6 +37,8 @@ console.log('Port: ', port, '  Public path: ', publicPath);
 
 router.post('/pull/:data_name', async ctx => {
   const {data_name} = ctx.params;
+  console.log('PULLING', data_name);
+  
   try {
     if (retrieveProc[data_name] === undefined){
       throw {code: 'DEAD_NOT_IMPL_PULL'}
@@ -66,8 +68,7 @@ router.post('/push/:data_name', async ctx => {
     if (updateProc[data_name] === undefined){
       throw {code: 'DEAD_NOT_IMPL_PUSH'}
     }
-    await updateProc[data_name](ctx.request.body);
-    ctx.body = {result: 'DONE'};
+    ctx.body = await updateProc[data_name](ctx.request.body);
   } catch ({code}) {
     ctx.body = {error: code || 'DEAD_UNKNOWN_PUSH_ERROR'}
   }

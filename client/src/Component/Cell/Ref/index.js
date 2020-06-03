@@ -1,102 +1,22 @@
-import React, {useState, useContext} from 'react';
+import React, {useContext} from 'react';
+import RefCore from './ref';
 
-import Autosuggest from 'react-autosuggest';
 import {Exchange} from '../../Exchange';
 
-import Check from './check.svg';
-
-import './react-autosuggest.css';
-import './refcell.css';
-
-
-const getSuggValue = (input, sugg) => {
-  return input.replace(/(?<=[$:/])([^$:/]*)$/, sugg);
-}
-
-export default ({sheetName, colName, disabled, children: cellData, data:{__path}}) => {
-
-  const {expr="", result, code} = cellData;
-  
-  const [editing, setEditing] = useState()
-  const [explained, setExplained] = useState();
-  const [value, setValue] = useState(expr.toString());
-  const [delayed, setDelayed] = useState(false);
-  const [suggestions, setSugg] = useState([]);
+const FetchRef = ({sheetName, colName, disabled, cellData, data, placeholder}) => {
 
   const {getSuggs, setField, evalSheet} = useContext(Exchange);
 
-  // the method below will be directly used by Autosuggest
-  // check: https://github.com/moroshko/react-autosuggest
-  const funcs = {
-    getSuggestionValue : (sugg) => getSuggValue(value, sugg),
-    renderSuggestion : (sugg) => <div>{sugg.toString()}</div>,
-    onSuggestionsFetchRequested : ({ value:rawValue }) => {
+  const {__path:path} = data;
 
-      const value = rawValue.replace('\n', '');
-
-      if (!delayed){
-        setDelayed(true);
-        setTimeout(() => {
-          setDelayed(false);
-
-          console.log(value, 'before split')
-          const exprType = value.split(':').length;
-          const curr = exprType > 1
-          ? value.split(':')[1].split('/').slice(-1)[0]
-          : value;
-          const suggs = getSuggs(value);
-          const transSuggs = suggs.every(sugg => typeof sugg === 'string')
-                ? suggs
-                : suggs.map((sugg) => sugg.ccode_name ? sugg.ccode_name : sugg.toString());
-
-          console.log(transSuggs, curr);
-          const filteredSuggs = transSuggs.filter(sugg => sugg.includes(curr));
-
-          setSugg(filteredSuggs.length > 0 ? filteredSuggs : transSuggs)
-        }, 100);
-      }
-    },
-    onSuggestionsClearRequested : () => setSugg([]),
-    onSuggestionSelected : (e, {suggestionValue}) => {
-      console.log(suggestionValue, 'select');
-      setValue(suggestionValue);
-    },
-  }
-
-  const inputProps = {
-    value,
-    id: 'sugg-input',
-    onChange:(e, {newValue}) => {
-      setValue(newValue);
-    }
-  }
-
-  const saveEdit = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setField(sheetName, __path, colName, {expr:value});
+  const saveEdit = (value) => {
+    setField(sheetName, path, colName, {type:'fetch-ref', expr:value});
     evalSheet(sheetName);
-    setEditing(false);
   }
 
-  const displayed = typeof result === 'number'
-  ? parseFloat(result.toFixed(2)).toLocaleString('en-us', {minimumFractionDigits: 2})
-  : result
-
-  // const id = `ID${Math.random().toString(36).substring(2)}`
-  const displayedResult = (result !== undefined)
-    ? <div className={`refcell-badge ${code.slice(0, 4).toLowerCase()}`}
-        onClick={(e)=>{
-          e.preventDefault();
-          e.stopPropagation();
-          setExplained(!explained)
-        }}
-      >
-        {displayed}
-      </div>
-    : <></>
-
-  const expln = {
+  const {expr="", result, code} = cellData;
+  
+  const desc = {
     WARN_UNDEFINED_FUNC:              '函数没有定义',
     WARN_INCOMPLETE_REFERENCE_FORMAT: '不是一个完整的引用（可能是没写取哪个数？）',
     WARN_SHEET_NOT_EXISTS:            '被引用的表没找到（再确认下名称）',
@@ -108,23 +28,43 @@ export default ({sheetName, colName, disabled, children: cellData, data:{__path}
     SUCC:                             '成功!',
     FAIL:                             '失败...',
     NORM:                             '正常'
+  }[code];
+  
+  return <RefCore {...{expr, result, code, desc, disabled, getSuggs, saveEdit, placeholder}} />
+}
+
+const StoreRef = ({sheetName, colName, disabled, cellData, data:rec, placeholder}) => {
+  
+  const {expr="", result, code} = cellData;
+
+  const {getSuggs, setField, assignRecTo, evalSheet} = useContext(Exchange);
+
+  // const {__path: paath}
+
+  const saveEdit = (value) => {
+    assignRecTo(rec, colName, value)
+    evalSheet(sheetName);
+  }
+  
+  return <RefCore {...{expr, result, code, desc:'not implemented', disabled, getSuggs, saveEdit, placeholder}} />
+}
+
+export default ({sheetName, colName, disabled: disabledProp, children: cellData, data, attr:{placeholder='empty'}={}}) => {
+
+  if (cellData === undefined) {
+    return "";
+  }
+  
+  const {type, disabled: disabledData} = cellData;
+
+  const disabled = disabledProp || disabledData;
+
+  if (type === 'fetch-ref') {
+    return <FetchRef {...{sheetName, colName, disabled, cellData, data, placeholder}} />
+  } else if (type === 'store-ref') {
+    return <StoreRef {...{sheetName, colName, disabled, cellData, data, placeholder}} />
+  } else {
+    return <FetchRef {...{sheetName, colName, disabled, cellData, data, placeholder}} />
   }
 
-  return editing
-  ? <div className="refcell-line">
-      <Autosuggest {...{...funcs, suggestions, inputProps}} />
-      <img className='refcell-button' src={Check} onClick={saveEdit} />
-    </div>
-  : <div className={`refcell-line ${editing ? "refcell-line-editing" : ''}`}>
-      <div className="refcell-text"
-        onClick={(e) => {
-          console.log(value,' before ');
-          e.preventDefault();
-          e.stopPropagation();
-          (!disabled) && setEditing(true)
-        }}
-      >{expr}</div>
-      {displayedResult}
-      {explained && <div className="refcell-result-tip">{expln[code] || '不解释'}</div>}
-    </div>
 }

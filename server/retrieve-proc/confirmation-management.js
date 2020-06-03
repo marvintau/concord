@@ -2,6 +2,8 @@ const {retrieveRecs} = require('../database');
 // const fs = require('fs').promises;
 // const path = require('path');
 
+// considering remove the fetch option.
+
 async function retrieve(context, fetch) {
 
   if (fetch !== undefined){
