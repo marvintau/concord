@@ -35,7 +35,7 @@ const getSuggValue = (input, sugg) => {
  * saveEdit: 保存更改及后续动作
  */
 
-export default ({expr='', result, code, desc, getSuggs=()=>[], saveEdit=()=>{}}) => {
+export default ({expr='', result, code, desc, placeholder, disabled, getSuggs=()=>[], saveEdit=()=>{}}) => {
   
   const [editing, setEditing] = useState()
   const [explained, setExplained] = useState();
@@ -86,16 +86,23 @@ export default ({expr='', result, code, desc, getSuggs=()=>[], saveEdit=()=>{}})
   const save = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     saveEdit(value);
     setEditing(false);
   }
 
   const inputProps = {
+    placeholder,
     value,
     id: 'sugg-input',
     onChange:(e, {newValue}) => {
+      e.preventDefault();
+      e.stopPropagation();
       setValue(newValue);
+    },
+    onClick: (e) => {
+      e.preventDefault();
+      e.stopPropagation();
     }
   }
 
@@ -103,7 +110,8 @@ export default ({expr='', result, code, desc, getSuggs=()=>[], saveEdit=()=>{}})
   ? parseFloat(result.toFixed(2)).toLocaleString('en-us', {minimumFractionDigits: 2})
   : result
 
-  // const id = `ID${Math.random().toString(36).substring(2)}`
+  // console.log(result, displayed, 'displayed result ref core');
+
   const displayedResult = (result !== undefined)
     ? <div className={`refcell-badge ${code.slice(0, 4).toLowerCase()}`}
         onClick={(e)=>{
@@ -127,9 +135,9 @@ export default ({expr='', result, code, desc, getSuggs=()=>[], saveEdit=()=>{}})
           console.log(value,' before ');
           e.preventDefault();
           e.stopPropagation();
-          setEditing(true)
+          !disabled && setEditing(true)
         }}
-      >{expr}</div>
+      >{expr === '' ? placeholder : expr}</div>
       {displayedResult}
       {explained && <div className="refcell-result-tip">{desc || '不解释'}</div>}
     </div>

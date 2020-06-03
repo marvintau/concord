@@ -161,6 +161,7 @@ export function DepRouter({children}) {
     setSubs(page.children);
     
     const newArgs = {...currArgs, ...args};
+    console.log(JSON.stringify(newArgs, null, 2), JSON.stringify(currArgs, null, 2), 'args');
     setArgs(newArgs);
 
     const pathList = [...currPath, {path, args:newArgs}];

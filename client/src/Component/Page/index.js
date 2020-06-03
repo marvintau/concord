@@ -31,12 +31,6 @@ const BrowserPage = () => {
   const {currPage, currArgs} = useContext(DepRouterContext);
   const {Sheets, status} = useContext(Exchange);
   
-  const [activeTab, setActiveTab] = useState('1');
-
-  const toggle = tab => {
-    if(activeTab !== tab) setActiveTab(tab);
-  }
-
   const [, forceUpdate] = useState();
   useEffect(() => {
     console.log(status, 'changed')

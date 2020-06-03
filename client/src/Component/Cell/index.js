@@ -1,5 +1,5 @@
 import QR from './QR';
-import {FetchRef, StoreRef} from './Ref';
+import Ref from './Ref';
 import Text from './Text';
 import Labels from './Labels';
 import Number from './Number';
@@ -9,8 +9,7 @@ import ConfStatus from './ConfStatus';
 
 export default {
   QR,
-  FetchRef,
-  StoreRef,
+  Ref,
   Text,
   Labels,
   Number,

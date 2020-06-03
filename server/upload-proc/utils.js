@@ -152,6 +152,14 @@ function readSingleSheet(buffer, withHeader=true){
   }
 }
 
+function readSingleText(buffer) {
+
+  const table = buffer.toString().split('\n').map(line => line.trim());
+  console.log('string table');
+
+  return table;
+}
+
 const generateQR = async text => {
 
   const options = {
@@ -180,5 +188,6 @@ module.exports = {
   cascade,
   columnNameRemap,
   readSingleSheet,
+  readSingleText,
   generateQR
 }
