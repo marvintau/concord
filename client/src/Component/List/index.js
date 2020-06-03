@@ -33,6 +33,7 @@ const ErrorIndicator = ({status}) => {
     'DEAD_INFO' : '未指定数据和远程地址。请联系开发人员',
     'DEAD_NOT_FOUND' : '没有找到数据，可能是您还没上传',
     'DEAD_NOT_IMPL_PULL': '数据存在，但是没有实现表示数据的方法，请联系开发人员',
+    'DEAD_NOT_IMPL_PUSH': '服务器没有实现更新数据的方法，请联系开发人员',
     'DEAD_NOT_IMPL' : '服务器上没有对应数据的处理方法，请联系开发人员',
     'DEAD_PROC_ERROR' : '处理数据时发生了错误，请联系开发人员',
     'DEAD_BALANCE_NOT_FOUND': '需要您先上传科目余额表',
@@ -71,7 +72,7 @@ function attachColumnsWithWidth(colSpecs) {
 
 export default ({sheet, sheetName, status, desc, colSpecs, rowEdit}) => {
 
-  const {addSheets, setStatus, pull, push} = useContext(Exchange);
+  const {updateSheets, setStatus, pull, push} = useContext(Exchange);
   const {currPage, currArgs} = useContext(DepRouterContext);
   const {toggleCreate, isCreating, createManager} = useCreateManager(sheetName, colSpecs);
 
@@ -119,7 +120,7 @@ export default ({sheet, sheetName, status, desc, colSpecs, rowEdit}) => {
   for (let tool of tools){
     if (tool === 'ImportExcel'){
       console.log(`${sheetName} before passing into upload manager`)
-      let props = {name:sheetName, refresh:addSheets, setStatus, context:{...currPage, ...currArgs}};
+      let props = {name:sheetName, refresh:updateSheets, setStatus, context:{...currPage, ...currArgs}};
       toolElems.push(<UploadManager key={tool} title={`上传${desc}数据文件`} {...props} />);
     }
     if (tool === 'HeaderCreate'){

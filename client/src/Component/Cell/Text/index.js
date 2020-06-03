@@ -11,7 +11,7 @@ const rem = (header) => {
   return header.replace(/#/g, '');
 }
 
-export default ({children, select}) => {
+export default ({children, select=() => {}}) => {
 
   if (typeof children === 'string'){
     if (children.startsWith('#')){

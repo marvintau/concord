@@ -17,6 +17,9 @@ const update = async (args) => {
       console.error(error);
     }
   }
+
+  const data = await retrieveRecs({table:'CONFIRMATION_TEMPLATE'});
+  return {data}
 }
 
 module.exports = update

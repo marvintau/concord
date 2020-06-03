@@ -163,9 +163,11 @@ const dirs = [
     tools: ['ImportExcel'],
     sheetName: 'SOFP',
     colSpecs: {
-      item: {desc: '条目', width: 2, isFilterable: true},
-      mb: {desc: '期初', width: 5, isFilterable: true, cellType:'Number'},
-      me: {desc: '期末', width: 5, isFilterable: true, cellType:'Number'},
+      item: {desc: '条目', width: 3, isFilterable: true},
+      mb: {desc: '期初', width: 2, isFilterable: true, cellType:'Number'},
+      mc: {desc: '借方发生', width: 2, isFilterable: true, cellType:'Number'},
+      md: {desc: '贷方发生', width: 2, isFilterable: true, cellType:'Number'},
+      me: {desc: '期末', width: 2, isFilterable: true, cellType:'Number'},
     }
   },
   {
