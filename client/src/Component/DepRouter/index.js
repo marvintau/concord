@@ -26,7 +26,6 @@ export const DepRouterContext = createContext({
   currSubs: [],
   fore: () => {},
   back: () => {},
-  jump: () => {},
   fetchDir : () => {}
 })
 
@@ -87,7 +86,7 @@ const NavigationBar = ({directories}) => {
   // console.log(currPath, 'nav path');
   const pathElems = currPath.map(({path, args}, i) => {
 
-    const {contextualPageName:ctxPageNavTitle, desc:defPageNavTitle} = directories[path];
+    const {contextualName:ctxPageNavTitle, desc:defPageNavTitle} = directories[path];
     const pageNavTitle = ctxPageNavTitle
         ? args[ctxPageNavTitle]
         : defPageNavTitle
@@ -104,7 +103,7 @@ const NavigationBar = ({directories}) => {
 
 export function DepRouter({children}) {
 
-  const {pull, status, evalSheet, clearAllSheets} = useContext(Exchange);
+  const {pull, status, evalSheet, clearAllSheets, refreshSheets} = useContext(Exchange);
 
   const [dirs, setDirs] = useState({});
   const [currArgs, setArgs] = useState({});
@@ -117,27 +116,21 @@ export function DepRouter({children}) {
   // it will be called single once.
   useEffect(() => {
     (async function(){
-
-      const {search, pathname} = window.location;
-      const args = Object.fromEntries((new URLSearchParams(search)).entries());
-      
-      const pathSegs = pathname.split('/').slice(1)
-
       const fetchedDirs = await fetchDir('/');
       setDirs(fetchedDirs);
-
-      if (pathSegs.length > 1 || fetchedDirs[pathSegs[0]] === undefined){
-        init(fetchedDirs);
-      } else {
-        jump(fetchedDirs[pathSegs[0]], args);
-      }
+      init(fetchedDirs);
     })()
   }, [])
 
   useEffect(() => {
     if (status === 'DONE_PULL') {
       console.log(currPage, 'dep router pull');
-      evalSheet(currPage.sheetName);
+
+      for (let {name: sheetName} of currPage.data) {
+        evalSheet(sheetName);
+      }
+
+      refreshSheets();
     }
   }, [status])
 
@@ -184,24 +177,10 @@ export function DepRouter({children}) {
     const pathList = [...currPath, {path, args:newArgs}];
     setPath(pathList);
 
-    const {sheetName, referredSheetNames=[]} = page;
-
-    if (sheetName !== undefined){
-      pull([...referredSheetNames, sheetName], newArgs);
+    if (page.data !== undefined){
+      pull(page.data, newArgs);
     }
 
-  }
-
-  const jump = (page, args={}) => {
-
-    setPage(page);
-    setArgs(args);
-    setPath([]);
-
-    const {sheetName, referredSheetNames=[]} = page;
-    if (sheetName !== undefined){
-      pull([...referredSheetNames, sheetName], args);
-    }
   }
 
   const back = (dest) => {
@@ -213,9 +192,9 @@ export function DepRouter({children}) {
     const histPage = Object.assign({}, ...pathList.map(({context}) => context), dirs[dest]);
     setPage(histPage);
 
-    const {sheetName, referredSheetNames=[], args} = histPage;
-    if (sheetName !== undefined){
-      pull([...referredSheetNames, sheetName], args);
+    const {data, args} = histPage;
+    if (data !== undefined){
+      pull(data, args);
     }
 
     setSubs(dirs[dest].children);
@@ -232,13 +211,12 @@ export function DepRouter({children}) {
       <Spinner />
       <div>正在载入，请稍候</div>
       <div>Loading the remaining stuff...</div>
-      <div style={{fontSize: '80%', width: '80%', marginTop:'2rem'}}>如果您是通过微信扫码进入，并长时间停留在此页，请从右上角菜单选择“在浏览器打开”进入</div>
     </div>;
   }
 
   return <DepRouterContext.Provider value={{
       currPage, currPath, currSubs, currArgs,
-      fore, back, jump, fetchDir}}>
+      fore, back, fetchDir}}>
     {content}
   </DepRouterContext.Provider>
 }

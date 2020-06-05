@@ -1,11 +1,8 @@
-const fs = require('fs').promises;
-
 const {remove, retrieveRecs, createRecs} = require('./database');
 
-const {genName} = require('./nameGenerate');
-const {v4} = require('uuid');
-
 const manualPage = require('./manual-page');
+
+const {fetchSheetSpec} = require('./sheet-spec');
 
 const processManualPage = name => {
   return manualPage[name] !== undefined
@@ -23,42 +20,39 @@ Phone: 176-0085-2337
 `
 }
 
+
+
 const dirs = [
   {
     loadPoint: '/',
-    pageName: 'Home',
+    name: 'Home',
     desc: '首页',
     type: 'TEXT',
     children: ['ProjectList', 'GeneralConfigure'],
   },
   {
     loadPoint: '/',
-    pageName: 'GeneralConfigure',
+    name: 'GeneralConfigure',
     desc: '通用配置',
     type: 'TEXT',
     children: ['CategoryNameAliases', 'ColAliases', 'PageConfiguration'],
   },
   {
     loadPoint: '/',
-    pageName: 'PageConfiguration',
+    name: 'PageConfiguration',
     desc: '页面导航',
     type: 'TEXT',
     children: ['']
   },
   {
     loadPoint: '/',
-    pageName: 'CategoryNameAliases',
+    name: 'CategoryNameAliases',
     desc: '科目别名',
     type: 'DATA',
-    sheetName: 'CATEGORY_NAME_ALIASES',
-    tools: ['ImportExcel', 'HeaderCreate', 'SaveRemote'],
-    colSpecs: {
-      alias: {desc: '科目别名', width: 12, cellType:'Labels'},
-    },
   },
   {
     loadPoint: '/',
-    pageName: 'ColAliases',
+    name: 'ColAliases',
     desc: '表头别名',
     type: 'DATA',
     sheetName: 'COLUMN_NAME_ALIASES',
@@ -69,68 +63,42 @@ const dirs = [
   },
   {
     loadPoint: '/',
-    pageName: 'ProjectList',
+    name: 'ProjectList',
     desc: '项目列表',
     type: 'DATA',
-    sheetName: 'PROJECT',
-    tools: ['HeaderCreate'],
-    colSpecs: {
-      year: {desc: '年度', width: 2, isFilterable: true},
-      companyName: {desc: '项目（企业）名称', width: 10, isFilterable: true},
-    },
-    rowEdit: {isSync: true, removeEnabled: true},
+    data: 'PROJECT',
     children: ['PROJECT'],
   },
   {
     loadPoint: '/',
-    pageName: 'PROJECT',
-    contextualPageName: 'companyName',
+    name: 'PROJECT',
+    contextualName: 'companyName',
     desc: '项目页',
     type: 'TEXT',
-    sheetName: undefined,
-    colSpecs: undefined,
     children: ['Finance', 'Confirmation'],
   },
   {
     loadPoint: '/',
-    pageName: 'Confirmation',
+    name: 'Confirmation',
     desc: '函证管理',
     type: 'TEXT',
     children: ['ConfirmationManagement', 'ConfirmationTemplateManagement'],
   },
   {
     loadPoint: '/',
-    pageName: 'ConfirmationManagement',
+    name: 'ConfirmationManagement',
     desc: '函证状态管理',
     type: 'DATA',
-    sheetName: 'CONFIRMATION_MANAGEMENT',
-    tools: ['ImportExcel', 'GenerateTemplate'],
-    qrLink:true,
-    colSpecs: {
-      ID: {desc: '编号', width: 2, isFilterable: true},
-      type: {desc:'类型', width: 1, isFilerable: true},
-      contact: {desc:'通信地址', width: 3, isFilerable: true, cellType: 'Address'},
-      confStatus: {desc:'函证状态', width: 4, isFilterable: true, cellType: 'ConfStatus'},
-      qr: {desc:'QR', width: 2, cellType:'QR'},
-    },
   },
   {
     loadPoint: '/',
-    pageName: 'ConfirmationTemplateManagement',
+    name: 'ConfirmationTemplateManagement',
     desc: '询证函模版管理',
     type: 'DATA',
-    sheetName: 'CONFIRMATION_TEMPLATE',
-    tools: ['HeaderCreate'],
-    colSpecs: {
-      tempName: {desc: '模版名称', width: 4, isFilerable: true},
-      tempType: {desc: '模版类型', width: 4, isFilerable: true},
-      fileInput: {desc:'上传', width: 2, cellType: 'FileInput'},
-    },
-    rowEdit: {isSync: true, removeEnabled: true, insertEnabled: false}
   },
   {
     loadPoint: '/',
-    pageName: 'Finance',
+    name: 'Finance',
     desc: '财务与报表管理',
     type: 'TEXT',
     sheetName: undefined,
@@ -139,91 +107,42 @@ const dirs = [
   },
   {
     loadPoint: '/',
-    pageName: 'Balance',
+    name: 'Balance',
     desc: '余额表',
     type: 'DATA',
-    isCascaded: true,
-    tools: ['ImportExcel'],
-    sheetName: 'BALANCE',
-    colSpecs: {
-      ccode: {desc: '编码', width: 1, isFilterable: true},
-      ccode_name: {desc: '科目名称', width: 3, isFilterable: true},
-      mb: {desc: '期初', width: 2, isFilterable: true, cellType:'Number'},
-      md: {desc: '借方', width: 2, isFilterable: true, cellType:'Number'},
-      mc: {desc: '贷方', width: 2, isFilterable: true, cellType:'Number'},
-      me: {desc: '期末', width: 2, isFilterable: true, cellType:'Number'},
-    }
   },
   {
     loadPoint: '/',
-    pageName: 'FinancialPositionStatement',
+    name: 'FinancialPositionStatement',
     desc: '资产负债表',
     type: 'DATA',
-    isCascaded: true,
-    tools: ['ImportExcel'],
-    sheetName: 'SOFP',
-    colSpecs: {
-      ccode_name: {desc: '条目', width: 3, isFilterable: true},
-      mb: {desc: '期初', width: 2, isFilterable: true, cellType:'Number'},
-      mc: {desc: '借方发生', width: 2, isFilterable: true, cellType:'Number'},
-      md: {desc: '贷方发生', width: 2, isFilterable: true, cellType:'Number'},
-      me: {desc: '期末', width: 2, isFilterable: true, cellType:'Number'},
-    }
   },
   {
     loadPoint: '/',
-    pageName: 'AccrualAnalysis',
+    name: 'AccrualAnalysis',
     desc: '发生额分析',
-    type: 'MULTI-DATA',
-    sheetName: 'ACCRUAL_ANALYSIS',
-    isCascaded: true,
+    type: 'DATA',
+    data: 'ACCRUAL_ANALYSIS',
     isHidingManual: true,
-    tools: ['ImportExcel', 'SaveRemote', 'ExportExcel'],
-    referredSheetNames: ['SOFP'],
-    colSpecs: {
-      ccode_name: {desc: '科目名称', width: 2, isFilterable: true},
-      dest_ccode_name: {desc: '对方科目', width: 1, isFilterable: true},
-      md: {desc: '借方发生', width: 1, isFilterable: true, isSortable: true, cellType:'Number'},
-      mc: {desc: '贷方发生', width: 1, isFilterable: true, isSortable: true, cellType:'Number'},
-      descendant_num: {desc: '笔数', width: 1, isSortable: true},
-      digest: {desc:'摘要', width: 1, isFilerable: true},
-      analyzed: {desc:'已分析', width: 1},
-      categorized: {desc:'列入报表项目', width: 4, cellType:'Ref'}
-    },
   },
   {
     loadPoint: '/',
-    pageName: 'TrialBalance',
+    name: 'TrialBalance',
     desc: '试算平衡表',
     type: 'MULTI-DATA',
-    sheetName: 'TRIAL_BALANCE',
-    isCascaded: true,
     isHidingManual: true,
-    tools: ['ImportExcel'],
-    colSpecs: {
-      ccode_name: {desc: '条目名称', width: 4, isFilterable: true},
-      value: {desc:'金额', width: 8, cellType:'Ref'},
-      categorized: {desc:'列入报表项目', width: 4, cellType:'Ref'}
-    },
   },
   {
     loadPoint: '/',
-    pageName: 'ProfitAndLoss',
+    name: 'ProfitAndLoss',
     desc: '损益表',
-    type: 'MULTI-DATA',
-    sheetName: 'PAL',
-    isCascaded: true,
     isHidingManual: true,
-    tools: [],
-    colSpecs: {
-      ccode_name: {desc: '条目名称', width: 4, isFilterable: true},
-      value: {desc:'金额', width: 8, cellType:'Ref'},
-      categorized: {desc:'列入报表项目', width: 4, cellType:'Ref'}
-    },
+    type: 'MULTI-DATA',
+    
   },
   {
     loadPoint: '/',
-    pageName: 'Cashflow',
+    name: 'Cashflow',
     desc: '现金流量表',
     type: 'MULTI-DATA',
     sheetName: 'CASHFLOW',
@@ -238,32 +157,14 @@ const dirs = [
   },
   {
     loadPoint: '/',
-    pageName: 'Equity',
+    name: 'Equity',
     desc: '所有权变动表',
     type: 'MULTI-DATA',
-    sheetName: 'EQUITY',
-    isCascaded: true,
     isHidingManual: true,
-    tools: [],
-    colSpecs: {
-      ccode_name: {desc: '条目名称', width: 1, isFilterable: true},
-      'capital': {desc: '股本', width: 1},
-      'other-preferred-shares': {desc: '其他权益工具优先股', width: 1},
-      'other-perpetual-bonds': {desc: '其他权益工具永续债', width: 1},
-      'other-other': {desc: '其他权益工具其它', width: 1},
-      'capital-surplus': {desc: '资本公积', width: 1},
-      'treasury': {desc: '减：库存股', width: 1},
-      'other-earned': {desc: '其他综合收益', width: 1},
-      'special-reserves': {desc: '专项储备', width: 1},
-      'feature-surplus': {desc: '盈余公积', width: 1},
-      'risk-prepare': {desc: '一般风险准备', width: 1},
-      'undistributed': {desc: '未分配利润', width: 1},
-      'amount': {desc: '股东权益合计', width: 1},
-    },
   },
   {
     loadPoint: '/',
-    pageName: 'CashflowStatement',
+    name: 'CashflowStatement',
     desc: '现金流量表 (Obsoleted)',
     type: 'DATA',
     sheetName: 'CASHFLOW_WORKSHEET',
@@ -281,8 +182,8 @@ const dirs = [
 (async () => {
 
   for (let dir of dirs) {
-    let {pageName} = dir;
-    dir.manual = processManualPage(pageName);
+    let {name} = dir;
+    dir.manual = processManualPage(name);
   }
 
   try {
@@ -294,34 +195,41 @@ const dirs = [
 
 })();
 
-(async () => {
+// (async () => {
 
-  try {
-    let retrieved = await retrieveRecs({table: 'PROJECT'});
-    console.log(retrieved.length, 'retrieved project');
+//   try {
+//     let retrieved = await retrieveRecs({table: 'PROJECT'});
+//     console.log(retrieved.length, 'retrieved project');
 
-    if (retrieved.length === 0){
-      let records = [];
-      for (let i = 0; i < 10; i++){
-        records.push({companyName: `${genName()} Inc.`, project_id:v4(), year:1990+Math.floor(Math.random()*30), link:'PROJECT', date:Date.now()});
-      }
-      createRecs('PROJECT', records);
-    }
+//     if (retrieved.length === 0){
+//       let records = [];
+//       for (let i = 0; i < 10; i++){
+//         records.push({companyName: `${genName()} Inc.`, project_id:v4(), year:1990+Math.floor(Math.random()*30), link:'PROJECT', date:Date.now()});
+//       }
+//       createRecs('PROJECT', records);
+//     }
 
-    retrieved = await retrieveRecs({table: 'PROJECT'});
-    console.log(retrieved.length, 'retrieved project');
+//     retrieved = await retrieveRecs({table: 'PROJECT'});
+//     console.log(retrieved.length, 'retrieved project');
 
-  } catch (err) {
-    console.log(err);
-  }
-})();
+//   } catch (err) {
+//     console.log(err);
+//   }
+// })();
 
 async function fetchDir(givenLoadPoint='/') {
   const dirs = await retrieveRecs({table: 'DIRS'});
 
-  const loaded = dirs.filter(({loadPoint}) => loadPoint === givenLoadPoint);
+  const loadedPages = dirs.filter(({loadPoint}) => loadPoint === givenLoadPoint);
 
-  return Object.fromEntries(loaded.map(({loadPoint, pageName, ...rest}) => [pageName, {pageName, ...rest}]))
+  for (let page of loadedPages){
+
+    if (page.data !== undefined ){
+      page.data = await fetchSheetSpec(page.data);
+    }
+  }
+
+  return Object.fromEntries(loadedPages.map(({loadPoint, name, ...rest}) => [name, {name, ...rest}]))
 }
 
 module.exports = {fetchDir}

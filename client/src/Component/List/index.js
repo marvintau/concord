@@ -70,13 +70,13 @@ function attachColumnsWithWidth(colSpecs) {
   }))
 }
 
-export default ({sheet, sheetName, status, desc, colSpecs, rowEdit}) => {
+export default ({sheet, sheetName, status, desc, colSpecs, rowEdit, isCascaded, tools}) => {
 
   const {updateSheets, setStatus, pull, push} = useContext(Exchange);
   const {currPage, currArgs} = useContext(DepRouterContext);
   const {toggleCreate, isCreating, createManager} = useCreateManager(sheetName, colSpecs);
 
-  const {isCascaded, tools} = currPage;
+  // const {isCascaded, tools} = currPage;
   const [folded, setFold] = useState(true);
 
   // the cols state could be updated from two source. The first is triggered

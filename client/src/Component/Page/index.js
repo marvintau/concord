@@ -9,13 +9,13 @@ import {DepRouterContext} from '../DepRouter';
 import {Exchange} from '../Exchange';
 import ReactMarkdown from 'react-markdown/with-html';
 import List from '../List';
-import Doc from '../Doc';
+// import Doc from '../Doc';
 
 import './page.css';
 import './docu.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-import QRScanner from '../QRScanner';
+// import QRScanner from '../QRScanner';
 
 
 const qrLinkContent = (name, dict) => {
@@ -31,13 +31,13 @@ const BrowserPage = () => {
   const {currPage, currArgs} = useContext(DepRouterContext);
   const {Sheets, status} = useContext(Exchange);
   
-  const [, forceUpdate] = useState();
-  useEffect(() => {
-    console.log(status, 'changed')
-    forceUpdate();
-  }, [status])
+  // const [, forceUpdate] = useState();
+  // useEffect(() => {
+  //   console.log(status, 'changed')
+  //   forceUpdate();
+  // }, [status])
 
-  const {type, pageName, children, qrLink, manual, isHidingManual} = currPage;
+  const {type, name, children, qrLink, manual, isHidingManual} = currPage;
 
   const manualPage = <ReactMarkdown
     source={manual}
@@ -56,7 +56,7 @@ const BrowserPage = () => {
       <div className="content">此页无描述</div>
       {qrLink && <div className="qr-block">
         <h3>手机扫码处</h3>
-        <QRCode value={qrLinkContent(pageName, currArgs)} />
+        <QRCode value={qrLinkContent(name, currArgs)} />
       </div>}
     </div>
   }
@@ -66,87 +66,32 @@ const BrowserPage = () => {
       {!isHidingManual && manualPage}
       {qrLink && <div className="qr-block">
         <h3>手机扫码处</h3>
-        <QRCode value={qrLinkContent(pageName, currArgs)} />
+        <QRCode value={qrLinkContent(name, currArgs)} />
       </div>}
     </div>
   }
 
   if (type === 'DATA'){
 
-    const {sheetName, pageName, desc, colSpecs, rowEdit} = currPage;
-    console.log(`${pageName} switched page`);
+    const {name: pageName, desc, data} = currPage;
+
+    const {name: sheetName, ...restListProps} = data[0]
+
+    console.log(`Navigated to page: [${pageName}]`);
+    console.log('data:', Sheets[sheetName], sheetName);
+
     return <div className="content-container">
-      <List {...{sheet: Sheets[sheetName], sheetName, desc, status, colSpecs, rowEdit}} />
+      <List {...{sheet: Sheets[sheetName], sheetName, desc, status, ...restListProps}} />
       {!isHidingManual && <div className="page-right-side">
-        {qrLink && <div className="qr-block">
-          <h3>手机扫码处</h3>
-          <QRCode value={qrLinkContent(pageName, currArgs)} />
-        </div>}
         {manualPage}
       </div>}
     </div>
   }
 
-  if (type === 'MULTI-DATA'){
-
-    const {sheetName, desc, colSpecs, rowEdit} = currPage;
-
-    return <div className='content-container'>
-      <List {...{sheet: Sheets[sheetName], sheetName, desc, status, colSpecs, rowEdit}} />
-    </div>
-  }
-
   return <>
   </>
-}
-
-const MobilePage = () => {
-
-  const {fetchURL} = useContext(Exchange);
-  const {currPage} = useContext(DepRouterContext);
-  const {sheetName, desc, colSpecs} = currPage;
-
-  const [stage, setStage] = useState('RETRIEVING_DOC');
-  const [doc, setDoc] = useState({});
-  const fetchRecord = (text) => {
-    (async () => {
-      try{
-        console.log('fetchURL, called')
-        const data = await fetchURL(text);
-        setDoc(data);
-        setStage('MANAGE_DOC');
-      } catch (e) {
-        console.error(e);
-      }
-    })();
-  };
-
-  let content = <></>;
-  if (stage === 'RETRIEVING_DOC') {
-    content = <div className='mobile-container'>
-      <div className="title">{desc}</div>
-      <div className='content'>手机端管理工具</div>
-      <QRScanner buttonName='扫描记录对应的二维码' success={({text}) => fetchRecord(text)}/>
-    </div>
-  }
-
-  if (stage === 'MANAGE_DOC') {
-    content = <div className='mobile-container'>
-      <div className="title">{desc}</div>
-      <Doc data={doc} {...{sheetName, colSpecs}} />
-    </div>
-  }
-
-  return content;
 }
 
 export default () => {
-  return <>
-    <BrowserView style={{height: '85%', position:'relative'}}>
-      <BrowserPage />
-    </BrowserView>
-    <MobileOnlyView>
-      <MobilePage />
-    </MobileOnlyView>
-  </>
+  return <BrowserPage />
 }

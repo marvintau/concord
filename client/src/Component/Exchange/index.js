@@ -9,7 +9,7 @@ export const Exchange = createContext({
   Sheets: {},
   status: '',
   updateSheets: () => {},
-  refreshSheet: () => {},
+  refreshSheets: () => {},
   evalSheet: () => {},
   clearAllSheets: () => {},
 
@@ -50,8 +50,13 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
   // When refreshing sheets, a new instance of sheet collection
   // is created, and a shallow copy of the specified sheet is 
   // made too.
-  const refreshSheet = (sheetName) => {
-    setSheets({...Sheets, [sheetName]: {...Sheets[sheetName]}});
+  const refreshSheets = () => {
+
+    const newSheetColl = Object.fromEntries(Object.entries(Sheets).map(([k, v]) => {
+      return [k, {...v}]
+    }));
+
+    setSheets(newSheetColl);
   }
 
   const setField = (sheetName, path, fieldName, value) => {
@@ -132,7 +137,6 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
     }
 
     trav(Sheets[sheetName].data, evalRecord, 'POST');
-    refreshSheet(sheetName);
   }
 
   const getSuggs = (expr) => {
@@ -163,7 +167,7 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
     (async() => {
       setStatus('PULL');
       let pulledSheets = {};
-      for (let sheetName of sheetNameList) if (Sheets[sheetName] === undefined){
+      for (let {name:sheetName} of sheetNameList) if (Sheets[sheetName] === undefined){
   
         try{
           console.log('PULL: payload: ', currPage)
@@ -221,7 +225,7 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
   }
 
   return <Exchange.Provider value={{
-      Sheets, status, setStatus, updateSheets, refreshSheet, evalSheet, clearAllSheets,
+      Sheets, status, setStatus, updateSheets, refreshSheets, evalSheet, clearAllSheets,
       setField, addSiblyRec, addChildRec, remRec, assignRecTo, getSuggs,
       pull, push, fetchURL,
     }}>
