@@ -1,5 +1,6 @@
 const SOFP = require('./sofp');
 const ACCRUAL_ANALYSIS = require('./accrual-analysis');
+const TRIAL_BALANCE = require('./trial-balance');
 const BALANCE = require('./balance');
 const CASHFLOW_WORKSHEET = require('./cashflow-worksheet');
 const CONFIRMATION_MANAGEMENT = require('./confirmation-management');
@@ -9,6 +10,7 @@ const CONFIRMATION_TEMPLATE = require('./confirmation-template');
 const uploadDict = {
   SOFP,
   ACCRUAL_ANALYSIS,
+  TRIAL_BALANCE,
   BALANCE,
   CASHFLOW_WORKSHEET,
   CONFIRMATION_MANAGEMENT,

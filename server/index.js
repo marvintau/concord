@@ -101,6 +101,7 @@ router.post('/upload/:data_name', upload.single('file'), async ctx => {
   console.log(file, 'uploaded file');
   try{
     const res = await uploadProc(file.buffer, data_name, ctx.request.body);
+    // console.log(res);
     ctx.body = res;
   } catch (error){
 

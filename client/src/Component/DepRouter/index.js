@@ -6,6 +6,19 @@ import {Exchange} from '../Exchange';
 
 import './dep-router.css';
 
+const containProp = (object1, object2) => {
+  const keys1 = Object.keys(object1);
+  const keys2 = Object.keys(object2);
+
+  for (let key2 of keys2){
+    if (keys1.includes(key2)){
+      return key2;
+    }
+  }
+
+  return undefined;
+}
+
 export const DepRouterContext = createContext({
   currPage: {},
   currArgs: {},
@@ -91,7 +104,7 @@ const NavigationBar = ({directories}) => {
 
 export function DepRouter({children}) {
 
-  const {pull, status, evalSheet} = useContext(Exchange);
+  const {pull, status, evalSheet, clearAllSheets} = useContext(Exchange);
 
   const [dirs, setDirs] = useState({});
   const [currArgs, setArgs] = useState({});
@@ -160,8 +173,12 @@ export function DepRouter({children}) {
     setPage(page);
     setSubs(page.children);
     
+    if (containProp(currArgs, args)){
+      clearAllSheets();
+    };
+
     const newArgs = {...currArgs, ...args};
-    console.log(JSON.stringify(newArgs, null, 2), JSON.stringify(currArgs, null, 2), 'args');
+    // console.log(JSON.stringify(newArgs, null, 2), JSON.stringify(currArgs, null, 2), 'args');
     setArgs(newArgs);
 
     const pathList = [...currPath, {path, args:newArgs}];

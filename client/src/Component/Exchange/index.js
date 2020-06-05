@@ -11,6 +11,7 @@ export const Exchange = createContext({
   updateSheets: () => {},
   refreshSheet: () => {},
   evalSheet: () => {},
+  clearAllSheets: () => {},
 
   getSuggs: () => {},
   addSiblyRec: () => {},
@@ -27,13 +28,23 @@ export const Exchange = createContext({
 
 export const ExchangeProvider = ({defaultColumnAliases, children}) => {
 
-  const [Sheets, setSheets] = useState({__COL_ALIASES:{...defaultColumnAliases}, __VARS:{}, __PATH_ALIASES: {}});
+  const initialSheets = {
+    __COL_ALIASES:{...defaultColumnAliases},
+    __VARS:{},
+    __PATH_ALIASES: {}
+  }
+
+  const [Sheets, setSheets] = useState(initialSheets);
   const [status, setStatus] = useState('INIT');
   
   const updateSheets = (newSheets) => {
     console.log('add sheet called');
     setSheets({...Sheets, ...newSheets});
     setStatus('DONE_ADDED');
+  }
+
+  const clearAllSheets = () => {
+    setSheets(initialSheets);
   }
 
   // When refreshing sheets, a new instance of sheet collection
@@ -163,6 +174,8 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
             return;
           }
 
+          console.log('PULL: respond:', data);
+
           pulledSheets[sheetName] = {data, indexColumn};
 
         } catch(error){
@@ -208,7 +221,7 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
   }
 
   return <Exchange.Provider value={{
-      Sheets, status, setStatus, updateSheets, refreshSheet, evalSheet,
+      Sheets, status, setStatus, updateSheets, refreshSheet, evalSheet, clearAllSheets,
       setField, addSiblyRec, addChildRec, remRec, assignRecTo, getSuggs,
       pull, push, fetchURL,
     }}>

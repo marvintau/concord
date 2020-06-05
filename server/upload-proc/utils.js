@@ -140,17 +140,40 @@ function columnNameRemap(table, map){
   return table
 }
 
+// Use when there only one sheet in the excel file
+// Suitable for data
 function readSingleSheet(buffer, withHeader=true){
   const table = XLSX.read(buffer, {type:'buffer'});
-  // console.log(table, 'table table');
   const firstSheet = table.Sheets[table.SheetNames[0]];  
-  // console.log(firstSheet, 'firstSheet');
   if (withHeader) {
     return XLSX.utils.sheet_to_json(firstSheet);
   } else {
     return XLSX.utils.sheet_to_json(firstSheet, {header: 1});
   }
 }
+
+
+// Use when there are multiple sheets, and you know the exact names of them.
+// Suitable for template, or other sheets with definite format.
+function readSheets(buffer, sheetNames=[], withHeader=true){
+  const table = XLSX.read(buffer, {type:'buffer'});
+
+  const sheets = {};
+
+  for (let sheetName of sheetNames){
+
+    const sheet = table.Sheets[sheetName];
+
+    if (withHeader) {
+      sheets[sheetName] = XLSX.utils.sheet_to_json(sheet);
+    } else {
+      sheets[sheetName] = XLSX.utils.sheet_to_json(sheet, {header: 1});
+    }  
+  }
+
+  return sheets;
+}
+
 
 function readSingleText(buffer) {
 
@@ -188,6 +211,7 @@ module.exports = {
   cascade,
   columnNameRemap,
   readSingleSheet,
+  readSheets,
   readSingleText,
   generateQR
 }
