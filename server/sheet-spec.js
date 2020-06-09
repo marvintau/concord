@@ -30,7 +30,7 @@ const sheetSpecs = [
     },
   },
   {
-    sheetName: 'BALANCE',
+    name: 'BALANCE',
     isCascaded: true,
     tools: ['ImportExcel'],
     colSpecs: {
@@ -43,7 +43,7 @@ const sheetSpecs = [
     }
   },
   {
-    sheetName: 'CONFIRMATION_TEMPLATE',
+    name: 'CONFIRMATION_TEMPLATE',
     tools: ['HeaderCreate'],
     colSpecs: {
       tempName: {desc: '模版名称', width: 4, isFilerable: true},
@@ -53,7 +53,7 @@ const sheetSpecs = [
     rowEdit: {isSync: true, removeEnabled: true, insertEnabled: false}
   },
   {
-    sheetName: 'SOFP',
+    name: 'SOFP',
     isCascaded: true,
     tools: ['ImportExcel'],
     colSpecs: {

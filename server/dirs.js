@@ -110,6 +110,7 @@ const dirs = [
     name: 'Balance',
     desc: '余额表',
     type: 'DATA',
+    data: ['BALANCE']
   },
   {
     loadPoint: '/',
@@ -129,7 +130,7 @@ const dirs = [
     loadPoint: '/',
     name: 'TrialBalance',
     desc: '试算平衡表',
-    type: 'MULTI-DATA',
+    type: 'DATA',
     isHidingManual: true,
   },
   {
@@ -137,14 +138,14 @@ const dirs = [
     name: 'ProfitAndLoss',
     desc: '损益表',
     isHidingManual: true,
-    type: 'MULTI-DATA',
+    type: 'DATA',
     
   },
   {
     loadPoint: '/',
     name: 'Cashflow',
     desc: '现金流量表',
-    type: 'MULTI-DATA',
+    type: 'DATA',
     sheetName: 'CASHFLOW',
     isCascaded: true,
     isHidingManual: true,
@@ -159,7 +160,7 @@ const dirs = [
     loadPoint: '/',
     name: 'Equity',
     desc: '所有权变动表',
-    type: 'MULTI-DATA',
+    type: 'DATA',
     isHidingManual: true,
   },
   {
@@ -194,29 +195,7 @@ const dirs = [
   }
 
 })();
-
-// (async () => {
-
-//   try {
-//     let retrieved = await retrieveRecs({table: 'PROJECT'});
-//     console.log(retrieved.length, 'retrieved project');
-
-//     if (retrieved.length === 0){
-//       let records = [];
-//       for (let i = 0; i < 10; i++){
-//         records.push({companyName: `${genName()} Inc.`, project_id:v4(), year:1990+Math.floor(Math.random()*30), link:'PROJECT', date:Date.now()});
-//       }
-//       createRecs('PROJECT', records);
-//     }
-
-//     retrieved = await retrieveRecs({table: 'PROJECT'});
-//     console.log(retrieved.length, 'retrieved project');
-
-//   } catch (err) {
-//     console.log(err);
-//   }
-// })();
-
+ 
 async function fetchDir(givenLoadPoint='/') {
   const dirs = await retrieveRecs({table: 'DIRS'});
 

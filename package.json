@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "cross-env PORT=3000 nodemon ./server",
+    "server": "cross-env PORT=3000 nodemon  --ignore './server/data_store' ./server",
     "client": "node start-client.js",
     "start": "concurrently \"npm run server\" \"npm run client\"",
-    "deploy": "cross-env PORT=3000 MODE=production nodemon ./server"
+    "deploy": "cross-env PORT=3000 MODE=production nodemon --ignore './server/data_store' ./server"
   },
   "dependencies": {
     "@babel/cli": "^7.8.4",

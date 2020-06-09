@@ -75,6 +75,8 @@ const BrowserPage = () => {
 
     const {name: pageName, desc, data} = currPage;
 
+    console.log(data, 'page')
+
     const {name: sheetName, ...restListProps} = data[0]
 
     console.log(`Navigated to page: [${pageName}]`);
