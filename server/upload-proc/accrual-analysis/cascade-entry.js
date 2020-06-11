@@ -13,7 +13,7 @@ const getCascadedCategories = (balanceData) => {
 
   // get the dictionary of category from balance table.
   let cascadedCategories = flattenedBalance.map(({ccode, ccode_name}) => {
-    return {ccode, ccode_name, categorized:{type:'store-ref', expr:''}, __children:[]}
+    return {ccode, ccode_name, categorized:{expr:''}, __children:[]}
   });
   // cascade it.
   let cascaded = casc(cascadedCategories, {cascCol:'ccode'});
@@ -67,7 +67,7 @@ const addJournalEntries = (cascaded, decomposed) => {
       ? `对方科目为 ${dest_ccode_name && dest_ccode_name.desc || dest_ccode_name} - ${dest_ccode}`
       : '未归类';
       
-      return {ccode, ccode_name, dest_ccode, dest_ccode_name, mc, md, __children, digest, categorized:{type:'store-ref', expr:''}};
+      return {ccode, ccode_name, dest_ccode, dest_ccode_name, mc, md, __children, digest, categorized:{expr:''}};
     })
   }
 

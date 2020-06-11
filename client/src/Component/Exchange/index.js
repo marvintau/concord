@@ -1,7 +1,6 @@
 import React, {useState, createContext} from 'react'; 
 import Agnt from 'superagent';
-import {add, del, set, trav, parse} from '@marvintau/chua';
-import func from './funcs';
+import {add, del, set, trav, fetch, store, expr} from '@marvintau/chua';
 
 import {assignAncestors, assignRecToSheet} from './assign-to';
 
@@ -111,36 +110,38 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
 
   const evalSheet = (sheetName) => {
 
+    const {colSpecs, data} = Sheets[sheetName];
+
+    console.log(colSpecs, 'col specs');
+
     initPathAliases();
     const evalRecord = (rec) => {
-      for (let key of Object.keys(rec)){
-        const {expr, type} = rec[key];
-        if (type) {
+      for (let key of Object.keys(rec)) {
 
-          if (type === 'fetch-ref'){
-            if (expr !== undefined){
+        if (colSpecs[key] && colSpecs[key].cellType === 'Ref'){
+  
+          const {attr:{type}} = colSpecs[key];
+  
+          if (type && type === 'store-ref'){
+            assignAncestors(rec, key);
+          } else {
+  
+            const {expr} = rec[key];
+            if (rec[key].expr !== undefined){
               const {result, code} = parse(expr.toString(), {func, tables: Sheets, self: rec});
               Object.assign(rec[key], {result, code});
             }
+  
           }
-
-          if (type === 'store-ref'){
-            assignAncestors(rec, key);
-          }
-
-        } else if (expr !== undefined){
-          console.warn('判断ref的标准已经变为"fetch-ref"，请重新上传数据')
-          const {result, code} = parse(expr.toString(), {func, tables: Sheets, self: rec});
-          Object.assign(rec[key], {result, code});
-        }
-      }  
+        }  
+      } 
     }
 
-    trav(Sheets[sheetName].data, evalRecord, 'POST');
+    trav(data, evalRecord, 'POST');
   }
 
   const getSuggs = (expr) => {
-    const {suggs=[]} = parse(expr, {func, tables: Sheets});
+    const {suggs=[]} = parse(expr, {Sheets});
     return suggs;
   }
 
@@ -167,7 +168,7 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
     (async() => {
       setStatus('PULL');
       let pulledSheets = {};
-      for (let {name:sheetName} of sheetNameList) if (Sheets[sheetName] === undefined){
+      for (let {name:sheetName, colSpecs} of sheetNameList) if (Sheets[sheetName] === undefined){
   
         try{
           console.log('PULL: payload: ', currPage)
@@ -180,7 +181,7 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
 
           console.log('PULL: respond:', data);
 
-          pulledSheets[sheetName] = {data, indexColumn};
+          pulledSheets[sheetName] = {data, indexColumn, colSpecs};
 
         } catch(error){
           console.warn('unknown error of pulling', error);

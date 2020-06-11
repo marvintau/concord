@@ -1,7 +1,5 @@
 const {retrieveTable} = require('../database');
-const flat = require('@marvintau/chua/src/flat');
-
-const get = require('@marvintau/chua/src/get');
+const {get, flat} = require('@marvintau/chua');
 
 async function exportData(currArgs){
 

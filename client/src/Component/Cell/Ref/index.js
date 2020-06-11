@@ -49,13 +49,13 @@ const StoreRef = ({sheetName, colName, disabled, cellData, data:rec, placeholder
   return <RefCore {...{expr, result, code, desc:'not implemented', disabled, getSuggs, saveEdit, placeholder}} />
 }
 
-export default ({sheetName, colName, disabled: disabledProp, children: cellData, data, attr:{placeholder='empty'}={}}) => {
+export default ({sheetName, colName, disabled: disabledProp, children: cellData, data, attr:{placeholder='empty', type='fetch-ref'}={}}) => {
 
   if (cellData === undefined) {
     return "";
   }
   
-  const {type, disabled: disabledData} = cellData;
+  const {disabled: disabledData} = cellData;
 
   const disabled = disabledProp || disabledData;
 
@@ -64,7 +64,7 @@ export default ({sheetName, colName, disabled: disabledProp, children: cellData,
   } else if (type === 'store-ref') {
     return <StoreRef {...{sheetName, colName, disabled, cellData, data, placeholder}} />
   } else {
-    return <FetchRef {...{sheetName, colName, disabled, cellData, data, placeholder}} />
+    return <div>Ref还不支持{type}类型</div>
   }
 
 }

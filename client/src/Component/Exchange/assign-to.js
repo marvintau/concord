@@ -44,7 +44,6 @@ export const assignRecToSheet = (rec, key, newExpr, Sheets) => {
   //    the current record immediately
   const {code, record:destRec} = evalAssignExpr(newExpr, Sheets);
   Object.assign(rec[key], {
-    type: 'store-ref',
     expr: newExpr,
     result: newExpr ? 100 : undefined,
     code,

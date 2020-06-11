@@ -77,7 +77,7 @@ const sheetSpecs = [
       descendant_num: {desc: '笔数', width: 1, isSortable: true},
       digest: {desc:'摘要', width: 1, isFilerable: true},
       analyzed: {desc:'已分析', width: 1},
-      categorized: {desc:'列入报表项目', width: 4, cellType:'Ref'}
+      categorized: {desc:'列入报表项目', width: 4, cellType:'Ref', attr: {type:'store-ref'}}
     },
   },
   {
