@@ -51,6 +51,7 @@ async function retrieveTable (crit, table) {
   if (doc.data === undefined){
     throw {code: 'DEAD_NOT_FOUND'}
   } else if (doc.data[table] === undefined){
+    console.log('not found table', table);
     throw {code: 'DEAD_NOT_FOUND'}
   } else {
     return doc.data[table];

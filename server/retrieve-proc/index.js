@@ -13,6 +13,11 @@ const CATEGORY_NAME_ALIASES = require('./category-name-aliases');
 const CONFIRMATION_MANAGEMENT = require('./confirmation-management');
 const CONFIRMATION_TEMPLATE = require('./confirmation-template');
 
+const SOURCE = require('./test-source');
+const TARGET = require('./test-target');
+const MEDIATE = require('./test-mediate');
+const REARRANGE = require('./test-rearrange');
+
 module.exports = {
   ACCRUAL_ANALYSIS,
 
@@ -23,6 +28,11 @@ module.exports = {
   EQUITY,
   CASHFLOW,
 
+  SOURCE,
+  TARGET,
+  MEDIATE,
+  REARRANGE,
+  
   PROJECT,
   CASHFLOW_WORKSHEET,
   CATEGORY_NAME_ALIASES,

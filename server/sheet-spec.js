@@ -2,6 +2,51 @@ const {remove, retrieveRecs, createRecs} = require('./database');
 
 const sheetSpecs = [
   {
+    name: 'SOURCE',
+    desc: '数据源表',
+    isCascaded: true,
+    tools: [],
+    colSpecs: {
+      ccode_name: {desc: '条目名称', width: 4, isFilterable: true},
+      md: {desc: '借方发生', width: 4, isFilterable: true, isSortable: true, cellType:'Number'},
+      mc: {desc: '贷方发生', width: 4, isFilterable: true, isSortable: true, cellType:'Number'},
+    },
+  },
+  {
+    name: 'TARGET',
+    desc: '目标数据表',
+    isCascaded: true,
+    tools: [],
+    colSpecs: {
+      ccode_name: {desc: '条目名称', width: 1, isFilterable: true},
+      md: {desc: '借方发生', width: 5.5, isFilterable: true, isSortable: true, cellType:'Number'},
+      mc: {desc: '贷方发生', width: 5.5, isFilterable: true, isSortable: true, cellType:'Number'},
+    },
+  },
+  {
+    name: 'REARRANGE',
+    desc: '重分类表',
+    isCascaded: true,
+    tools: [],
+    colSpecs: {
+      item_name: {desc: '条目名称', width: 1, isFilterable: true},
+      fetch: {desc: '引用自', width: 5.5, isFilterable: true, isSortable: true, cellType:'Ref'},
+      store: {desc: '分配至', width: 5.5, isFilterable: true, isSortable: true, cellType:'Ref'},
+    },
+  },
+  {
+    name: 'MEDIATE',
+    desc: '操作表',
+    isCascaded: true,
+    tools: [],
+    colSpecs: {
+      item_name: {desc: '条目名称', width: 1, isFilterable: true},
+      fetch: {desc: '引用自', width: 5.5, isFilterable: true, isSortable: true, cellType:'Ref'},
+      store: {desc: '分配至', width: 5.5, isFilterable: true, isSortable: true, cellType:'Ref'},
+    },
+  },
+
+  {
     name: 'PROJECT',
     tools: ['HeaderCreate'],
     colSpecs: {
@@ -145,7 +190,11 @@ async function fetchSheetSpec(names) {
     names = [names];
   }
 
-  const res = await retrieveRecs({table:'SHEET_SPEC', name:{$in:names}});
+  const res = [];
+  for (let name of names) {
+    const [doc] = await retrieveRecs({table:'SHEET_SPEC', name});
+    res.push(doc);
+  }
 
   return res;
 }

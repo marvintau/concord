@@ -1,18 +1,16 @@
 import React, {useState, createContext} from 'react'; 
 import Agnt from 'superagent';
-import {add, del, set, trav, fetch, store, expr} from '@marvintau/chua';
-
-import {assignAncestors, assignRecToSheet} from './assign-to';
+import {add, del, set, trav, expr as evalExpr, fetch as fetchRec, store} from '@marvintau/chua';
 
 export const Exchange = createContext({
   Sheets: {},
   status: '',
   updateSheets: () => {},
-  refreshSheets: () => {},
+  refreshSheet: () => {},
   evalSheet: () => {},
   clearAllSheets: () => {},
 
-  getSuggs: () => {},
+  getPathSuggs: () => {},
   addSiblyRec: () => {},
   addChildRec: () => {},
   remRec: () => {},
@@ -49,13 +47,11 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
   // When refreshing sheets, a new instance of sheet collection
   // is created, and a shallow copy of the specified sheet is 
   // made too.
-  const refreshSheets = () => {
-
-    const newSheetColl = Object.fromEntries(Object.entries(Sheets).map(([k, v]) => {
-      return [k, {...v}]
-    }));
-
-    setSheets(newSheetColl);
+  const refreshSheets = (sheetName) => {
+    if (sheetName !== undefined){
+      setSheets({...Sheets, [sheetName]: {...Sheets[sheetName]}});
+    }
+    setSheets({...Sheets});
   }
 
   const setField = (sheetName, path, fieldName, value) => {
@@ -71,11 +67,13 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
     
     const {data, indexColumn} = Sheets[sheetName];
     add(data, newRec, {path:newPath, indexColumn, atIndex});
+    trav(data);
   }
 
   const addChildRec = (sheetName, path, newRec) => {
     const {data, indexColumn} = Sheets[sheetName];
     add(data, newRec, {path, indexColumn});
+    trav(data);
   }
 
   const remRec = (sheetName, path) => {
@@ -85,10 +83,7 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
     const {data, indexColumn} = Sheets[sheetName];
     console.log(newPath, indexColumn, 'del');
     del(data, {path: newPath, indexColumn, atIndex});
-  }
-
-  const assignRecTo = (rec, key, newExpr) => {
-    assignRecToSheet(rec, key, newExpr, Sheets);
+    trav(data);
   }
 
   const initPathAliases = () => {
@@ -108,41 +103,85 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
     }
   }
 
-  const evalSheet = (sheetName) => {
-
-    const {colSpecs, data} = Sheets[sheetName];
-
-    console.log(colSpecs, 'col specs');
-
+  const evalSheet = (sheetName, colName) => {
+    console.log('evalSheet runned', sheetName);
     initPathAliases();
     const evalRecord = (rec) => {
-      for (let key of Object.keys(rec)) {
+      
+      const col = rec[colName];
 
-        if (colSpecs[key] && colSpecs[key].cellType === 'Ref'){
-  
-          const {attr:{type}} = colSpecs[key];
-  
-          if (type && type === 'store-ref'){
-            assignAncestors(rec, key);
+      if (col.type) {
+        const {type, path, expr, cases} = col;
+        if (type === 'ref-fetch'){
+
+          if (expr.startsWith('=')){
+            const {result, code} = evalExpr(expr, {Sheets, vars:rec});
+            Object.assign(col, {result, code});
           } else {
-  
-            const {expr} = rec[key];
-            if (rec[key].expr !== undefined){
-              const {result, code} = parse(expr.toString(), {func, tables: Sheets, self: rec});
-              Object.assign(rec[key], {result, code});
-            }
-  
+            const {record} = fetchRec(path, Sheets);
+            const {result, code} = evalExpr(expr, {Sheets, vars:record});
+            Object.assign(col, {result, code});
           }
-        }  
-      } 
+          // console.log(result, code);
+        }
+
+        if (['ref-store', 'ref-cond-store'].includes(type)){
+          const {__assigned_ances, __assigned_desc, __children, __destRecs, __cands} = rec;
+          if (__destRecs && __destRecs.length > 0) {
+            // 说明是执行evalSheet前刚刚被分配的那个记录
+            Object.assign(col, {result: '科目已分配', code:'SUCC'})
+          } else if (__assigned_desc && __assigned_desc.length > 0) {
+            if (__assigned_desc.length === __children.length) {
+              Object.assign(col, {
+                result: `全部子科目已分配`,
+                code: 'SUCC',
+                disabled:true
+              })
+            } else {
+              Object.assign(col, {
+                result: `${__assigned_desc.length}/${__children.length} 已分配`,
+                code: 'WARN',
+                disabled: true
+              })
+            }
+          } else if (__assigned_ances && __assigned_ances.length > 0) {
+            Object.assign(col, {
+              result: '已由上级分配',
+              code: 'INFO',
+              disabled: true
+            })
+          } else if (__destRecs === undefined || __destRecs.length === 0) {
+
+            const refStoreAndPath = type === 'ref-store' && (path && path.length > 0);
+            const refCondStoreAndAnyPath = type === 'ref-cond-store' && cases.some(path => path && path.length > 0);
+
+            if (__cands !== undefined) {
+              console.log(__cands);
+              Object.assign(col, {
+                code : __cands.length > 1 ? 'FAIL_MUL_ASSIGN_COND' : 'FAIL_NO_ASSIGN_COND',
+                result : '科目未分配'
+              })
+
+            } else if (refStoreAndPath || refCondStoreAndAnyPath) {
+              Object.assign(col, {
+                result: '科目未分配',
+                code: 'FAIL',
+                disabled: false
+              })
+            } else {
+              Object.assign(col, {
+                result: undefined,
+                code: 'NONE',
+                disabled: false
+              })
+            }
+          }
+        }
+      }  
     }
 
-    trav(data, evalRecord, 'POST');
-  }
-
-  const getSuggs = (expr) => {
-    const {suggs=[]} = parse(expr, {Sheets});
-    return suggs;
+    trav(Sheets[sheetName].data, evalRecord, 'POST');
+    refreshSheets(sheetName);
   }
 
   const fetchURL = async (url) => {
@@ -168,20 +207,18 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
     (async() => {
       setStatus('PULL');
       let pulledSheets = {};
-      for (let {name:sheetName, colSpecs} of sheetNameList) if (Sheets[sheetName] === undefined){
+      for (let {name: sheetName} of sheetNameList) if (Sheets[sheetName] === undefined){
   
         try{
-          console.log('PULL: payload: ', currPage)
-          const {body:{data, indexColumn, error}} = await Agnt.post(`/pull/${sheetName}`).send(currPage);
+          console.log('PULL:', sheetName,' payload: ', currPage)
+          const {body:{ error, ...sheetContent}} = await Agnt.post(`/pull/${sheetName}`).send(currPage);
           if (error) {
             console.warn('remote error', error);
             setStatus(error);
             return;
           }
 
-          console.log('PULL: respond:', data);
-
-          pulledSheets[sheetName] = {data, indexColumn, colSpecs};
+          pulledSheets[sheetName] = sheetContent;
 
         } catch(error){
           console.warn('unknown error of pulling', error);
@@ -206,7 +243,6 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
         : {type, data: Sheets[sheetName].data, ...rem}
 
         const {body: {data, indexColumn, error}} = await Agnt.post(`/push/${sheetName}`).send(payload);
-        console.log(data, 'push return');
         if (error){
           console.warn('remote error', error);
           setStatus(error);
@@ -227,7 +263,7 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
 
   return <Exchange.Provider value={{
       Sheets, status, setStatus, updateSheets, refreshSheets, evalSheet, clearAllSheets,
-      setField, addSiblyRec, addChildRec, remRec, assignRecTo, getSuggs,
+      setField, addSiblyRec, addChildRec, remRec,
       pull, push, fetchURL,
     }}>
     {children}

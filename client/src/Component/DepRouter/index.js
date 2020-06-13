@@ -122,18 +122,6 @@ export function DepRouter({children}) {
     })()
   }, [])
 
-  useEffect(() => {
-    if (status === 'DONE_PULL') {
-      console.log(currPage, 'dep router pull');
-
-      for (let {name: sheetName} of currPage.data) {
-        evalSheet(sheetName);
-      }
-
-      refreshSheets();
-    }
-  }, [status])
-
   const fetchDir = (fetchPath) => {
 
     const options = {

@@ -1,69 +1,93 @@
-import React, {useContext} from 'react';
-import RefCore from './ref';
+import React, { useCallback, useContext } from 'react';
+import FetchRef from './fetch-ref';
+import StoreRef from './store-ref';
+import CondStoreRef from './cond-store-ref';
 
 import {Exchange} from '../../Exchange';
 
-const FetchRef = ({sheetName, colName, disabled, cellData, data, placeholder}) => {
+import {fetch as fetchRec} from '@marvintau/chua';
 
-  const {getSuggs, setField, evalSheet} = useContext(Exchange);
-
-  const {__path:path} = data;
-
-  const saveEdit = (value) => {
-    setField(sheetName, path, colName, {type:'fetch-ref', expr:value});
-    evalSheet(sheetName);
-  }
-
-  const {expr="", result, code} = cellData;
-  
-  const desc = {
-    WARN_UNDEFINED_FUNC:              '函数没有定义',
-    WARN_INCOMPLETE_REFERENCE_FORMAT: '不是一个完整的引用（可能是没写取哪个数？）',
-    WARN_SHEET_NOT_EXISTS:            '被引用的表没找到（再确认下名称）',
-    WARN_RECORD_NOT_FOUND:            '按给定的路径没找到对应条目',
-    WARN_NOT_EQUAL:                   '校验结果不相等',
-    WARN_VAR_NOT_FOUND:               '要取的数或变量不存在',
-    WARN:                             '请参考子项中的错误信息',
-    INFO_ALTER_PATH:                  '此结果是通过等效的路径名称得到的',
-    SUCC:                             '成功!',
-    FAIL:                             '失败...',
-    NORM:                             '正常'
-  }[code];
-  
-  return <RefCore {...{expr, result, code, desc, disabled, getSuggs, saveEdit, placeholder}} />
-}
-
-const StoreRef = ({sheetName, colName, disabled, cellData, data:rec, placeholder}) => {
-  
-  const {expr="", result, code} = cellData;
-
-  const {getSuggs, setField, assignRecTo, evalSheet} = useContext(Exchange);
-
-  // const {__path: paath}
-
-  const saveEdit = (value) => {
-    assignRecTo(rec, colName, value)
-    evalSheet(sheetName);
-  }
-  
-  return <RefCore {...{expr, result, code, desc:'not implemented', disabled, getSuggs, saveEdit, placeholder}} />
-}
-
-export default ({sheetName, colName, disabled: disabledProp, children: cellData, data, attr:{placeholder='empty', type='fetch-ref'}={}}) => {
+export default ({sheetName, colName, disabled: disabledProp, children: cellData, data, attr:{placeholder='empty'}={}}) => {
 
   if (cellData === undefined) {
     return "";
   }
-  
-  const {disabled: disabledData} = cellData;
+
+  const {Sheets} = useContext(Exchange);
+
+  const getPathSuggs = (inputValue) => {
+
+    console.log('getPath clalled', inputValue);
+
+    const separateLast = (inputValue) => {
+      if (inputValue.includes('/')){
+        const lastDelim = inputValue.lastIndexOf('/');
+        const most = inputValue.slice(0, lastDelim);
+        const last = inputValue.slice(lastDelim+1);
+        return [most, last];
+      } else {
+        return [inputValue, '']
+      }
+    }
+    
+    if (inputValue.split(':').length < 2) {
+      return Object.entries(Sheets)
+        .filter(([k]) => !k.startsWith('__'))
+        .map(([k, {desc}]) => {
+          return {desc: `${k} - ${desc || '无描述'}`, value: k}
+        })
+    } else {
+      const [most, last] = separateLast(inputValue);
+      console.log(most, last);
+      const {suggs = [], code} = fetchRec(inputValue, Sheets);
+      console.log(code, 'fetchRec');
+      const filt = suggs.filter(sugg => sugg.includes(last));
+      return filt.length > 0 ? filt : suggs;
+    }
+  }
+
+  const getPathSuggValue = (value, sugg) => {
+    if (value.includes(':')){
+      return value.replace(/[^/:]*$/, sugg.value || sugg.toString());
+    } else {
+      return sugg.value || sugg.toString();
+    }
+  }
+
+  const getExprSuggs = (value, rec={}) => {
+    const {__VARS, __COL_ALIASES} = Sheets;
+    const regVars = Object.entries(__VARS)
+      .map(([k, v]) => ({desc:`${k} - ${v.toFixed(2)}`, value:k}));
+
+    const columns = Object.entries(rec)
+      .filter(([col]) => !col.startsWith('__'))
+      .map(([k, v]) => ({desc:`${k} - ${ !isNaN(v) ? v.toFixed(2): v}`, value:k}));
+
+    const aliases = Object.entries(__COL_ALIASES)
+      .filter(([_, v]) => rec[v] !== undefined)
+      .map(([k, v]) => ({desc: `${k} - ${rec[v].toFixed(2)}`, value: k}));
+
+    return [...regVars, ...columns, ...aliases];
+  }
+
+  const getExprSuggValue = (value, sugg) => {
+    return value.replace(/[^@*/+-<>= ]*$/, sugg.value || sugg.toString());
+  }
+
+  const {type, disabled: disabledData} = cellData;
 
   const disabled = disabledProp || disabledData;
 
-  if (type === 'fetch-ref') {
-    return <FetchRef {...{sheetName, colName, disabled, cellData, data, placeholder}} />
-  } else if (type === 'store-ref') {
-    return <StoreRef {...{sheetName, colName, disabled, cellData, data, placeholder}} />
-  } else {
+  if (type === 'ref-fetch') {
+    return <FetchRef {...{sheetName, colName, disabled, cellData, data, getPathSuggs, getPathSuggValue, getExprSuggs, getExprSuggValue}} />
+  }
+  else if (type === 'ref-store') {
+    return <StoreRef {...{sheetName, colName, disabled, cellData, data, getPathSuggs, getPathSuggValue}} />
+  }
+  else if (type === 'ref-cond-store') {
+    return <CondStoreRef {...{sheetName, colName, disabled, cellData, data, getPathSuggs, getPathSuggValue, getExprSuggs, getExprSuggValue}} />
+  }
+  else {
     return <div>Ref还不支持{type}类型</div>
   }
 

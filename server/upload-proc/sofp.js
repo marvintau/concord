@@ -3,7 +3,8 @@ global.window = new Window();
 
 const {setTable} = require('../database');
 const {readSingleText} = require('./utils');
-const {read, trav} = require('@marvintau/chua');
+const read = require('@marvintau/chua/src/read');
+const trav = require('@marvintau/chua/src/trav');
 
 async function sofp(fileBuffer, context){
 

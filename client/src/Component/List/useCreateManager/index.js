@@ -39,7 +39,7 @@ export default (sheetName, colSpecs) => {
       console.log('creating record to', sheetName);
 
       push(sheetName, {type: 'ADD_REC', rec: {...rec, table: sheetName}});
-      pull([sheetName], currPage, true);
+      // pull([sheetName], currPage, true);
       setCreating(false);
     } else {
       formElem.current.classList.add('was-validated');

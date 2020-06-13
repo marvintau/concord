@@ -74,7 +74,6 @@ const BrowserPage = () => {
   if (type === 'DATA'){
 
     const {name: pageName, desc, data} = currPage;
-
     const {name: sheetName, ...restListProps} = data[0]
 
     console.log(`Navigated to page: [${pageName}]`);
