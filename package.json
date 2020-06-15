@@ -17,7 +17,7 @@
     "@koa/multer": "^2.0.2",
     "@koa/router": "^8.0.8",
     "@marvintau/chua": "^1.0.30",
-    "@marvintau/poloscope": "0.0.4",
+    "@marvintau/poloscope": "0.0.5",
     "@pathofdev/react-tag-input": "^1.0.7",
     "@zxing/library": "^0.16.0",
     "archiver-promise": "^1.0.0",

@@ -44,7 +44,7 @@ export default ({sheetName, colName, cellData, data:rec, getPathSuggValue, getPa
       saveEdit(value){
         cases[i].cond = value;
       }, 
-      placeholder: '表达式'
+      placeholder: '条件表达式'
     }
   
     const pathInputProps = {
@@ -56,7 +56,7 @@ export default ({sheetName, colName, cellData, data:rec, getPathSuggValue, getPa
         cases[i].path = value;
         condAssignRec();
       }, 
-      placeholder: '路径'
+      placeholder: '分类路径'
     }
 
     const removeCase = () => {
@@ -71,12 +71,14 @@ export default ({sheetName, colName, cellData, data:rec, getPathSuggValue, getPa
     </div> 
   })
   
-  const addCase = () => {
+  const addCase = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     cases.push({cond:'', path: ''});
     evalSheet(sheetName, colName)
   }
 
-  lines.push(<button key='add' style={buttonStyle} onClick={addCase}> + </button>)
+  lines.push(<button key='add' style={{...buttonStyle, marginLeft:'8px'}} onClick={addCase}> + </button>)
 
   return <div className='refcell-line'>
     <div>{lines}</div>

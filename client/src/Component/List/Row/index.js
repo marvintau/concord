@@ -40,12 +40,16 @@ export default (colSpecs, rowEdit, sheetName, {sticky=false, editable=true, push
     const onClick = link ? navigate : () => select(data);
 
     return (rowEdit && editable)
-    ? <div style={style} {...bindTrigger} {...{className, ref, onClick}}>
-        {cols}
-        <Menu {...{bindMenu, bindMenuItems, hideMenu, sheetName, data, rowEdit, push, pull}} />
+    ? <div style={{...style, width: '100%'}} {...bindTrigger}>
+        <div {...{className, ref, onClick}}>
+          {cols}
+          <Menu {...{bindMenu, bindMenuItems, hideMenu, sheetName, data, rowEdit, push, pull}} />
+        </div>
       </div>
-    : <div style={style} {...{className, ref, onClick}}>
+    : <div style={{...style, width: '100%'}}>
+        <div {...{className, ref, onClick}}>
         {cols}
+        </div>
       </div>
       
   });
