@@ -119,10 +119,10 @@ const sheetSpecs = [
       dest_ccode_name: {desc: '对方科目', width: 1, isFilterable: true},
       md: {desc: '借方发生', width: 1, isFilterable: true, isSortable: true, cellType:'Number'},
       mc: {desc: '贷方发生', width: 1, isFilterable: true, isSortable: true, cellType:'Number'},
-      descendant_num: {desc: '笔数', width: 1, isSortable: true},
+      sub_num: {desc: '笔数', width: 1, isSortable: true},
       digest: {desc:'摘要', width: 1, isFilerable: true},
       analyzed: {desc:'已分析', width: 1},
-      categorized: {desc:'列入报表项目', width: 4, cellType:'Ref', attr: {type:'store-ref'}}
+      __categorized: {desc:'列入报表项目', width: 4, cellType:'Ref', attr: {type:'ref-cond-store'}}
     },
   },
   {
@@ -130,9 +130,10 @@ const sheetSpecs = [
     isCascaded: true,
     tools: ['ImportExcel'],
     colSpecs: {
-      ccode_name: {desc: '条目名称', width: 4, isFilterable: true},
-      value: {desc:'金额', width: 8, cellType:'Ref'},
-      categorized: {desc:'列入报表项目', width: 4, cellType:'Ref'}
+      ccode_name: {desc: '条目名称', width: 1, isFilterable: true},
+      mb: {desc:'金额', width: 3, cellType:'Ref'},
+      mc: {desc:'金额', width: 3, cellType:'Ref'},
+      categorized: {desc:'列入报表项目', width: 3, cellType:'Ref'}
     },
   },
   {

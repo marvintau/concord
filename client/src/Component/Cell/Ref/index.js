@@ -61,7 +61,7 @@ export default ({sheetName, colName, disabled: disabledProp, children: cellData,
 
     const columns = Object.entries(rec)
       .filter(([col]) => !col.startsWith('__'))
-      .map(([k, v]) => ({desc:`${k} - ${ !isNaN(v) ? v.toFixed(2): v}`, value:k}));
+      .map(([k, v]) => ({desc:`${k} - ${ typeof v === 'number' ? v.toFixed(2): v}`, value:k}));
 
     const aliases = Object.entries(__COL_ALIASES)
       .filter(([_, v]) => rec[v] !== undefined)

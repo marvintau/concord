@@ -3,8 +3,10 @@ const now = require('performance-now');
 const group = require('@marvintau/chua/src/group');
 const flat = require('@marvintau/chua/src/flat');
 const casc = require('@marvintau/chua/src/casc');
-const {trav} = require('@marvintau/chua/src/util');
+const trav = require('@marvintau/chua/src/trav');
 const add = require('@marvintau/chua/src/add');
+
+const __categorized = {cond:'', cases:[], type:'ref-cond-store'}
 
 // 我们
 const getCascadedCategories = (balanceData) => {
@@ -13,7 +15,7 @@ const getCascadedCategories = (balanceData) => {
 
   // get the dictionary of category from balance table.
   let cascadedCategories = flattenedBalance.map(({ccode, ccode_name}) => {
-    return {ccode, ccode_name, categorized:{expr:''}, __children:[]}
+    return {ccode, ccode_name, __categorized, __children:[]}
   });
   // cascade it.
   let cascaded = casc(cascadedCategories, {cascCol:'ccode'});
@@ -67,7 +69,7 @@ const addJournalEntries = (cascaded, decomposed) => {
       ? `对方科目为 ${dest_ccode_name && dest_ccode_name.desc || dest_ccode_name} - ${dest_ccode}`
       : '未归类';
       
-      return {ccode, ccode_name, dest_ccode, dest_ccode_name, mc, md, __children, digest, categorized:{expr:''}};
+      return {ccode, ccode_name, dest_ccode, dest_ccode_name, mc, md, __children, digest, __categorized};
     })
   }
 
@@ -81,18 +83,13 @@ const addJournalEntries = (cascaded, decomposed) => {
   const addToCascT = now();
 
   trav(cascaded, (rec) => {
-    // console.log(rec);
-    // if (rec.__children === undefined || rec.__children.length === 0){
-    //   rec.descendant_num = 1;
-    // } else {
-    //   rec.descendant_num = rec.__children.reduce((acc, {descendant_num}) => acc + descendant_num, 0);
-    // }
-    rec.descendant_num = rec.__children
-    ? rec.__children.reduce((acc, {descendant_num, analyzed}) => {
+
+    rec.sub_num = rec.__children
+    ? rec.__children.reduce((acc, {sub_num, analyzed}) => {
       if (analyzed){
         return acc + 1;
-      } else if (descendant_num){
-        return acc + descendant_num;
+      } else if (sub_num){
+        return acc + sub_num;
       } else {
         return acc
       }

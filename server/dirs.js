@@ -101,7 +101,8 @@ const dirs = [
     name: 'Finance',
     desc: '财务与报表管理',
     type: 'TEXT',
-    children: ['AccrualAnalysis', 'Balance', 'TrialBalance', 'FinancialPositionStatement', 'ProfitAndLoss', 'Cashflow', 'Equity', 'CashflowStatement'],
+    // children: ['AccrualAnalysis', 'Balance', 'TrialBalance', 'FinancialPositionStatement', 'ProfitAndLoss', 'Cashflow', 'Equity', 'CashflowStatement'],
+    children: ['AccrualAnalysis', 'Balance', 'TrialBalance', 'FinancialPositionStatement', 'ProfitAndLoss', 'Equity', 'CashflowStatement'],
   },
   {
     loadPoint: '/',
@@ -169,6 +170,7 @@ const dirs = [
     name: 'TrialBalance',
     desc: '试算平衡表',
     type: 'DATA',
+    data: ['TRIAL_BALANCE'],
     isHidingManual: true,
   },
   {
@@ -177,23 +179,17 @@ const dirs = [
     desc: '损益表',
     isHidingManual: true,
     type: 'DATA',
+    data: ['PAL'],
     
   },
-  {
-    loadPoint: '/',
-    name: 'Cashflow',
-    desc: '现金流量表',
-    type: 'DATA',
-    sheetName: 'CASHFLOW',
-    isCascaded: true,
-    isHidingManual: true,
-    tools: [],
-    colSpecs: {
-      ccode_name: {desc: '条目名称', width: 4, isFilterable: true},
-      value: {desc:'金额', width: 8, cellType:'Ref'},
-      categorized: {desc:'列入报表项目', width: 4, cellType:'Ref'}
-    },
-  },
+  // {
+  //   loadPoint: '/',
+  //   name: 'Cashflow',
+  //   desc: '现金流量表',
+  //   type: 'DATA',
+  //   isHidingManual: true,
+  //   data: ['CASHFLOW']
+  // },
   {
     loadPoint: '/',
     name: 'Equity',

@@ -109,7 +109,10 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
     const evalRecord = (rec) => {
       
       const col = rec[colName];
-
+      if (col === undefined){
+        return;
+      }
+      
       if (col.type) {
         const {type, path, expr, cases} = col;
         if (type === 'ref-fetch'){
