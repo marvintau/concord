@@ -4,13 +4,23 @@ import StoreRef from './store-ref';
 import CondStoreRef from './cond-store-ref';
 
 import {Exchange} from '../../Exchange';
-
 import {fetch as fetchRec} from '@marvintau/chua';
+
+import Text from '../Text';
+import Number from '../Number';
 
 export default ({sheetName, colName, disabled: disabledProp, children: cellData, data, attr:{placeholder='empty'}={}}) => {
 
   if (cellData === undefined) {
     return "";
+  }
+
+  if (typeof cellData === 'string') {
+    return <Text>{cellData}</Text>;
+  }
+
+  if (typeof cellData === 'number') {
+    return <Number>{cellData}</Number>;
   }
 
   const {Sheets} = useContext(Exchange);
