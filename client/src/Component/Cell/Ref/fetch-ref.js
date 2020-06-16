@@ -8,12 +8,12 @@ import {fetch as fetchRec} from '@marvintau/chua';
 
 import './refcell.css'
 
-export default ({sheetName, colName, disabled, cellData, getPathSuggs, getPathSuggValue, getExprSuggs, getExprSuggValue}) => {
+export default ({sheetName, colName, disabled, data:rec, getPathSuggs, getPathSuggValue, getExprSuggs, getExprSuggValue}) => {
 
   const [record, setRecord] = useState();
   const {Sheets, evalSheet} =useContext(Exchange);
 
-  const {expr="", path:fetchPath, result, code} = cellData;
+  const {expr="", path:fetchPath, result, code, disp} = rec[colName];
   
   const pathInputProps = {
     expr:fetchPath,
@@ -23,7 +23,7 @@ export default ({sheetName, colName, disabled, cellData, getPathSuggs, getPathSu
     saveEdit(value){
       const {record} = fetchRec(value, Sheets);
       setRecord(record);
-      cellData.path = value;
+      rec[colName].path = value;
     }, 
     placeholder: '路径'
   }
@@ -36,16 +36,27 @@ export default ({sheetName, colName, disabled, cellData, getPathSuggs, getPathSu
     },
     getSuggValue: getExprSuggValue,
     saveEdit(value){
-      cellData.expr = value;
+      rec[colName].expr = value;
       console.log(value);
       evalSheet(sheetName, colName);
     }, 
-    placeholder: '表达式'
+    placeholder: '表达式',
   }
 
-  return <div className='refcell-line'>
-    <SuggInput {...pathInputProps} />
+  if (disp === 'full' || disp === undefined) {
+    return <div className='refcell-line'>
+      <SuggInput {...pathInputProps} />
+      <SuggInput {...exprInputProps} />
+      <RefBadge {...{result, code}} />
+    </div>
+  } else if (disp === 'expr') {
+    return <div className='refcell-line'>
     <SuggInput {...exprInputProps} />
     <RefBadge {...{result, code}} />
   </div>
+  } else if (disp === 'res') {
+    return <div className='refcell-line'>
+      <RefBadge {...{result, code}} />
+    </div>
+  }
 }

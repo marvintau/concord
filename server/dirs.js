@@ -149,7 +149,8 @@ const dirs = [
     name: 'Balance',
     desc: '余额表',
     type: 'DATA',
-    data: ['BALANCE']
+    isHidingManual: true,
+    data: ['BALANCE', 'TRIAL_BALANCE']
   },
   {
     loadPoint: '/',

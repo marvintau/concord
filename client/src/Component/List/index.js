@@ -2,10 +2,17 @@ import React, {useContext, useState, useEffect} from 'react';
 
 import {Spinner} from 'reactstrap';
 import TreeList from './TreeList';
-import UploadManager from './UploadManager';
-import GenerateTemplate from './GenerateTemplate';
-import useCreateManager from './useCreateManager';
-import ExportManager from './ExportManager';
+
+import { 
+  UploadManager ,
+  GenerateTemplate ,
+  useCreateManager ,
+  ExportManager,
+  EvalSheet
+} from '../DataTool';
+  
+
+
 import Header from './Header';
 import {Exchange} from '../Exchange';
 import { DepRouterContext } from '../DepRouter';
@@ -119,9 +126,11 @@ export default ({sheet, sheetName, status, desc, colSpecs, rowEdit, isCascaded, 
   let toolElems = [];
   for (let tool of tools){
     if (tool === 'ImportExcel'){
-      console.log(`${sheetName} before passing into upload manager`)
       let props = {name:sheetName, refresh:updateSheets, setStatus, context:{...currPage, ...currArgs}};
       toolElems.push(<UploadManager key={tool} title={`上传${desc}数据文件`} {...props} />);
+    }
+    if (tool === 'EvalSheet'){
+      toolElems.push(<EvalSheet key={tool} title={`刷新 ${desc} 数据`} name={sheetName} />);
     }
     if (tool === 'HeaderCreate'){
       toolElems.push(<button key={tool}

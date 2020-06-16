@@ -40,7 +40,7 @@ function group(table, key){
     !(label in group) && (group[label] = []);
     group[label].push(rec);
   }
-  console.log()
+  // console.log()
   return group;
 }
 
@@ -48,9 +48,12 @@ function cascade(table, colKey) {
 
   // grip使用了layerFunc，将列表分为几代（Generation）
   const sorted = sort(table, colKey);
-  const layers = Object.values(group(sorted, (rec) => rec[colKey].length));
-  console.log(table.length);
-  console.log(layers.map(e => e[0][colKey].length), 'cascade');
+  const layers = Object.values(group(sorted, (rec) => {
+    // console.log(rec, rec[colKey]);
+    return rec[colKey].length
+  }));
+  // console.log(table.length);
+  // console.log(layers.map(e => e[0][colKey].length), 'cascade');
 
   // 每相邻的两代之间两两比较，如果没有找到父辈的孩子会被弃掉。
   let children;

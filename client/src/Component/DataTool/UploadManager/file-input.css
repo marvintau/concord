@@ -1,0 +1,18 @@
+.input-button {
+  min-width: 150px;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+.file-input {
+  display:none;
+}
+
+.upload:hover {
+  background: var(--yellow);
+}
+
+.upload:active {
+  background: #dea700;
+}

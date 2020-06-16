@@ -38,16 +38,13 @@ async function TRIAL_BALANCE(fileBuffer, context){
     'EQUITY-所有者权益表条目'
   ]);
 
-  console.log(sheets, 'sheets');
+  // console.log(sheets, 'sheets');
 
   const sheetEntries = {};
 
   for (let sheetName in sheets) {
     let sheet = sheets[sheetName];
 
-    sheet = columnNameRemap(sheet, header);
-    sheet = cascade(sheet, 'ccode');
-    const entry = {data: sheet, indexColumn:'ccode_name'};
     const tableName = {
       'TB-试算平衡条目': 'TRIAL_BALANCE',
       'SOFP-资产负债表条目': 'SOFP',
@@ -56,13 +53,32 @@ async function TRIAL_BALANCE(fileBuffer, context){
       'EQUITY-所有者权益表条目': 'EQUITY',
     }[sheetName];
 
+    sheet = columnNameRemap(sheet, header);
+    
+    if (tableName === 'TRIAL_BALANCE') {
+
+      for (let rec of sheet) {
+        rec.mb = {type:'ref-fetch', expr:'=SUMSUB()', disp:'res'}
+        rec.md = {type:'ref-fetch', expr:'=SUMSUB()', disp:'res'}
+        rec.mc = {type:'ref-fetch', expr:'=SUMSUB()', disp:'res'}
+        rec.me = {type:'ref-fetch', expr:'=SUMSUB()', disp:'res'}
+      }
+      console.log(sheet);
+    }
+    
+    if ('ccode' in sheet[0]) {
+      sheet = cascade(sheet, 'ccode');
+    }
+    
+    const entry = {data: sheet, indexColumn:'ccode_name'};
+
     sheetEntries[tableName] = entry;
 
     await setTable({project_id, table:'PROJECT'}, tableName, entry)
     
   }
 
-  console.log(JSON.stringify(sheetEntries['EQUITY'], null, 2));
+  // console.log(JSON.stringify(sheetEntries['EQUITY'], null, 2));
 
   return sheetEntries['TRIAL_BALANCE'];
 }

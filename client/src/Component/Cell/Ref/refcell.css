@@ -3,7 +3,7 @@
   /* height: 35px; */
   display: flex; 
   
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   line-height: normal;
 
@@ -46,7 +46,7 @@
 }
 
 .refcell-badge {
-  min-width: 100px;
+  min-width: 50px;
   text-align: right;
   font-family: 'Avenir Next Condensed', 'Arial Narrow';
   border-radius: 3px;

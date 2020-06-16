@@ -6,9 +6,9 @@ import {store as assignRec} from '@marvintau/chua';
 import { Exchange } from '../../Exchange';
 
 
-export default ({sheetName, colName, cellData, data:rec, getPathSuggValue, getPathSuggs}) => {
+export default ({sheetName, colName, data:rec, getPathSuggValue, getPathSuggs}) => {
   
-  const {path:storePath, result, code, disabled} = cellData;
+  const {path:storePath, result, code, disabled} = rec[colName];
 
   const {Sheets, evalSheet} = useContext(Exchange);
 
@@ -18,7 +18,7 @@ export default ({sheetName, colName, cellData, data:rec, getPathSuggValue, getPa
     getSuggs: getPathSuggs,
     getSuggValue: getPathSuggValue,
     saveEdit(value){
-      cellData.path = value;
+      rec[colName].path = value;
       assignRec(value, rec, Sheets[sheetName].data, Sheets);
       evalSheet(sheetName, colName);
     }, 

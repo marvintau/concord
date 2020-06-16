@@ -12,7 +12,7 @@
 /build
 
 # uploaded and generated files
-/data_store
+/server/data_store
 /file_store
 /generated
 

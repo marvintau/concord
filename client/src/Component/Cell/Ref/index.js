@@ -9,18 +9,27 @@ import {fetch as fetchRec} from '@marvintau/chua';
 import Text from '../Text';
 import Number from '../Number';
 
-export default ({sheetName, colName, disabled: disabledProp, children: cellData, data, attr:{placeholder='empty'}={}}) => {
+export default ({sheetName, colName, data, attr:{disabled: disabledProp, placeholder='empty', defaultType}={}}) => {
 
-  if (cellData === undefined) {
-    return "";
+  if (typeof data[colName] === 'string') {
+    return <Text>{data[colName]}</Text>;
   }
 
-  if (typeof cellData === 'string') {
-    return <Text>{cellData}</Text>;
+  if (typeof data[colName] === 'number') {
+    return <Number>{data[colName]}</Number>;
   }
 
-  if (typeof cellData === 'number') {
-    return <Number>{cellData}</Number>;
+  if (data[colName] === undefined ) {
+    if (!['ref-fetch', 'ref-store', 'ref-cond-store'].includes(defaultType)) {
+      return '';
+    } else {
+      const defaultValue = {
+        'ref-fetch' : {type: 'ref-fetch', path: '', expr: ''},
+        'ref-store' : {type: 'ref-store', path: ''},
+        'ref-cond-store' : {type: 'ref-cond-store', cases:[]}
+      }[defaultType];
+      data[colName] = defaultValue;
+    }
   }
 
   const {Sheets} = useContext(Exchange);
@@ -48,9 +57,7 @@ export default ({sheetName, colName, disabled: disabledProp, children: cellData,
         })
     } else {
       const [most, last] = separateLast(inputValue);
-      console.log(most, last);
       const {suggs = [], code} = fetchRec(inputValue, Sheets);
-      console.log(code, 'fetchRec');
       const filt = suggs.filter(sugg => sugg.includes(last));
       return filt.length > 0 ? filt : suggs;
     }
@@ -84,18 +91,20 @@ export default ({sheetName, colName, disabled: disabledProp, children: cellData,
     return value.replace(/[^@*/+-<>= ]*$/, sugg.value || sugg.toString());
   }
 
-  const {type, disabled: disabledData} = cellData;
+  const {type, disabled: disabledData} = data[colName];
 
-  const disabled = disabledProp || disabledData;
 
-  if (type === 'ref-fetch') {
-    return <FetchRef {...{sheetName, colName, disabled, cellData, data, getPathSuggs, getPathSuggValue, getExprSuggs, getExprSuggValue}} />
-  }
-  else if (type === 'ref-store') {
-    return <StoreRef {...{sheetName, colName, disabled, cellData, data, getPathSuggs, getPathSuggValue}} />
-  }
-  else if (type === 'ref-cond-store') {
-    return <CondStoreRef {...{sheetName, colName, disabled, cellData, data, getPathSuggs, getPathSuggValue, getExprSuggs, getExprSuggValue}} />
+  if (['ref-fetch', 'ref-store', 'ref-cond-store'].includes(type)) {
+
+    const disabled = disabledProp || disabledData;
+
+    const Ref = {
+      'ref-fetch' : FetchRef,
+      'ref-store' : StoreRef,
+      'ref-cond-store' : CondStoreRef
+    }[type];
+
+    return <Ref {...{sheetName, colName, disabled, data, getPathSuggs, getPathSuggValue, getExprSuggs, getExprSuggValue}} />
   }
   else {
     return <div>Ref还不支持{type}类型</div>

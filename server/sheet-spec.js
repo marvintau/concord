@@ -79,12 +79,13 @@ const sheetSpecs = [
     isCascaded: true,
     tools: ['ImportExcel'],
     colSpecs: {
-      ccode: {desc: '编码', width: 1, isFilterable: true},
-      ccode_name: {desc: '科目名称', width: 3, isFilterable: true},
-      mb: {desc: '期初', width: 2, isFilterable: true, cellType:'Number'},
-      md: {desc: '借方', width: 2, isFilterable: true, cellType:'Number'},
-      mc: {desc: '贷方', width: 2, isFilterable: true, cellType:'Number'},
-      me: {desc: '期末', width: 2, isFilterable: true, cellType:'Number'},
+      // ccode: {desc: '编码', width: 1, isFilterable: true},
+      ccode_name: {desc: '科目名称', width: 2, isFilterable: true},
+      mb: {desc: '期初', width: 1, isFilterable: true, cellType:'Number'},
+      md: {desc: '借方', width: 1, isFilterable: true, cellType:'Number'},
+      mc: {desc: '贷方', width: 1, isFilterable: true, cellType:'Number'},
+      me: {desc: '期末', width: 1, isFilterable: true, cellType:'Number'},
+      __categorized_to_tb: {desc:'列入TB项目', width: 6, cellType:'Ref', attr: {defaultType:'ref-cond-store'}}
     }
   },
   {
@@ -122,18 +123,20 @@ const sheetSpecs = [
       sub_num: {desc: '笔数', width: 1, isSortable: true},
       digest: {desc:'摘要', width: 1, isFilerable: true},
       analyzed: {desc:'已分析', width: 1},
-      __categorized: {desc:'列入报表项目', width: 4, cellType:'Ref', attr: {type:'ref-cond-store'}}
+      __categorized_to_tb: {desc:'列入报表项目', width: 4, cellType:'Ref', attr: {type:'ref-cond-store'}}
     },
   },
   {
     name: 'TRIAL_BALANCE',
     isCascaded: true,
-    tools: ['ImportExcel'],
+    tools: ['ImportExcel', 'EvalSheet'],
     colSpecs: {
       ccode_name: {desc: '条目名称', width: 1, isFilterable: true},
-      mb: {desc:'金额', width: 3, cellType:'Ref'},
-      mc: {desc:'金额', width: 3, cellType:'Ref'},
-      categorized: {desc:'列入报表项目', width: 3, cellType:'Ref'}
+      mb: {desc:'期初', width: 2, cellType:'Ref'},
+      md: {desc:'借方', width: 2, cellType:'Ref'},
+      mc: {desc:'贷方', width: 2, cellType:'Ref'},
+      me: {desc:'期末', width: 2, cellType:'Ref'},
+      __categorized_to_report: {desc:'列入报表项目', width: 2, cellType:'Ref'}
     },
   },
   {

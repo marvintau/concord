@@ -104,83 +104,91 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
   }
 
   const evalSheet = (sheetName, colName) => {
-    console.log('evalSheet runned', sheetName);
     initPathAliases();
     const evalRecord = (rec) => {
       
-      const col = rec[colName];
-      if (col === undefined){
-        return;
-      }
-      
-      if (col.type) {
-        const {type, path, expr, cases} = col;
-        if (type === 'ref-fetch'){
-
-          if (expr.startsWith('=')){
-            const {result, code} = evalExpr(expr, {Sheets, vars:rec});
-            Object.assign(col, {result, code});
-          } else {
-            const {record} = fetchRec(path, Sheets);
-            const {result, code} = evalExpr(expr, {Sheets, vars:record});
-            Object.assign(col, {result, code});
-          }
-          // console.log(result, code);
-        }
-
-        if (['ref-store', 'ref-cond-store'].includes(type)){
-          const {__assigned_ances, __assigned_desc, __children, __destRecs, __cands} = rec;
-          if (__destRecs && __destRecs.length > 0) {
-            // 说明是执行evalSheet前刚刚被分配的那个记录
-            Object.assign(col, {result: '科目已分配', code:'SUCC'})
-          } else if (__assigned_desc && __assigned_desc.length > 0) {
-            if (__assigned_desc.length === __children.length) {
-              Object.assign(col, {
-                result: `全部子科目已分配`,
-                code: 'SUCC',
-                disabled:true
-              })
+      const evalCol = (col, colName) => {
+        if (col === undefined){
+          return;
+        }        
+        if (col.type) {
+        
+          const {type, path, expr, cases} = col;
+          if (type === 'ref-fetch'){
+  
+            if (expr.startsWith('=')){
+              const {result, code} = evalExpr(expr, {Sheets, vars:rec, colKey:colName});
+              Object.assign(col, {result, code});
             } else {
+              const {record} = fetchRec(path, Sheets);
+              const {result, code} = evalExpr(expr, {Sheets, vars:record});
+              Object.assign(col, {result, code});
+            }
+            // console.log(result, code);
+          }
+  
+          if (['ref-store', 'ref-cond-store'].includes(type)){
+            const {__assigned_ances, __assigned_desc, __children, __destRecs, __cands} = rec;
+            if (__destRecs && __destRecs.length > 0) {
+              // 说明是执行evalSheet前刚刚被分配的那个记录
+              Object.assign(col, {result: '科目已分配', code:'SUCC'})
+            } else if (__assigned_desc && __assigned_desc.length > 0) {
+              if (__assigned_desc.length === __children.length) {
+                Object.assign(col, {
+                  result: `全部子科目已分配`,
+                  code: 'SUCC',
+                  disabled:true
+                })
+              } else {
+                Object.assign(col, {
+                  result: `${__assigned_desc.length}/${__children.length} 已分配`,
+                  code: 'WARN',
+                  disabled: true
+                })
+              }
+            } else if (__assigned_ances && __assigned_ances.length > 0) {
               Object.assign(col, {
-                result: `${__assigned_desc.length}/${__children.length} 已分配`,
-                code: 'WARN',
+                result: '已由上级分配',
+                code: 'INFO',
                 disabled: true
               })
-            }
-          } else if (__assigned_ances && __assigned_ances.length > 0) {
-            Object.assign(col, {
-              result: '已由上级分配',
-              code: 'INFO',
-              disabled: true
-            })
-          } else if (__destRecs === undefined || __destRecs.length === 0) {
-
-            const refStoreAndPath = type === 'ref-store' && (path && path.length > 0);
-            const refCondStoreAndAnyPath = type === 'ref-cond-store' && cases.some(path => path && path.length > 0);
-
-            if (__cands !== undefined) {
-              console.log(__cands);
-              Object.assign(col, {
-                code : __cands.length > 1 ? 'FAIL_MUL_ASSIGN_COND' : 'FAIL_NO_ASSIGN_COND',
-                result : '科目未分配'
-              })
-
-            } else if (refStoreAndPath || refCondStoreAndAnyPath) {
-              Object.assign(col, {
-                result: '科目未分配',
-                code: 'FAIL',
-                disabled: false
-              })
-            } else {
-              Object.assign(col, {
-                result: undefined,
-                code: 'NONE',
-                disabled: false
-              })
+            } else if (__destRecs === undefined || __destRecs.length === 0) {
+  
+              const refStoreAndPath = type === 'ref-store' && (path && path.length > 0);
+              const refCondStoreAndAnyPath = type === 'ref-cond-store' && cases.some(path => path && path.length > 0);
+  
+              if (__cands !== undefined) {
+                console.log(__cands);
+                Object.assign(col, {
+                  code : __cands.length > 1 ? 'FAIL_MUL_ASSIGN_COND' : 'FAIL_NO_ASSIGN_COND',
+                  result : '科目未分配'
+                })
+  
+              } else if (refStoreAndPath || refCondStoreAndAnyPath) {
+                Object.assign(col, {
+                  result: '科目未分配',
+                  code: 'FAIL',
+                  disabled: false
+                })
+              } else {
+                Object.assign(col, {
+                  result: undefined,
+                  code: 'NONE',
+                  disabled: false
+                })
+              }
             }
           }
         }
-      }  
+      }
+
+      if (colName !== undefined) {
+        evalCol(rec[colName], colName);
+      } else {
+        for (let [colName, col] of Object.entries(rec)){
+          evalCol(col, colName);
+        }
+      }
     }
 
     trav(Sheets[sheetName].data, evalRecord, 'POST');
@@ -222,6 +230,8 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
           }
 
           pulledSheets[sheetName] = sheetContent;
+          // console.log(sheetContent);
+          // evalSheet(sheetName);
 
         } catch(error){
           console.warn('unknown error of pulling', error);
@@ -229,6 +239,7 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
           return
         }
       }
+
       updateSheets(pulledSheets);
       setStatus('DONE_PULL');
     })()

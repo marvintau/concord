@@ -6,15 +6,16 @@ import {store as assignRec, expr as evalExpr} from '@marvintau/chua';
 import { Exchange } from '../../Exchange';
 
 const buttonStyle = {
+  background: '#FAFAFA',
   border: '1px solid lightgray',
-  borderRadius: '3px'
+  borderRadius: '5px'
 }
 
-export default ({sheetName, colName, cellData, data:rec, getPathSuggValue, getPathSuggs, getExprSuggs, getExprSuggValue}) => {
+export default ({sheetName, colName, data:rec, getPathSuggValue, getPathSuggs, getExprSuggs, getExprSuggValue}) => {
 
   const {Sheets, evalSheet} = useContext(Exchange);
 
-  const {cases, result, code, disabled} = cellData;
+  const {cases, result, code, disabled} = rec[colName];
   
   const condAssignRec = () => {
     console.log(cases, 'cond assign');
@@ -44,7 +45,8 @@ export default ({sheetName, colName, cellData, data:rec, getPathSuggValue, getPa
       saveEdit(value){
         cases[i].cond = value;
       }, 
-      placeholder: '条件表达式'
+      placeholder: '条件表达式',
+      style:{flexBasis: '40%'}
     }
   
     const pathInputProps = {
@@ -78,10 +80,10 @@ export default ({sheetName, colName, cellData, data:rec, getPathSuggValue, getPa
     evalSheet(sheetName, colName)
   }
 
-  lines.push(<button key='add' style={{...buttonStyle, marginLeft:'8px'}} onClick={addCase}> + </button>)
+  lines.push(<button key='add' style={{...buttonStyle, margin:'5px 0 0 8px'}} onClick={addCase}> + </button>)
 
   return <div className='refcell-line'>
-    <div>{lines}</div>
+    <div style={{width: '100%'}}>{lines}</div>
     <RefBadge {...{result, code}} />
   </div>
 }
