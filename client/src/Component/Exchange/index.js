@@ -128,15 +128,18 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
           }
   
           if (['ref-store', 'ref-cond-store'].includes(type)){
-            const {__assigned_ances, __assigned_desc, __children, __destRecs, __cands} = rec;
+            const {__assigned_ances, __assigned_desc, __children, __destRecs, __cands, __applyToSub} = rec;
             if (__destRecs && __destRecs.length > 0) {
               // 说明是执行evalSheet前刚刚被分配的那个记录
-              Object.assign(col, {result: '已分配', code:'SUCC'})
+              Object.assign(col, {
+                result: '已分配',
+                code:'SUCC'
+              })
             } else if (__assigned_desc && __assigned_desc.length > 0) {              
               Object.assign(col, {
                 result: `${__assigned_desc.length}/${__children.length} 已分配`,
                 code: __assigned_desc.length === __children.length ? 'SUCC' : 'WARN',
-                disabled: true
+                disabled: !__applyToSub
               })
             } else if (__assigned_ances && __assigned_ances.length > 0) {
               Object.assign(col, {

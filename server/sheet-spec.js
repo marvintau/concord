@@ -77,7 +77,7 @@ const sheetSpecs = [
   {
     name: 'BALANCE',
     isCascaded: true,
-    tools: ['ImportExcel'],
+    tools: ['ImportExcel', 'EvalSheet', 'SaveRemote'],
     colSpecs: {
       // ccode: {desc: '编码', width: 1, isFilterable: true},
       ccode_name: {desc: '科目名称', width: 2, isFilterable: true},
@@ -129,7 +129,7 @@ const sheetSpecs = [
   {
     name: 'TRIAL_BALANCE',
     isCascaded: true,
-    tools: ['ImportExcel', 'EvalSheet'],
+    tools: ['ImportExcel', 'EvalSheet', 'SaveRemote'],
     colSpecs: {
       ccode_name: {desc: '条目名称', width: 1, isFilterable: true},
       mb: {desc:'期初', width: 2, cellType:'Ref'},
