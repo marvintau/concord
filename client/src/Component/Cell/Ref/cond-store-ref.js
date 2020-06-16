@@ -31,7 +31,6 @@ export default ({sheetName, colName, data:rec, getPathSuggValue, getPathSuggs, g
     } else {
       assignRec('INVALID', rec, Sheets[sheetName].data, Sheets);
     }
-    evalSheet(sheetName, colName);
   }
 
   const lines = cases.map(({cond, path:storePath}, i) => {
@@ -57,6 +56,7 @@ export default ({sheetName, colName, data:rec, getPathSuggValue, getPathSuggs, g
       saveEdit(value){
         cases[i].path = value;
         condAssignRec();
+        evalSheet(sheetName, colName);
       }, 
       placeholder: '分类路径'
     }

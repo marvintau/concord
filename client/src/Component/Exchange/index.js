@@ -131,24 +131,16 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
             const {__assigned_ances, __assigned_desc, __children, __destRecs, __cands} = rec;
             if (__destRecs && __destRecs.length > 0) {
               // 说明是执行evalSheet前刚刚被分配的那个记录
-              Object.assign(col, {result: '科目已分配', code:'SUCC'})
-            } else if (__assigned_desc && __assigned_desc.length > 0) {
-              if (__assigned_desc.length === __children.length) {
-                Object.assign(col, {
-                  result: `全部子科目已分配`,
-                  code: 'SUCC',
-                  disabled:true
-                })
-              } else {
-                Object.assign(col, {
-                  result: `${__assigned_desc.length}/${__children.length} 已分配`,
-                  code: 'WARN',
-                  disabled: true
-                })
-              }
+              Object.assign(col, {result: '已分配', code:'SUCC'})
+            } else if (__assigned_desc && __assigned_desc.length > 0) {              
+              Object.assign(col, {
+                result: `${__assigned_desc.length}/${__children.length} 已分配`,
+                code: __assigned_desc.length === __children.length ? 'SUCC' : 'WARN',
+                disabled: true
+              })
             } else if (__assigned_ances && __assigned_ances.length > 0) {
               Object.assign(col, {
-                result: '已由上级分配',
+                result: '⇧已分配',
                 code: 'INFO',
                 disabled: true
               })
@@ -161,12 +153,12 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
                 console.log(__cands);
                 Object.assign(col, {
                   code : __cands.length > 1 ? 'FAIL_MUL_ASSIGN_COND' : 'FAIL_NO_ASSIGN_COND',
-                  result : '科目未分配'
+                  result : '未分配'
                 })
   
               } else if (refStoreAndPath || refCondStoreAndAnyPath) {
                 Object.assign(col, {
-                  result: '科目未分配',
+                  result: '未分配',
                   code: 'FAIL',
                   disabled: false
                 })

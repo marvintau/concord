@@ -123,7 +123,7 @@ const sheetSpecs = [
       sub_num: {desc: '笔数', width: 1, isSortable: true},
       digest: {desc:'摘要', width: 1, isFilerable: true},
       analyzed: {desc:'已分析', width: 1},
-      __categorized_to_tb: {desc:'列入报表项目', width: 4, cellType:'Ref', attr: {type:'ref-cond-store'}}
+      __categorized_to_tb: {desc:'列入报表项目', width: 4, cellType:'Ref', attr: {defaultType:'ref-cond-store'}}
     },
   },
   {
@@ -136,7 +136,7 @@ const sheetSpecs = [
       md: {desc:'借方', width: 2, cellType:'Ref'},
       mc: {desc:'贷方', width: 2, cellType:'Ref'},
       me: {desc:'期末', width: 2, cellType:'Ref'},
-      __categorized_to_report: {desc:'列入报表项目', width: 2, cellType:'Ref'}
+      __categorized_to_report: {desc:'列入报表项目', width: 3, cellType:'Ref', attr: {defaultType: 'ref-store'}}
     },
   },
   {
