@@ -150,7 +150,8 @@ const dirs = [
     desc: '余额表',
     type: 'DATA',
     isHidingManual: true,
-    data: ['BALANCE', 'TRIAL_BALANCE']
+    data: ['BALANCE', 'TRIAL_BALANCE'],
+    importedData: [{name:'BALANCE', desc:'总分类账'}, {name: 'ASSISTED', desc:'辅助明细'}],
   },
   {
     loadPoint: '/',

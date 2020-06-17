@@ -153,11 +153,9 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
               const refCondStoreAndAnyPath = type === 'ref-cond-store' && cases.some(path => path && path.length > 0);
   
               if (__cands !== undefined) {
-                console.log(__cands);
-                Object.assign(col, {
-                  code : __cands.length > 1 ? 'FAIL_MUL_ASSIGN_COND' : 'FAIL_NO_ASSIGN_COND',
-                  result : '未分配'
-                })
+
+                const code = col.code || (__cands.length > 1 ? 'FAIL_MUL_ASSIGN_COND' : 'FAIL_NO_ASSIGN_COND');
+                Object.assign(col, { code, result : '未分配'})
   
               } else if (refStoreAndPath || refCondStoreAndAnyPath) {
                 Object.assign(col, {

@@ -57,14 +57,14 @@ const sheetSpecs = [
   },
   {
     name: 'CATEGORY_NAME_ALIASES',
-    tools: ['ImportExcel', 'HeaderCreate', 'SaveRemote'],
+    tools: ['Import', 'HeaderCreate', 'SaveRemote'],
     colSpecs: {
       alias: {desc: '科目别名', width: 12, cellType:'Labels'},
     }
   },
   {
     name: 'CONFIRMATION_MANAGEMENT',
-    tools: ['ImportExcel', 'GenerateTemplate'],
+    tools: ['Import', 'GenerateTemplate'],
     qrLink:true,
     colSpecs: {
       ID: {desc: '编号', width: 2, isFilterable: true},
@@ -77,7 +77,7 @@ const sheetSpecs = [
   {
     name: 'BALANCE',
     isCascaded: true,
-    tools: ['ImportExcel', 'EvalSheet', 'SaveRemote'],
+    tools: ['Import', 'EvalSheet', 'SaveRemote', 'BatchAssign'],
     colSpecs: {
       // ccode: {desc: '编码', width: 1, isFilterable: true},
       ccode_name: {desc: '科目名称', width: 2, isFilterable: true},
@@ -101,7 +101,7 @@ const sheetSpecs = [
   {
     name: 'SOFP',
     isCascaded: true,
-    tools: ['ImportExcel'],
+    tools: ['Import'],
     colSpecs: {
       ccode_name: {desc: '条目', width: 3, isFilterable: true},
       mb: {desc: '期初', width: 2, isFilterable: true, cellType:'Number'},
@@ -113,7 +113,7 @@ const sheetSpecs = [
   {
     name: 'ACCRUAL_ANALYSIS',
     isCascaded: true,
-    tools: ['ImportExcel', 'SaveRemote', 'ExportExcel'],
+    tools: ['Import', 'SaveRemote', 'ExportExcel'],
     referredSheetNames: ['SOFP'],
     colSpecs: {
       ccode_name: {desc: '科目名称', width: 2, isFilterable: true},
@@ -129,7 +129,7 @@ const sheetSpecs = [
   {
     name: 'TRIAL_BALANCE',
     isCascaded: true,
-    tools: ['ImportExcel', 'EvalSheet', 'SaveRemote'],
+    tools: ['Import', 'EvalSheet', 'SaveRemote'],
     colSpecs: {
       ccode_name: {desc: '条目名称', width: 1, isFilterable: true},
       mb: {desc:'期初', width: 2, cellType:'Ref'},

@@ -8,7 +8,8 @@ import {
   GenerateTemplate ,
   useCreateManager ,
   ExportManager,
-  EvalSheet
+  EvalSheet,
+  BatchAssign
 } from '../DataTool';
   
 
@@ -125,12 +126,15 @@ export default ({sheet, sheetName, status, desc, colSpecs, rowEdit, isCascaded, 
 
   let toolElems = [];
   for (let tool of tools){
-    if (tool === 'ImportExcel'){
+    if (tool === 'Import'){
       let props = {name:sheetName, refresh:updateSheets, setStatus, context:{...currPage, ...currArgs}};
-      toolElems.push(<UploadManager key={tool} title={`上传${desc}数据文件`} {...props} />);
+      toolElems.push(<UploadManager key={tool} desc={desc} {...props} />);
     }
     if (tool === 'EvalSheet'){
       toolElems.push(<EvalSheet key={tool} title={`刷新 ${desc} 数据`} name={sheetName} />);
+    }
+    if (tool === 'BatchAssign'){
+      toolElems.push(<BatchAssign key={tool} name={sheetName} />);
     }
     if (tool === 'HeaderCreate'){
       toolElems.push(<button key={tool}

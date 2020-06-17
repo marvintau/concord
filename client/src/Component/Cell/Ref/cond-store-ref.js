@@ -2,7 +2,8 @@ import React, {useContext, useState,useRef} from 'react';
 import SuggInput from './sugg-input';
 import RefBadge from './ref-badge';
 
-import {store as assignRec, expr as evalExpr} from '@marvintau/chua';
+import {store as assignRec} from '@marvintau/chua';
+
 import { Exchange } from '../../Exchange';
 
 const buttonStyle = {
@@ -15,31 +16,8 @@ export default ({sheetName, colName, data:rec, getPathSuggValue, getPathSuggs, g
 
   const {Sheets, evalSheet} = useContext(Exchange);
 
-  const {cases, result, code, disabled} = rec[colName];
+  const {cases, result, disabled} = rec[colName];
   
-  const condAssignRec = () => {
-
-    rec.__cands = cases.length === 1
-    ? [{result: true, path:cases[0].path}]
-    : cases.map(({cond, path}) => {
-        const {result} = evalExpr(cond, {Sheets, vars:rec});
-        return {result, path};
-      }).filter(({result}) => result);
-    
-    const destPath = rec.__cands.length === 1
-    ? rec.__cands[0].path
-    : 'INVALID';
-    if (rec.__applyToSub){
-      if (rec.__children === undefined) {
-        assignRec('INVALID', rec, Sheets[sheetName].data, Sheets);
-      } else for (let sub of rec.__children){
-        assignRec(destPath, sub, Sheets[sheetName].data, Sheets);
-      }
-    } else {
-      assignRec(destPath, rec, Sheets[sheetName].data, Sheets);
-    }
-  }
-
   const lines = cases.map(({cond, path:storePath}, i, arr) => {
     const exprInputProps = {
       expr: cond,
@@ -62,7 +40,11 @@ export default ({sheetName, colName, data:rec, getPathSuggValue, getPathSuggs, g
       getSuggValue: getPathSuggValue,
       saveEdit(value){
         cases[i].path = value;
-        condAssignRec();
+        const {code} = assignRec(cases, rec, Sheets[sheetName].data, Sheets);
+        if (code !== undefined) {
+          rec[colName].code = code;
+        }
+
         evalSheet(sheetName, colName);
         console.log(rec, 'after asasigned');
       }, 
@@ -106,6 +88,6 @@ export default ({sheetName, colName, data:rec, getPathSuggValue, getPathSuggs, g
 
   return <div className='refcell-line'>
     <div style={{width: '100%'}}>{lines}</div>
-    <RefBadge {...{result, code}} />
+    <RefBadge {...{result, code: rec[colName].code}} />
   </div>
 }

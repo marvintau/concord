@@ -6,13 +6,15 @@ import './file-input.css';
 
 const ident = e => e;
 
-export default function({title="上传文件", name, context={}, refresh=ident, setStatus=ident}){
+export default function({desc="文件", name, context={}, refresh=ident, setStatus=ident}){
 
     const [stage, setStage] = useState('READY');
     const [progress, setProgress] = useState(0);
     const [inputKey, setInputKey] = useState(Math.random().toString(36));
 
     const fileRef = useRef(null);
+
+    const [dataName, setDataName] = useState(context.importedData !== undefined ? undefined : name);
 
     const uploadFile = (e) => {
         const form = new FormData();
@@ -24,7 +26,7 @@ export default function({title="上传文件", name, context={}, refresh=ident, 
 
         setStage('UPLOAD');
 
-        Agnt.post(`/upload/${name}`)
+        Agnt.post(`/upload/${dataName}`)
             .on('progress', ({percent}) => {
                 percent && setProgress(percent);
                 if (percent && percent > 0.99){
@@ -61,10 +63,16 @@ export default function({title="上传文件", name, context={}, refresh=ident, 
             <Spinner size="sm" />
             <div>后台处理中...</div>
           </div>
-        : <div className="input-button">{title}</div>;
+        : <div className="input-button">上传</div>;
 
     return <div className="upload-wrapper">
         <input key={inputKey} ref={fileRef} className='file-input' type="file" id="choose-backup-file" title="" onChange={uploadFile}/>
-        <button className="button upload" onClick={selectFile}>{display}</button>
+        <select value={dataName} onChange={(e) => setDataName(e.target.value)}>
+            {context.importedData === undefined
+            ? <option value={name}>{desc}</option>
+            : [<option key='def' value={undefined}>请选择数据</option>].concat(context.importedData.map(({name, desc}, i) => <option key={i} value={name}>{desc}</option>))
+            }
+        </select>
+        <button className="button upload" onClick={selectFile} disabled={dataName === undefined}>{display}</button>
     </div>
 }

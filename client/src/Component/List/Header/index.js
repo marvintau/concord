@@ -7,6 +7,8 @@ const HeaderCol = ({colKey, width:initWidth, children, setColWidth=e=>e}) =>{
 
   const [width, setHeaderWidth] = useState(`${(initWidth/12*100)}%`);
 
+  const [isShowingColKey, toggleShowingColKey] = useState(false);
+
   return <Resz
     size={{width}}
     className={`list-header-col`}
@@ -15,8 +17,11 @@ const HeaderCol = ({colKey, width:initWidth, children, setColWidth=e=>e}) =>{
       setHeaderWidth(width + d.width);
       setColWidth(colKey, width);
     }}
+    onClick={() => {
+      toggleShowingColKey(!isShowingColKey);
+    }}
     enable={{ top:false, right:true, bottom:false, left:false, topRight:false, bottomRight:false, bottomLeft:false, topLeft:false}}
-  ><div className="list-header-col-inner">{children}</div>
+  ><div className="list-header-col-inner">{children}{isShowingColKey && ` - [${colKey}]`}</div>
   </Resz>;
 }
 export default ({colSpecs, hidden, setColWidth}) => {
