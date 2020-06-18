@@ -40,6 +40,7 @@ export default ({sheetName, colName, data:rec, getPathSuggValue, getPathSuggs, g
       getSuggValue: getPathSuggValue,
       saveEdit(value){
         cases[i].path = value;
+        console.log(cases, 'before assgin');
         const {code} = assignRec(cases, rec, Sheets[sheetName].data, Sheets);
         if (code !== undefined) {
           rec[colName].code = code;

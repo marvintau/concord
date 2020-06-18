@@ -136,7 +136,7 @@ const sheetSpecs = [
       md: {desc:'借方', width: 2, cellType:'Ref'},
       mc: {desc:'贷方', width: 2, cellType:'Ref'},
       me: {desc:'期末', width: 2, cellType:'Ref'},
-      __categorized_to_report: {desc:'列入报表项目', width: 3, cellType:'Ref', attr: {defaultType: 'ref-store'}}
+      __categorized_to_report: {desc:'列入报表项目', width: 3, cellType:'Ref', attr: {defaultType: 'ref-cond-store'}}
     },
   },
   {

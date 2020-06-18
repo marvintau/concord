@@ -1,6 +1,6 @@
 import React, { useCallback, useContext } from 'react';
 import FetchRef from './fetch-ref';
-import StoreRef from './store-ref';
+// import StoreRef from './store-ref';
 import CondStoreRef from './cond-store-ref';
 
 import {Exchange} from '../../Exchange';
@@ -100,7 +100,6 @@ export default ({sheetName, colName, data, attr:{disabled: disabledProp, placeho
 
     const Ref = {
       'ref-fetch' : FetchRef,
-      'ref-store' : StoreRef,
       'ref-cond-store' : CondStoreRef
     }[type];
 

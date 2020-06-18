@@ -24,6 +24,10 @@ let header = [
   ['未分配利润', 'undistributed'],
   ['股东权益合计', 'amount'],
   
+  ['期初余额', 'mb'],
+  ['期末余额', 'me'],
+  ['借方发生', 'md'],
+  ['贷方发生', 'mc'],
 ]
 
 async function TRIAL_BALANCE(fileBuffer, context){
@@ -53,17 +57,19 @@ async function TRIAL_BALANCE(fileBuffer, context){
       'EQUITY-所有者权益表条目': 'EQUITY',
     }[sheetName];
 
-    sheet = columnNameRemap(sheet, header);
+    sheet = columnNameRemap(sheet, header, {handleNum:false});
+
     
     if (tableName === 'TRIAL_BALANCE') {
 
       for (let rec of sheet) {
-        rec.mb = {type:'ref-fetch', expr:'=SUMSUB()', disp:'res'}
-        rec.md = {type:'ref-fetch', expr:'=SUMSUB()', disp:'res'}
-        rec.mc = {type:'ref-fetch', expr:'=SUMSUB()', disp:'res'}
-        rec.me = {type:'ref-fetch', expr:'=SUMSUB()', disp:'res'}
+
+        rec.mb = {type:'ref-fetch', expr:rec.mb, disp:'res'}
+        rec.md = {type:'ref-fetch', expr:rec.md, disp:'res'}
+        rec.mc = {type:'ref-fetch', expr:rec.mc, disp:'res'}
+        rec.me = {type:'ref-fetch', expr:rec.me, disp:'res'}
       }
-      console.log(sheet);
+      // console.log(sheet);
     }
     
     if ('ccode' in sheet[0]) {

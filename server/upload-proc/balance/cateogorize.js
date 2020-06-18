@@ -40,7 +40,7 @@ const categoryMap = {
     type:'ref-cond-store',
     cases:[
       {cond:'me >= 0', path: 'TRIAL_BALANCE:应付账款'},
-      {cond:'me <  0', path: 'TRIAL_BALANCE:预负账款'},
+      {cond:'me <  0', path: 'TRIAL_BALANCE:预付账款'},
     ],
     __applyToSub: true,
   },

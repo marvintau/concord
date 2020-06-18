@@ -85,7 +85,7 @@ function cascade(table, colKey) {
   return children;
 }
 
-function columnNameRemap(table, map){
+function columnNameRemap(table, map, {handleNum=true}={}){
   
   for (let p = 0; p < table.length; p++){
     let rec = table[p],
@@ -110,24 +110,26 @@ function columnNameRemap(table, map){
       }
     }
 
-    const {mc, md} = newRec;
-    if (md === undefined){
-      newRec.md = 0;
-    }
-    if (typeof md === 'string'){
-      newRec.md = parseFloat(md.replace(/[\s,]/g, ''));
-      console.log(newRec.md, 'new md');
-    }
-    if (mc === undefined){
-      newRec.mc = 0;
-    }
-    if (typeof mc === 'string'){
-      newRec.mc = parseFloat(mc.replace(/[\s,]/g, ''));
-      console.log(newRec.mc, 'new mc');
-    }
-
-    if (isNaN(newRec.mc) || isNaN(newRec.md)){
-      throw {message: `found NaN value mc: ${newRec.mc} md: ${newRec.md} @ ${newRec.ccode_name}`, code:'DEAD_INVALID_NUMERIC_FORMAT'};
+    if (handleNum){
+      const {mc, md} = newRec;
+      if (md === undefined){
+        newRec.md = 0;
+      }
+      if (typeof md === 'string'){
+        newRec.md = parseFloat(md.replace(/[\s,]/g, ''));
+        console.log(newRec.md, 'new md');
+      }
+      if (mc === undefined){
+        newRec.mc = 0;
+      }
+      if (typeof mc === 'string'){
+        newRec.mc = parseFloat(mc.replace(/[\s,]/g, ''));
+        console.log(newRec.mc, 'new mc');
+      }
+  
+      if (isNaN(newRec.mc) || isNaN(newRec.md)){
+        throw {message: `found NaN value mc: ${newRec.mc} md: ${newRec.md} @ ${newRec.ccode_name}`, code:'DEAD_INVALID_NUMERIC_FORMAT'};
+      }
     }
 
     // 从用友NC中导出的科目名称均已形成路径，我们需要保留末级科目

@@ -1,20 +1,23 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import { Exchange } from '../../Exchange';
 
 import {trav, store as condAssign} from '@marvintau/chua';
+// import trav from '@marvintau/chua/src/trav';
+// import condAssign from '@marvintau/chua/src/store';
 
-export default function({title="批量分类", name}){
+export default function({name}){
 
   const {Sheets, evalSheet} = useContext(Exchange);
 
   const onClick = () => {
-    console.log('eval sheet from outside');
+
     evalSheet(name);
 
     const sourceSheet = Sheets[name].data;
 
     trav(sourceSheet, (rec) => {
       if (rec.__categorized_to_tb && rec.__categorized_to_tb.cases){
+        // console.log(rec.__categorized_to_tb.cases, 'cases');
         condAssign(rec.__categorized_to_tb.cases, rec, sourceSheet, Sheets)
       }
     }, 'PRE')
@@ -23,6 +26,6 @@ export default function({title="批量分类", name}){
   }
 
   return <div className="upload-wrapper">
-      <button className="button upload" onClick={onClick}>{title}</button>
+      <button className="button upload" onClick={onClick}>批量分类</button>
   </div>
 }

@@ -1,6 +1,6 @@
 import React, {useState, createContext} from 'react'; 
 import Agnt from 'superagent';
-import {add, del, set, trav, expr as evalExpr, fetch as fetchRec, store} from '@marvintau/chua';
+import {add, del, set, trav, expr as evalExpr, fetch as fetchRec, flat} from '@marvintau/chua';
 
 export const Exchange = createContext({
   Sheets: {},
@@ -135,12 +135,18 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
                 result: '已分配',
                 code:'SUCC'
               })
-            } else if (__assigned_desc && __assigned_desc.length > 0) {              
-              Object.assign(col, {
-                result: `${__assigned_desc.length}/${__children.length} 已分配`,
-                code: __assigned_desc.length === __children.length ? 'SUCC' : 'WARN',
-                disabled: !__applyToSub
-              })
+            } else if (__assigned_desc && __assigned_desc.length > 0) {           
+              
+              const leafRecs = flat(__children).filter(({__children:ch})=> ch === undefined || ch.length === 0);
+
+              const result = __applyToSub
+                ? `${__assigned_desc.length}/${leafRecs.length} 已分配`
+                : `${__assigned_desc.length}/${__children.length} 已分配`
+              
+              const code = __assigned_desc.length === (__applyToSub ? leafRecs.length : __children.length) ? 'SUCC' : 'WARN';
+
+              Object.assign(col, { result, code, disabled: !__applyToSub})
+
             } else if (__assigned_ances && __assigned_ances.length > 0) {
               Object.assign(col, {
                 result: '⇧已分配',
