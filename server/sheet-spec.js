@@ -81,10 +81,10 @@ const sheetSpecs = [
     colSpecs: {
       // ccode: {desc: '编码', width: 1, isFilterable: true},
       ccode_name: {desc: '科目名称', width: 2, isFilterable: true},
-      mb: {desc: '期初', width: 1, isFilterable: true, cellType:'Number'},
-      md: {desc: '借方', width: 1, isFilterable: true, cellType:'Number'},
-      mc: {desc: '贷方', width: 1, isFilterable: true, cellType:'Number'},
-      me: {desc: '期末', width: 1, isFilterable: true, cellType:'Number'},
+      mb: {desc: '期初', width: 1, isSortable: true, cellType:'Number'},
+      md: {desc: '借方', width: 1, isSortable: true, cellType:'Number'},
+      mc: {desc: '贷方', width: 1, isSortable: true, cellType:'Number'},
+      me: {desc: '期末', width: 1, isSortable: true, cellType:'Number'},
       __categorized_to_tb: {desc:'列入TB项目', width: 6, cellType:'Ref', attr: {defaultType:'ref-cond-store'}}
     }
   },
@@ -101,13 +101,13 @@ const sheetSpecs = [
   {
     name: 'SOFP',
     isCascaded: true,
-    tools: ['Import'],
+    tools: ['Import', 'EvalSheet'],
     colSpecs: {
       ccode_name: {desc: '条目', width: 3, isFilterable: true},
-      mb: {desc: '期初', width: 2, isFilterable: true, cellType:'Number'},
-      mc: {desc: '借方发生', width: 2, isFilterable: true, cellType:'Number'},
-      md: {desc: '贷方发生', width: 2, isFilterable: true, cellType:'Number'},
-      me: {desc: '期末', width: 2, isFilterable: true, cellType:'Number'},
+      mb: {desc: '期初', width: 2, isFilterable: true, cellType:'Ref'},
+      mc: {desc: '借方发生', width: 2, isFilterable: true, cellType:'Ref'},
+      md: {desc: '贷方发生', width: 2, isFilterable: true, cellType:'Ref'},
+      me: {desc: '期末', width: 2, isFilterable: true, cellType:'Ref'},
     }
   },
   {
@@ -132,11 +132,11 @@ const sheetSpecs = [
     tools: ['Import', 'EvalSheet', 'SaveRemote'],
     colSpecs: {
       ccode_name: {desc: '条目名称', width: 1, isFilterable: true},
-      mb: {desc:'期初', width: 2, cellType:'Ref'},
-      md: {desc:'借方', width: 2, cellType:'Ref'},
-      mc: {desc:'贷方', width: 2, cellType:'Ref'},
-      me: {desc:'期末', width: 2, cellType:'Ref'},
-      __categorized_to_report: {desc:'列入报表项目', width: 3, cellType:'Ref', attr: {defaultType: 'ref-cond-store'}}
+      mb: {desc:'期初', width: 1.5, cellType:'Ref', isSortable: true},
+      md: {desc:'借方', width: 1.5, cellType:'Ref', isSortable: true},
+      mc: {desc:'贷方', width: 1.5, cellType:'Ref', isSortable: true},
+      me: {desc:'期末', width: 1.5, cellType:'Ref', isSortable: true},
+      __categorized_to_report: {desc:'列入报表项目', width: 5, cellType:'Ref', attr: {defaultType: 'ref-cond-store'}}
     },
   },
   {

@@ -158,6 +158,8 @@ const dirs = [
     name: 'FinancialPositionStatement',
     desc: '资产负债表',
     type: 'DATA',
+    isHidingManual: true,
+    data: ['SOFP']
   },
   {
     loadPoint: '/',
@@ -172,7 +174,7 @@ const dirs = [
     name: 'TrialBalance',
     desc: '试算平衡表',
     type: 'DATA',
-    data: ['TRIAL_BALANCE'],
+    data: ['TRIAL_BALANCE', 'SOFP', 'PAL'],
     isHidingManual: true,
   },
   {
