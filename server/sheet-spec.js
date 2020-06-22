@@ -1,4 +1,4 @@
-const {remove, retrieveRecs, createRecs} = require('./database');
+const {init, remove, retrieveRecs, createRecs} = require('./database');
 
 const sheetSpecs = [
   {
@@ -175,6 +175,7 @@ const sheetSpecs = [
 (async () => {
 
   try {
+    await init();
     await remove({table: 'SHEET_SPEC'});
     await createRecs('SHEET_SPEC', sheetSpecs);
 

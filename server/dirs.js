@@ -1,4 +1,4 @@
-const {remove, retrieveRecs, createRecs} = require('./database');
+const {init, remove, retrieveRecs, createRecs} = require('./database');
 
 const manualPage = require('./manual-page');
 
@@ -226,6 +226,7 @@ const dirs = [
   }
 
   try {
+    await init();
     await remove({table: 'DIRS'});
     await createRecs('DIRS', dirs);
   } catch(err) {
@@ -236,6 +237,7 @@ const dirs = [
  
 async function fetchDir(givenLoadPoint='/') {
   const dirs = await retrieveRecs({table: 'DIRS'});
+  console.log(dirs, 'fetch dir');
 
   const loadedPages = dirs.filter(({loadPoint}) => loadPoint === givenLoadPoint);
 

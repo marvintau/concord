@@ -1,52 +1,78 @@
-const path = require('path');
+const mongo = require('mongodb').MongoClient;
 
-const Datastore = require('nedb-promise');
-const db = new Datastore({
-  filename: path.resolve(__dirname, '../data_store/data.json'),
-  autoload: true
-});
+let conn, db, coll;
+
+const init = async () => {
+  try {
+    if (conn !== undefined) {
+      console.log('database has been initialized.');
+      return;
+    }
+
+    conn = await mongo.connect('mongodb://localhost:27017', { useUnifiedTopology: true });
+    db = conn.db('main');
+    coll = db.collection('tables');
+    // console.log(coll);
+  } catch (error) {
+    console.log(error);
+    console.log('Error during initializing DB');
+  }
+};
+
+const getColl = () => {
+  if (coll === undefined) {
+    throw Error('Database not initialized');
+  }
+  return coll;
+}
+
+// const Datastore = require('nedb-promise');
+// const db = new Datastore({
+//   filename: path.resolve(__dirname, '../data_store/data.json'),
+//   autoload: true
+// });
 
 // for creating flattened data
-function createRecs(table, records) {
+async function createRecs(table, records) {
   if (table === undefined) {
     throw {code: 'DEAD_TABLE_NOT_SPECIFIED'}
   }
   const preparedRecs = records.map(rec => ({...rec, table}));
-  return db.insert(preparedRecs);
+  return getColl().insertMany(preparedRecs);
 }
 
 // for creating / updating structured data. the crit
 // could be a project ID. thus all the tables here will
 // be associated with the ID.
-function setTable(crit, table, doc) {
+async function setTable(crit, table, doc) {
   if (table === undefined) {
     throw {code: 'DEAD_TABLE_NOT_SPECIFIED'}
   }
-  return db.update(crit, {$set: {[`data.${table}`]: doc}}, {upsert: true});
+  return getColl().update(crit, {$set: {[`data.${table}`]: doc}}, {upsert: true});
 }
 
-function insertRec (table, rec) {
+async function insertRec (table, rec) {
   if (table === undefined){
     throw {code: 'DEAD_TABLE_NOT_SPECIFIED'}
   } else {
-    return db.insert({...rec, table})
+    return getColl().insertOne({...rec, table})
   }
 }
 
-function remove (crit) {
-  return db.remove(crit, {multi: true});
+async function remove (crit) {
+  return getColl().deleteMany(crit);
 }
 
-function update (crit, vals) {
-  return db.update(crit, vals);
+async function update (crit, vals) {
+  return getColl().updateMany(crit, vals);
 }
 
-function retrieveRecs (crit) {
-  return db.find(crit)
+async function retrieveRecs (crit) {
+  return getColl().find(crit).toArray();
 }
 
 async function retrieveTable (crit, table) {
-  const doc = await db.findOne(crit);
+  const doc = await coll.findOne(crit);
   console.log(doc, 'retrieve table')
   if (doc.data === undefined){
     throw {code: 'DEAD_NOT_FOUND'}
@@ -66,4 +92,5 @@ module.exports = {
   retrieveTable,
   update,
   remove,
+  init
 }
