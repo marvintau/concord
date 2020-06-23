@@ -1,51 +1,6 @@
-const {init, remove, retrieveRecs, createRecs} = require('./database');
+const {init, remove, retrieve, create} = require('./database');
 
 const sheetSpecs = [
-  {
-    name: 'SOURCE',
-    desc: '数据源表',
-    isCascaded: true,
-    tools: [],
-    colSpecs: {
-      ccode_name: {desc: '条目名称', width: 4, isFilterable: true},
-      md: {desc: '借方发生', width: 4, isFilterable: true, isSortable: true, cellType:'Number'},
-      mc: {desc: '贷方发生', width: 4, isFilterable: true, isSortable: true, cellType:'Number'},
-    },
-  },
-  {
-    name: 'TARGET',
-    desc: '目标数据表',
-    isCascaded: true,
-    tools: [],
-    colSpecs: {
-      ccode_name: {desc: '条目名称', width: 1, isFilterable: true},
-      md: {desc: '借方发生', width: 5.5, isFilterable: true, isSortable: true, cellType:'Number'},
-      mc: {desc: '贷方发生', width: 5.5, isFilterable: true, isSortable: true, cellType:'Number'},
-    },
-  },
-  {
-    name: 'REARRANGE',
-    desc: '重分类表',
-    isCascaded: true,
-    tools: [],
-    colSpecs: {
-      item_name: {desc: '条目名称', width: 1, isFilterable: true},
-      fetch: {desc: '引用自', width: 5.5, isFilterable: true, isSortable: true, cellType:'Ref'},
-      store: {desc: '分配至', width: 5.5, isFilterable: true, isSortable: true, cellType:'Ref'},
-    },
-  },
-  {
-    name: 'MEDIATE',
-    desc: '操作表',
-    isCascaded: true,
-    tools: [],
-    colSpecs: {
-      item_name: {desc: '条目名称', width: 1, isFilterable: true},
-      fetch: {desc: '引用自', width: 5.5, isFilterable: true, isSortable: true, cellType:'Ref'},
-      store: {desc: '分配至', width: 5.5, isFilterable: true, isSortable: true, cellType:'Ref'},
-    },
-  },
-
   {
     name: 'PROJECT',
     tools: ['HeaderCreate'],
@@ -79,13 +34,14 @@ const sheetSpecs = [
     isCascaded: true,
     tools: ['Import', 'EvalSheet', 'SaveRemote', 'BatchAssign'],
     colSpecs: {
-      // ccode: {desc: '编码', width: 1, isFilterable: true},
+      ccode: {desc: '编码', width: 1, isFilterable: true},
       ccode_name: {desc: '科目名称', width: 2, isFilterable: true},
       mb: {desc: '期初', width: 1, isSortable: true, cellType:'Number'},
       md: {desc: '借方', width: 1, isSortable: true, cellType:'Number'},
       mc: {desc: '贷方', width: 1, isSortable: true, cellType:'Number'},
       me: {desc: '期末', width: 1, isSortable: true, cellType:'Number'},
-      __categorized_to_tb: {desc:'列入TB项目', width: 6, cellType:'Ref', attr: {defaultType:'ref-cond-store'}}
+      dest_ccode_name: {desc: '对方科目', width: 1},
+      __categorized_to_tb: {desc:'列入TB项目', width: 5, cellType:'Ref', attr: {defaultType:'ref-cond-store'}}
     }
   },
   {
@@ -109,22 +65,6 @@ const sheetSpecs = [
       md: {desc: '贷方发生', width: 2, isFilterable: true, cellType:'Ref'},
       me: {desc: '期末', width: 2, isFilterable: true, cellType:'Ref'},
     }
-  },
-  {
-    name: 'ACCRUAL_ANALYSIS',
-    isCascaded: true,
-    tools: ['Import', 'SaveRemote', 'ExportExcel'],
-    referredSheetNames: ['SOFP'],
-    colSpecs: {
-      ccode_name: {desc: '科目名称', width: 2, isFilterable: true},
-      dest_ccode_name: {desc: '对方科目', width: 1, isFilterable: true},
-      md: {desc: '借方发生', width: 1, isFilterable: true, isSortable: true, cellType:'Number'},
-      mc: {desc: '贷方发生', width: 1, isFilterable: true, isSortable: true, cellType:'Number'},
-      sub_num: {desc: '笔数', width: 1, isSortable: true},
-      digest: {desc:'摘要', width: 1, isFilerable: true},
-      analyzed: {desc:'已分析', width: 1},
-      __categorized_to_tb: {desc:'列入报表项目', width: 4, cellType:'Ref', attr: {defaultType:'ref-cond-store'}}
-    },
   },
   {
     name: 'TRIAL_BALANCE',
@@ -177,7 +117,7 @@ const sheetSpecs = [
   try {
     await init();
     await remove({table: 'SHEET_SPEC'});
-    await createRecs('SHEET_SPEC', sheetSpecs);
+    await create({table: 'SHEET_SPEC'}, sheetSpecs);
 
     // const specs = await retrieveRecs({table: 'SHEET_SPEC'});
     // console.log(specs);
@@ -197,7 +137,7 @@ async function fetchSheetSpec(names) {
 
   const res = [];
   for (let name of names) {
-    const [doc] = await retrieveRecs({table:'SHEET_SPEC', name});
+    const [doc] = await retrieve({table:'SHEET_SPEC', name});
     res.push(doc);
   }
 

@@ -42,6 +42,7 @@ const ErrorIndicator = ({status}) => {
     'DEAD_NOT_FOUND' : '没有找到数据，可能是您还没上传',
     'DEAD_NOT_IMPL_PULL': '数据存在，但是没有实现表示数据的方法，请联系开发人员',
     'DEAD_NOT_IMPL_PUSH': '服务器没有实现更新数据的方法，请联系开发人员',
+    'DEAD_NOT_IMPL_UPLOAD': '服务器没有实现上传数据的处理方法，请联系开发人员',
     'DEAD_NOT_IMPL' : '服务器上没有对应数据的处理方法，请联系开发人员',
     'DEAD_PROC_ERROR' : '处理数据时发生了错误，请联系开发人员',
     'DEAD_BALANCE_NOT_FOUND': '需要您先上传科目余额表',

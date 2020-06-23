@@ -1,4 +1,4 @@
-const {init, remove, retrieveRecs, createRecs} = require('./database');
+const {init, remove, retrieve, create} = require('./database');
 
 const manualPage = require('./manual-page');
 
@@ -75,7 +75,7 @@ const dirs = [
     contextualName: 'companyName',
     desc: '项目页',
     type: 'TEXT',
-    children: ['Finance', 'Confirmation', 'Tests'],
+    children: ['Finance', 'Confirmation'],
   },
   {
     loadPoint: '/',
@@ -102,47 +102,9 @@ const dirs = [
     desc: '财务与报表管理',
     type: 'TEXT',
     // children: ['AccrualAnalysis', 'Balance', 'TrialBalance', 'FinancialPositionStatement', 'ProfitAndLoss', 'Cashflow', 'Equity', 'CashflowStatement'],
-    children: ['AccrualAnalysis', 'Balance', 'TrialBalance', 'FinancialPositionStatement', 'ProfitAndLoss', 'Equity', 'CashflowStatement'],
+    children: ['Balance', 'TrialBalance', 'FinancialPositionStatement', 'ProfitAndLoss', 'Equity', 'CashflowStatement'],
   },
-  {
-    loadPoint: '/',
-    name: 'Tests',
-    desc: '测试用表',
-    type: 'TEXT',
-    children: ['TestSource', 'TestTarget', 'TestRearrange', 'TestMediate'],
-  },
-  {
-    loadPoint: '/',
-    name: 'TestMediate',
-    desc: '测试-Assign',
-    isHidingManual: true,
-    type: 'DATA',
-    data: ['MEDIATE', 'TARGET', 'SOURCE'],
-  },
-  {
-    loadPoint: '/',
-    name: 'TestRearrange',
-    desc: '测试-Rearrange',
-    isHidingManual: true,
-    type: 'DATA',
-    data: ['REARRANGE', 'TARGET', 'SOURCE'],
-  },
-  {
-    loadPoint: '/',
-    name: 'TestTarget',
-    desc: '测试-分配目标数据',
-    isHidingManual: true,
-    type: 'DATA',
-    data: ['TARGET'],
-  },
-  {
-    loadPoint: '/',
-    name: 'TestSource',
-    desc: '测试-引用来源数据',
-    isHidingManual: true,
-    type: 'DATA',
-    data: ['SOURCE'],
-  },
+ 
 
   {
     loadPoint: '/',
@@ -150,8 +112,13 @@ const dirs = [
     desc: '余额表',
     type: 'DATA',
     isHidingManual: true,
-    data: ['BALANCE', 'TRIAL_BALANCE'],
-    importedData: [{name:'BALANCE', desc:'总分类账'}, {name: 'ASSISTED', desc:'辅助明细'}],
+    // data: ['BALANCE', 'TRIAL_BALANCE'],
+    data: ['BALANCE'],
+    importedData: [
+      {name:'BALANCE', desc:'总分类账'},
+      {name: 'ASSISTED', desc:'辅助明细'},
+      {name: 'JOURNAL', desc:'序时帐'}
+    ],
   },
   {
     loadPoint: '/',
@@ -160,14 +127,6 @@ const dirs = [
     type: 'DATA',
     isHidingManual: true,
     data: ['SOFP']
-  },
-  {
-    loadPoint: '/',
-    name: 'AccrualAnalysis',
-    desc: '发生额分析',
-    type: 'DATA',
-    data: 'ACCRUAL_ANALYSIS',
-    isHidingManual: true,
   },
   {
     loadPoint: '/',
@@ -186,14 +145,6 @@ const dirs = [
     data: ['PAL'],
     
   },
-  // {
-  //   loadPoint: '/',
-  //   name: 'Cashflow',
-  //   desc: '现金流量表',
-  //   type: 'DATA',
-  //   isHidingManual: true,
-  //   data: ['CASHFLOW']
-  // },
   {
     loadPoint: '/',
     name: 'Equity',
@@ -228,7 +179,7 @@ const dirs = [
   try {
     await init();
     await remove({table: 'DIRS'});
-    await createRecs('DIRS', dirs);
+    await create({table: 'DIRS'}, dirs);
   } catch(err) {
     console.log(err);
   }
@@ -236,8 +187,7 @@ const dirs = [
 })();
  
 async function fetchDir(givenLoadPoint='/') {
-  const dirs = await retrieveRecs({table: 'DIRS'});
-  console.log(dirs, 'fetch dir');
+  const dirs = await retrieve({table: 'DIRS'});
 
   const loadedPages = dirs.filter(({loadPoint}) => loadPoint === givenLoadPoint);
 

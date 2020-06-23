@@ -1,7 +1,7 @@
-const {retrieveRecs} = require('../database');
+const {retrieve} = require('../database');
 
 async function e() {
-  const orig = await retrieveRecs({table: 'PROJECT'});
+  const orig = await retrieve({table: 'PROJECT'});
 
   const data = orig.map(({data, ...rest}) => rest);
 
@@ -9,7 +9,6 @@ async function e() {
     return dateB - dateA;
   })
 
-  console.log(data)
   return {data};
 }
 

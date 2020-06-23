@@ -1,5 +1,5 @@
 const SOFP = require('./sofp');
-const ACCRUAL_ANALYSIS = require('./accrual-analysis');
+const JOURNAL = require('./journal');
 const TRIAL_BALANCE = require('./trial-balance');
 const BALANCE = require('./balance');
 const ASSISTED = require('./assisted');
@@ -10,7 +10,7 @@ const CONFIRMATION_TEMPLATE = require('./confirmation-template');
 
 const uploadDict = {
   SOFP,
-  ACCRUAL_ANALYSIS,
+  JOURNAL,
   TRIAL_BALANCE,
   BALANCE,
   ASSISTED,
@@ -30,6 +30,7 @@ async function dataProc(fileBuffer, dataName, context){
   }
 
   // try {
+    console.log(dataName, uploadDict[dataName])
     const result = await uploadDict[dataName](fileBuffer, context);
     return {ok: 'DONE', data:result}
   // } catch ({code}) {

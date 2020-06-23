@@ -11,9 +11,11 @@ const Multer = require('@koa/multer');
 const exportExcel = require('./xlsx-export');
 const generateDocs = require('./generate-docs');
 
-const uploadProc = require('./upload-proc');
-const retrieveProc = require('./retrieve-proc');
-const updateProc = require('./update-proc');
+const DataTables = require('./tables');
+
+// const uploadProc = require('./upload-proc');
+// const retrieveProc = require('./retrieve-proc');
+// const updateProc = require('./update-proc');
 
 const {fetchDir} = require('./dirs');
 
@@ -40,36 +42,28 @@ router.post('/pull/:data_name', async ctx => {
   console.log('PULLING', data_name);
   
   try {
-    if (retrieveProc[data_name] === undefined){
+
+    console.log(DataTables[data_name], data_name, 'retireve');
+
+    if (DataTables[data_name].retrieve === undefined){
       console.log('DEAD_NOT_IMPL_PULL', data_name);
       throw {code: 'DEAD_NOT_IMPL_PULL'}
     }
-    ctx.body = await retrieveProc[data_name](ctx.request.body);
-  } catch ({code}) {
-    ctx.body = {error: code || 'DEAD_UNKNOWN_FETCH_ERROR'}
+    ctx.body = await DataTables[data_name].retrieve(ctx.request.body);
+  } catch (error) {
+    console.log(error, 'pull error code');
+    ctx.body = {error: error.code || 'DEAD_UNKNOWN_FETCH_ERROR'}
 
-  }
-})
-
-router.post('/fetch/:data_name', async ctx => {
-  const {data_name} = ctx.params;
-  try {
-    if (retrieveProc[data_name] === undefined){
-      throw {code: 'DEAD_NOT_IMPL_PULL'}
-    }
-    ctx.body = await retrieveProc[data_name](ctx.request.body, 'fetch');
-  } catch ({code}) {
-    ctx.body = {error: code || 'DEAD_UNKNOWN_FETCH_ERROR'}
   }
 })
 
 router.post('/push/:data_name', async ctx => {
   const {data_name} = ctx.params;
   try {
-    if (updateProc[data_name] === undefined){
+    if (DataTables[data_name].update === undefined){
       throw {code: 'DEAD_NOT_IMPL_PUSH'}
     }
-    ctx.body = await updateProc[data_name](ctx.request.body);
+    ctx.body = await DataTables[data_name].update(ctx.request.body);
   } catch (error) {
     console.log(error);
     const {code} = error;
@@ -98,13 +92,13 @@ router.post('/generate-letters', async ctx => {
 
 router.post('/upload/:data_name', upload.single('file'), async ctx => {
   const {data_name} = ctx.params;
-  console.log(data_name, 'upload');
-  console.log(ctx.request.body, 'uploaded form');
+  console.log(data_name, ctx.request.body, 'uploaded');
   const file = ctx.request.file;
-  console.log(file, 'uploaded file');
   try{
-    const res = await uploadProc(file.buffer, data_name, ctx.request.body);
-    // console.log(res);
+    if (DataTables[data_name].upload === undefined){
+      throw {code: 'DEAD_NOT_IMPL_UPLOAD'}
+    }
+    const res = await DataTables[data_name].upload(file.buffer, ctx.request.body);
     ctx.body = res;
   } catch (error){
 
