@@ -162,7 +162,7 @@ const decompose = (data) => {
     mc += data[end].mc || 0;
     md += data[end].md || 0;
 
-    console.log(data[end].mc, data[end].md, Math.abs(mc - md), 'check')
+    // console.log(data[end].mc, data[end].md, Math.abs(mc - md), 'check')
 
     if (Math.abs(mc - md) < 1e-4){
       let groupEntries = data.slice(start, end+1);
@@ -208,7 +208,7 @@ const decompose = (data) => {
     }
   }
 
-  console.log(groups, 'for test')
+  // console.log(groups, 'for test')
 
   return groups.map(({groupEntries}) => groupEntries).flat();
 }

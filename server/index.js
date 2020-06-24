@@ -1,3 +1,6 @@
+var Window = require('window');
+global.window = new Window();
+
 const fs = require('fs').promises;
 
 const Path = require('path');

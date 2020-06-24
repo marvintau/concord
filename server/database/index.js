@@ -1,6 +1,8 @@
-// const {trav, flat} = require('@marvintau/chua');
-const trav = require('@marvintau/chua/src/trav')
-const flat = require('@marvintau/chua/src/flat')
+const now = require('performance-now');
+
+const {trav, flat} = require('@marvintau/chua');
+// const trav = require('@marvintau/chua/src/trav')
+// const flat = require('@marvintau/chua/src/flat')
 
 const mongo = require('mongodb').MongoClient;
 
@@ -77,9 +79,31 @@ async function create(idents, records, {flatten}={}) {
       return {...rest, ...idents}
     })
 
-    await getColl().insertMany(preparedRecs);
+    await insertMany(preparedRecs);
     return getColl().insertOne({...idents, ___NESTED:true, map})
   }
+}
+
+async function insertMany(recs) {
+  const newElem = [];
+  const existing = [];
+  for (let i = 0; i < recs.length; i++) {
+    const rec = recs[i];
+    rec._id === undefined ? (newElem.push(rec)) : (existing.push(rec));
+  }
+  await getColl().insertMany(newElem);
+
+  const insertExistingT = now();
+  // for (let i = 0; i < existing.length; i++){
+  //   const {_id} = existing[i];
+  //   await getColl().updateOne({_id}, {$set: existing[i]}, {upsert: true});
+  // }
+  Promise.all(existing.map(async rec => {
+    const {_id} = rec;
+    await getColl().updateOne({_id}, {$set: rec}, {upsert: true});
+  }))
+  const insertExistingEndT = now();
+  console.log(insertExistingEndT - insertExistingT, 'insert existing');
 }
 
 async function remove (idents) {
@@ -92,11 +116,38 @@ async function update (crit, vals) {
 
 async function retrieve (idents) {
   const mapHold = await getColl().findOne({...idents, ___NESTED:true});
+ 
   if (mapHold === null) {
     return await getColl().find(idents).toArray();
   } else {
+
+    const beginRetrieveT = now();
+
     const records = await getColl().find({...idents, ___ID: {$ne: null}}).toArray();
-    return records;
+    const mapped = Object.fromEntries(records.map(rec => [rec.___ID, rec]));
+    const result = []
+
+    const {map} = mapHold;
+    for (let i = 0; i < map.length; i++) {
+      const [child_id, parent_id] = map[i];
+      if (parent_id.length === 0) {
+        result.push(mapped[child_id]);
+      } else {
+        const child = mapped[child_id];
+        const parent = mapped[parent_id];
+        if (parent.__children === undefined) {
+          parent.__children = [];
+        }
+        parent.__children.push(child);
+      }
+    }
+
+    const endRetrieveT = now();
+
+    console.log('retrieve costs', (endRetrieveT - beginRetrieveT).toFixed(2), 'ms');
+    console.log('records', records.length, 'in total');
+
+    return result;
   }
 }
 

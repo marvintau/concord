@@ -1,7 +1,7 @@
 const now = require('performance-now');
-const {retrieveTable, setTable} = require('../../database');
+const {fetchTable, storeTable} = require('../data-store-util');
 
-const {readSingleSheet, columnNameRemap, uniq} = require('../utils');
+const {readSingleSheet, columnNameRemap, uniq} = require('../data-process-util');
 
 const {normalize, decompose } = require('./decompose-voucher');
 const {addJournalEntries} = require('./cascade-entry');
@@ -47,13 +47,13 @@ let header = [
   ['金额', 'amount']
 ]
 
-async function accrual_analysis(fileBuffer, context){
+async function upload(fileBuffer, context){
 
   const {project_id} = context;
 
   let balance;
   try {
-    balance = await retrieveTable({project_id}, 'BALANCE');
+    balance = await fetchTable({project_id, table: 'BALANCE'});
   } catch (error){
     console.log(error);
     const {code} = error;
@@ -69,11 +69,12 @@ async function accrual_analysis(fileBuffer, context){
 
   addJournalEntries(balance.data, journals);
 
-  // await setTable({project_id}, 'ACCRUAL_ANALYSIS', {data: cascadedCategories})
-  // await setTable({project_id}, 'ACCRUAL_ANALYSIS', {data: journals})
+  await storeTable(balance, {flatten: true})
 
   return balance;
   // return {data: journals};
 }
 
-module.exports = accrual_analysis;
+module.exports = {
+  upload
+};

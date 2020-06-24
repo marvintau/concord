@@ -1,6 +1,5 @@
-const {setTable, retrieveTable} = require('../../database');
-
-const {uniq, cascade, group, readSingleSheet, columnNameRemap} = require('../utils');
+const {storeTable, fetchTable} = require('../data-store-util');
+const {uniq, cascade, group, readSingleSheet, columnNameRemap} = require('../data-process-util');
 
 const {flat} = require('@marvintau/chua');
 // const categorize = require('./cateogorize');
@@ -45,30 +44,34 @@ let header = [
   ['核算项目编号', 'item_code'],
 ]
 
-async function assisted(fileBuffer, context){
+async function upload(fileBuffer, context){
 
   const {project_id} = context;
 
   let data = readSingleSheet(fileBuffer);
-  // console.log(data, 'processed');
   data = columnNameRemap(data, header);
   
   const groups = group(data, 'ccode');
 
-  const entry = await retrieveTable({project_id, table:'PROJECT'}, 'BALANCE') 
+  const entry = await fetchTable({project_id, table:'BALANCE'}) ;
 
   const {data:balanceData} = entry;
-  const flattenedBalanceData = flat(balanceData, 'ccode');
-  const filteredData = flattenedBalanceData.filter(({ccode}) => ccode in groups);
+  const flattenedData = flat(balanceData, 'ccode');
+  const filteredData = flattenedData.filter(({ccode}) => ccode in groups);
+
   for (let rec of filteredData) {
     const {ccode} = rec;
     const subs = groups[ccode].map(({item_code, item_name, ...rest}) => ({...rest, ccode:item_code, ccode_name:item_name}));
 
+    // 这里可以直接放心地为__children赋值，原因是核算科目一定是现有
+    // 科目余额表中的末级科目。
     rec.__children = subs;
   }
 
-  await setTable({project_id}, 'BALANCE', entry);
+  await storeTable(entry, {flatten: true});
   return entry;
 }
 
-module.exports = assisted;
+module.exports = {
+  upload
+};

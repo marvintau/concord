@@ -37,9 +37,10 @@ export default function({desc="文件", name, context={}, refresh=ident, setStat
             .then((res) => {
                 setStage('READY');
                 setInputKey(Math.random().toString(36))
-                const {ok, error, data} = (res.body);
-                if(ok){
+                const {error, ...data} = (res.body);
+                if(error === undefined){
                     console.log('Uploaded done!')
+                    setStatus('DONE_UPLOAD');
                     refresh({[name]:data});
                 } else {
                     console.log(error, 'Upload error');
