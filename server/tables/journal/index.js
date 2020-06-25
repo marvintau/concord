@@ -1,10 +1,5 @@
-const now = require('performance-now');
-const {fetchTable, storeTable} = require('../data-store-util');
-
-const {readSingleSheet, columnNameRemap, uniq} = require('../data-process-util');
-
-const {normalize, decompose } = require('./decompose-voucher');
-const {addJournalEntries} = require('./cascade-entry');
+const {storeTable} = require('../data-store-util');
+const {readSingleSheet, columnNameRemap} = require('../data-process-util');
 
 let header = [
   ['会计年' , 'iyear'],
@@ -51,35 +46,11 @@ async function upload(fileBuffer, context){
 
   const {project_id} = context;
 
-  // let balance;
-  // try {
-  //   balance = await fetchTable({project_id, table: 'BALANCE'});
-  // } catch (error){
-  //   console.log(error);
-  //   const {code} = error;
-  //   if (code === 'DEAD_NOT_FOUND') {
-  //     throw {code: 'DEAD_BALANCE_NOT_FOUND'}
-  //   }
-  // }
-
-  // let journals = readSingleSheet(fileBuffer);
-  // journals = columnNameRemap(journals, header);
-  // journals = normalize(journals);
-  // journals = decompose(journals);
-
-  // addJournalEntries(balance.data, journals);
-
-  // await storeTable(balance, {flatten: true})
-
   let journals = readSingleSheet(fileBuffer);
-      // journals = journals.slice(0, 30);
       journals = columnNameRemap(journals, header);
-
-  console.log(journals.slice(0, 10));
 
   await storeTable({project_id, table:'BALANCE', indexColumn: 'ccode_name', data: journals}, {flatten: true});
 
-  // return {data: []};
   return {data: journals, indexColumn:'ccode_name'};
 }
 

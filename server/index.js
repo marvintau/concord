@@ -95,7 +95,7 @@ router.post('/generate-letters', async ctx => {
 
 router.post('/upload/:data_name', upload.single('file'), async ctx => {
   const {data_name} = ctx.params;
-  console.log(data_name, ctx.request.body, 'uploaded');
+  // console.log(data_name, ctx.request.body, 'uploaded');
   const file = ctx.request.file;
   try{
     if (DataTables[data_name].upload === undefined){

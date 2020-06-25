@@ -32,6 +32,28 @@ const getColl = () => {
   return coll;
 }
 
+async function insertMany(recs) {
+  const newElem = [];
+  const existing = [];
+  for (let i = 0; i < recs.length; i++) {
+    const rec = recs[i];
+    rec._id === undefined ? (newElem.push(rec)) : (existing.push(rec));
+  }
+  if (newElem.length > 0){
+    await getColl().insertMany(newElem);
+  }
+
+  // for (let i = 0; i < existing.length; i++){
+  //   const {_id} = existing[i];
+  //   await getColl().updateOne({_id}, {$set: existing[i]}, {upsert: true});
+  // }
+  Promise.all(existing.map(async rec => {
+    const {_id} = rec;
+    await getColl().updateOne({_id}, {$set: rec}, {upsert: true});
+  }))
+}
+
+
 // 保存大型的数据表文档
 // 由于MongoDB的BSON文档有16MB的限制，当我们要存储一个较大企业的序时帐时很可能会不够用。
 // 因此保存数据时，我们将nested record扁平化，每个记录作为独立的document进行储存，同时
@@ -79,31 +101,12 @@ async function create(idents, records, {flatten}={}) {
       return {...rest, ...idents}
     })
 
+    const beforeInsertT = now();
     await insertMany(preparedRecs);
+    const afterInsertT = now();
+    console.log('inserted',preparedRecs.length, 'records, using', afterInsertT - beforeInsertT, 'ms');
     return getColl().insertOne({...idents, ___NESTED:true, map})
   }
-}
-
-async function insertMany(recs) {
-  const newElem = [];
-  const existing = [];
-  for (let i = 0; i < recs.length; i++) {
-    const rec = recs[i];
-    rec._id === undefined ? (newElem.push(rec)) : (existing.push(rec));
-  }
-  await getColl().insertMany(newElem);
-
-  const insertExistingT = now();
-  // for (let i = 0; i < existing.length; i++){
-  //   const {_id} = existing[i];
-  //   await getColl().updateOne({_id}, {$set: existing[i]}, {upsert: true});
-  // }
-  Promise.all(existing.map(async rec => {
-    const {_id} = rec;
-    await getColl().updateOne({_id}, {$set: rec}, {upsert: true});
-  }))
-  const insertExistingEndT = now();
-  console.log(insertExistingEndT - insertExistingT, 'insert existing');
 }
 
 async function remove (idents) {

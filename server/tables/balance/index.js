@@ -2,7 +2,9 @@ const {storeTable, fetchTable} = require('../data-store-util');
 
 const {uniq, cascade, readSingleSheet, columnNameRemap} = require('../data-process-util');
 
-const categorize = require('./cateogorize');
+const {normalize, decompose} = require('./voucher');
+const {categorize} = require('./categorize');
+const assignPath = require('./assign');
 
 let header = [
   ['会计年' , 'iyear'],
@@ -45,19 +47,46 @@ async function upload(fileBuffer, context){
 
   const {project_id} = context;
 
+  // 在我们准备上传真正的科目余额表时，我们已经上传了总的序时帐，以及各往来科目
+  // 的相关序时帐。
+  let balance;
+  try {
+    balance = await fetchTable({project_id, table: 'BALANCE'});
+  } catch (error){
+    console.log(error);
+    const {code} = error;
+    if (code === 'DEAD_NOT_FOUND') {
+      throw {code: 'DEAD_BALANCE_NOT_FOUND'}
+    }
+  }
+
+  // 而这才是我们刚上传的，真正的余额表数据。我们只是将余额表改造为级联数据。
+  // 在处理序时帐时，形成对方科目路径需要处理好的余额表数据，而序时帐数据处
+  // 理后的结果也要重新写入此处的余额表数据中。
   let data = readSingleSheet(fileBuffer);
   // console.log(data, 'processed');
   data = columnNameRemap(data, header);
   data = uniq(data, 'ccode');
 
-  for (let record of data) {
-    categorize(record, '__categorized_to_tb');
-  }
+  // for (let record of data) {
+  //   assignPath(record, '__categorized_to_tb');
+  // }
 
   data = cascade(data, 'ccode');
 
+  // 接下来一系列操作都针对journals，并且中间结果不需要存入balance.data，所以这个引用
+  // 暂时没用了。normalize和decompose的说明详见源码，经过这一步，我们得到了拥有计算过的
+  // （而非原始序时帐所标明的）对方科目。
+  let journals = balance.data;
+  journals = normalize(journals);
+  journals = decompose(journals);
+
+  // console.log(journals.filter(({curr}) => curr !== undefined).length, 'currs');
+
+  categorize(data, journals)
+
   const entry = {data, indexColumn:'ccode_name'};
-  await storeTable({project_id, table:'BALANCE', ...entry}, {flatten: true})
+  // await storeTable({project_id, table:'BALANCE', ...entry}, {flatten: true})
 
   return entry;
 }

@@ -106,7 +106,7 @@ const categoryMap = {
   },
 }
 
-function categorize(record, key) {
+function assign(record, key) {
   const {ccode_name} = record;
   // console.log(ccode_name, 'categorize')
   if (ccode_name !== undefined) {
@@ -124,4 +124,4 @@ function categorize(record, key) {
   }
 }
 
-module.exports = categorize;
+module.exports = assign;
