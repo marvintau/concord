@@ -147,14 +147,10 @@ function columnNameRemap(table, map, {handleNum=true}={}){
 
 // Use when there only one sheet in the excel file
 // Suitable for data
-function readSingleSheet(buffer, withHeader=true){
+function readSingleSheet(buffer, {withHeader=true, startFrom}={}){
   const table = XLSX.read(buffer, {type:'buffer'});
   const firstSheet = table.Sheets[table.SheetNames[0]];  
-  if (withHeader) {
-    return XLSX.utils.sheet_to_json(firstSheet);
-  } else {
-    return XLSX.utils.sheet_to_json(firstSheet, {header: 1});
-  }
+  return XLSX.utils.sheet_to_json(firstSheet, {header: withHeader ? undefined : 1, range: startFrom});
 }
 
 

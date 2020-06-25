@@ -1,7 +1,7 @@
 const now = require('performance-now');
-const {fetchTable, storeTable} = require('../data-store-util');
+const {retrieveTable, setTable} = require('../../database');
 
-const {readSingleSheet, columnNameRemap, uniq} = require('../data-process-util');
+const {readSingleSheet, columnNameRemap, uniq} = require('../utils');
 
 const {normalize, decompose } = require('./decompose-voucher');
 const {addJournalEntries} = require('./cascade-entry');
@@ -14,7 +14,6 @@ let header = [
   ['科目名称' , 'ccode_name'],
   ['科目类别' , 'cclass'],
   
-
   ['本期发生借方', 'md'],
   ['账面借方发生额' , 'md'],
   ['未审借方发生额' , 'md'],
@@ -42,47 +41,38 @@ let header = [
 
   ['对方科目', 'dest_ccode_name'],
   ['对方科目名称', 'dest_ccode_name'],
+
   ['方向', 'dir'],
-  ['金额', 'amount'],
-  ['核算项目', 'desc']
+  ['金额', 'amount']
 ]
 
-async function upload(fileBuffer, context){
+async function accrual_analysis(fileBuffer, context){
 
   const {project_id} = context;
 
-  // let balance;
-  // try {
-  //   balance = await fetchTable({project_id, table: 'BALANCE'});
-  // } catch (error){
-  //   console.log(error);
-  //   const {code} = error;
-  //   if (code === 'DEAD_NOT_FOUND') {
-  //     throw {code: 'DEAD_BALANCE_NOT_FOUND'}
-  //   }
-  // }
-
-  // let journals = readSingleSheet(fileBuffer);
-  // journals = columnNameRemap(journals, header);
-  // journals = normalize(journals);
-  // journals = decompose(journals);
-
-  // addJournalEntries(balance.data, journals);
-
-  // await storeTable(balance, {flatten: true})
+  let balance;
+  try {
+    balance = await retrieveTable({project_id}, 'BALANCE');
+  } catch (error){
+    console.log(error);
+    const {code} = error;
+    if (code === 'DEAD_NOT_FOUND') {
+      throw {code: 'DEAD_BALANCE_NOT_FOUND'}
+    }
+  }
 
   let journals = readSingleSheet(fileBuffer);
-      // journals = journals.slice(0, 30);
-      journals = columnNameRemap(journals, header);
+  journals = columnNameRemap(journals, header);
+  journals = normalize(journals);
+  journals = decompose(journals);
 
-  console.log(journals.slice(0, 10));
+  addJournalEntries(balance.data, journals);
 
-  await storeTable({project_id, table:'BALANCE', indexColumn: 'ccode_name', data: journals}, {flatten: true});
+  // await setTable({project_id}, 'ACCRUAL_ANALYSIS', {data: cascadedCategories})
+  // await setTable({project_id}, 'ACCRUAL_ANALYSIS', {data: journals})
 
-  // return {data: []};
-  return {data: journals, indexColumn:'ccode_name'};
+  return balance;
+  // return {data: journals};
 }
 
-module.exports = {
-  upload
-};
+module.exports = accrual_analysis;
