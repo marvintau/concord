@@ -1,7 +1,9 @@
 const {storeTable, fetchTable} = require('../data-store-util');
 const {uniq, cascade, group, readSingleSheet, columnNameRemap} = require('../data-process-util');
 
-const {flat} = require('@marvintau/chua');
+// const {flat, group} = require('@marvintau/chua');
+const flat = require('@marvintau/chua/src/flat');
+const trav = require('@marvintau/chua/src/trav');
 // const categorize = require('./cateogorize');
 
 let header = [
@@ -48,28 +50,35 @@ async function upload(fileBuffer, context){
 
   const {project_id} = context;
 
-  let data = readSingleSheet(fileBuffer);
-  data = columnNameRemap(data, header);
-  
-  const groups = group(data, 'ccode');
-
-  const entry = await fetchTable({project_id, table:'BALANCE'}) ;
-
-  const {data:balanceData} = entry;
-  const flattenedData = flat(balanceData, 'ccode');
-  const filteredData = flattenedData.filter(({ccode}) => ccode in groups);
-
-  for (let rec of filteredData) {
-    const {ccode} = rec;
-    const subs = groups[ccode].map(({item_code, item_name, ...rest}) => ({...rest, ccode:item_code, ccode_name:item_name}));
-
-    // 这里可以直接放心地为__children赋值，原因是核算科目一定是现有
-    // 科目余额表中的末级科目。
-    rec.__children = subs;
+  let balance;
+  try {
+    balance = await fetchTable({project_id, table: 'BALANCE'});
+  } catch (error){
+    console.log(error);
+    const {code} = error;
+    if (code === 'DEAD_NOT_FOUND') {
+      throw {code: 'DEAD_BALANCE_NOT_FOUND'}
+    }
   }
+  
+  // const flattened = flat(balance.data);
+  // console.log(flattened.slice(0, 20));
+  
+  // console.log(Object.keys(balanceDict));
 
-  await storeTable(entry, {flatten: true});
-  return entry;
+  // let assisted = readSingleSheet(fileBuffer);
+  // assisted = columnNameRemap(assisted, header);
+
+  // let anyExcludedAssited = false
+  // for(let i = 0; i < assisted.length; i++) {
+  //   const {item_name, ccode} = assisted;
+  //   if (balanceDict[ccode] === undefined) {
+  //     anyExcludedAssited = true;
+  //   }
+    
+  // }
+  // console.log('any excluded', anyExcludedAssited);
+  return balance;
 }
 
 module.exports = {

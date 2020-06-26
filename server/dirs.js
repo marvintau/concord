@@ -117,8 +117,8 @@ const dirs = [
     importedData: [
       {name: 'JOURNAL', desc:'序时帐'},
       {name: 'CURR_JOURNAL', desc:'往来-序时帐'},
-      {name: 'ASSISTED', desc:'辅助明细'},
       {name:'BALANCE', desc:'总分类账'},
+      {name: 'ASSISTED', desc:'辅助核算'},
     ],
   },
   {

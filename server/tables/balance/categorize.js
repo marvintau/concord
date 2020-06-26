@@ -1,3 +1,5 @@
+const now = require('performance-now');
+
 const group = require('@marvintau/chua/src/group');
 const flat = require('@marvintau/chua/src/flat');
 const trav = require('@marvintau/chua/src/trav');
@@ -69,8 +71,8 @@ const categorize = (balance, decomposed) => {
   const groupedJournal = group(decomposed, 'ccode');
 
   const extra = {
-    digest(g){
-      const {dest_ccode:dc, dest_ccode_name:dcn} = g;
+    digest([first]){
+      const {dest_ccode:dc, dest_ccode_name:dcn} = first;
       return dc ? `对方科目为 ${dcn && dcn.desc || dcn} - ${dc}` : '未归类';
     },
     __categorized:{cond:'', cases:[], type:'ref-cond-store'}
@@ -89,10 +91,10 @@ const categorize = (balance, decomposed) => {
     // 如果有一个curr存在则意味着整个科目所有的都存在 ???
     if (entries.some(({curr}) => curr !== undefined)) {
       const groupedSub = group(entries, ({curr:{vendor, customer, person}={}}) => {
-        if (vendor) return `供应商-${vendor}`
-        else if (customer) return `客户-${customer}`
-        else if (person) return `个人-${person}`
-        else return '未分类的往来科目'
+        if (vendor) return vendor
+        else if (customer) return customer
+        else if (person) return person
+        else return '未分类明细科目'
       });
       for (let subName in groupedSub) {
         const subEntries = groupedSub[subName];

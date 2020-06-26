@@ -69,6 +69,8 @@ async function upload(fileBuffer, context){
       throw {code: 'DEAD_BALANCE_NOT_FOUND'}
     }
   }
+  console.log(balance.data.filter(({curr}) => curr !== undefined).length, 'existing currs');
+
 
   // 此处是我们上传的往来科目序时帐。上传某个往来科目的序时帐不会影响到先前的结果。
   // 上传的序时帐按照鼎信诺单个科目导出的格式，我们需要去除每月小结，及其它不属于
@@ -79,7 +81,6 @@ async function upload(fileBuffer, context){
   journals = journals.filter(({ccode_name}) => {
     return ccode_name !== undefined && ccode_name !== null && ccode_name.toString().trim().length !== 0;
   })
-  console.log(balance.data.filter(({curr}) => curr !== undefined).length, 'existing currs');
 
   // 接下来我们将总的序时帐和单个科目序时帐进行融合。我们按照会计月-凭证编号将序时帐
   // 进行划分。然后，我们扫描一遍全部的往来科目序时帐凭证，然后将凭证中每一条分录，
@@ -88,18 +89,18 @@ async function upload(fileBuffer, context){
   const groupT = now();
   const groupedOverallJournals = group(balance.data, ({iperiod, voucher_id}) => `${iperiod}-${voucher_id}`);
   const groupEndT = now();
-  console.log((groupEndT - groupT).toString(), balance.data.length, 'grouped');
+  console.log((groupEndT - groupT).toString(), balance.data.length, 'grouped original');
 
   const groupCurrentT = now();
   const groupedCurrentJournals = group(journals, ({iperiod, voucher_id}) => `${iperiod}-${voucher_id}`);
   const entriedCurrentJournals = Object.entries(groupedCurrentJournals);
   const groupCurrentEndT = now();
-  console.log((groupCurrentEndT - groupCurrentT).toString(), journals.length, 'grouped');
+  console.log((groupCurrentEndT - groupCurrentT).toString(), journals.length, 'grouped current');
 
   for (let [key, currVoucher] of entriedCurrentJournals) {
     const origVoucher = groupedOverallJournals[key];
     if (!Array.isArray(origVoucher)) {
-      console.log(key, origVoucher)
+      console.log(key, currVoucher, origVoucher)
     }
     for (let currEntry of currVoucher) {
       for (let origEntry of origVoucher) {
@@ -109,7 +110,7 @@ async function upload(fileBuffer, context){
         const origMd = origEntry.md.toFixed(2);
         if (currMc === origMc && currMd === origMd) {
           if (currEntry.desc !== undefined){
-            parseDesc(currEntry.desc);
+            origEntry.curr = parseDesc(currEntry.desc);
           }
         }
       }
