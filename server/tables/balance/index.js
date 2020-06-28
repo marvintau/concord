@@ -6,7 +6,6 @@ const trav = require('@marvintau/chua/src/trav');
 
 const {normalize, decompose} = require('./voucher');
 const {categorize} = require('./categorize');
-const assignPath = require('./assign');
 
 let header = [
   ['会计年' , 'iyear'],
@@ -69,10 +68,6 @@ async function upload(fileBuffer, context){
   // console.log(data, 'processed');
   data = columnNameRemap(data, header);
   data = uniq(data, 'ccode');
-
-  // for (let record of data) {
-  //   assignPath(record, '__categorized_to_tb');
-  // }
 
   data = cascade(data, 'ccode');
 

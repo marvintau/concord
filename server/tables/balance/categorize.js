@@ -30,8 +30,8 @@ const getCategoryPathDict = (cascadedCategories) => {
 
 const groupSum = (group, extra={}) => {
   return Object.entries(group).map(([k, g]) => {
-    let {ccode, ccode_name, dest_ccode, dest_ccode_name} = g[0];
-    let idInfo = {ccode, ccode_name, dest_ccode, dest_ccode_name};
+    let {ccode, ccode_name} = g[0];
+    let idInfo = {ccode, ccode_name};
 
     let md = g.reduce((acc, {md}) => acc + md, 0);
     let mc = g.reduce((acc, {mc}) => acc + mc, 0);
@@ -50,27 +50,12 @@ const groupSum = (group, extra={}) => {
 
 const categorize = (balance, decomposed) => {
 
-  // 1. 得到科目目录所对应的路径表。如果balance中的记录没有path属性，那么
-  //    再进行一次trav，重新补上path。这个path事实上在实现了数据的聚合之后
-  //    就没有用了。
-
-  trav(balance);
-  const pathDict = getCategoryPathDict(balance);
-  trav(balance);
-
-  // 2. 按照路径表找到所有的对方科目所在路径
-  for(let i = 0; i < decomposed.length; i++){
-    const {dest_ccode} = decomposed[i];
-    if (dest_ccode){
-      const dest_path = pathDict[dest_ccode];
-      decomposed[i].dest_ccode_name.path = dest_path;
-    }
-  }
-
-  // 3. 将已经分解的分录按照本方科目编码分组
+  // 1. 将已经分解的分录按照本方科目编码分组。
   const groupedJournal = group(decomposed, 'ccode');
 
   const extra = {
+    dest_ccode([{dest_ccode}]) {return dest_ccode},
+    dest_ccode_name(_, k) { return k },
     digest([first]){
       const {dest_ccode:dc, dest_ccode_name:dcn} = first;
       return dc ? `对方科目为 ${dcn && dcn.desc || dcn} - ${dc}` : '未归类';
@@ -78,27 +63,26 @@ const categorize = (balance, decomposed) => {
     __categorized:{cond:'', cases:[], type:'ref-cond-store'}
   }
 
-  // 4. 对于每个分组，如果分组内的分录有curr属性，即意味着它是之前处理过的
+  // 2. 对于每个分组，如果分组内的分录有curr属性，即意味着它是之前处理过的
   //    往来科目，那么我们需要依据明细科目（客户/供应商/个人）再进行分组，
   //    再对明细科目按照其对方科目发生额进行分类，否则，则直接按对方科目发
   //    生额分类
 
   const beforeCascadeT = now();
   let groupTimes = 0, groupedRecords = 0;
+
   for (let ccode in groupedJournal){
     const entries = groupedJournal[ccode];
 
-    // 如果有一个curr存在则意味着整个科目所有的都存在 ???
     if (entries.some(({curr}) => curr !== undefined)) {
-      const groupedSub = group(entries, ({curr:{vendor, customer, person}={}}) => {
-        if (vendor) return vendor
-        else if (customer) return customer
-        else if (person) return person
-        else return '未分类明细科目'
-      });
+      const groupedSub = group(entries, ({curr:{item}={}}) => item || '其他明细科目');
       for (let subName in groupedSub) {
         const subEntries = groupedSub[subName];
-        const groupedDest = group(subEntries, 'dest_ccode');
+        const groupedDest = group(subEntries, ({dest_ccode_name}) => {
+          return dest_ccode_name 
+          ? (dest_ccode_name.desc || dest_ccode_name)
+          : '其他对方科目'
+        });
         groupedSub[subName] = groupSum(groupedDest, extra);
       }
       // console.log(groupedSub);
@@ -106,7 +90,12 @@ const categorize = (balance, decomposed) => {
         ccode_name(g, k){ return k }
       });
     } else {
-      const groupedDest = group(entries, 'dest_ccode');
+      const groupedDest = group(entries, ({dest_ccode_name}) => {
+        return dest_ccode_name 
+        ? (dest_ccode_name.desc || dest_ccode_name)
+        : '其他对方科目'
+    });
+
       groupedJournal[ccode] = groupSum(groupedDest, extra);
     }
   }

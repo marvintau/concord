@@ -9,11 +9,14 @@ function isCr({mc, md}) {
 function assignDest(rec1, rec2, {label='succ', desc='1Dr/1Cr'}={}){
 
   const getNewVal = (rec) => {
-    const {ccode, ccode_name} = rec;
+    const {ccode, ccode_name, curr} = rec;
+    if (curr !== undefined && Object.keys(curr).length > 0) {
+      console.log(curr);
+    }
     return {
       dest_ccode: ccode,
-      dest_ccode_name: {desc: ccode_name},
-      analyzed: {label,desc}
+      dest_ccode_name: {desc: curr && curr.item ? `${ccode.toString().slice(0, 4)}:${curr.item}` : ccode_name},
+      analyzed: {label, desc}
     }
   };
   Object.assign(rec1, getNewVal(rec2));

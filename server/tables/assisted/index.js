@@ -79,6 +79,7 @@ async function upload(fileBuffer, context){
   let anyExcludedAssited = false
   for(let i = 0; i < assisted.length; i++) {
     const {item_name, ccode} = assisted[i];
+    console.log(ccode, balanceDict[ccode]);
     const balanceEntry = balanceDict[ccode][0];
     if (balanceEntry.__children !== undefined) {
       const list = balanceEntry.__children;
@@ -86,10 +87,12 @@ async function upload(fileBuffer, context){
       if (entry !== undefined) {
         const {mb, me} = assisted[i];
         Object.assign(entry, {mb, me});
+        console.log(ccode, item_name, mb, me);
       } 
     }
   }
   console.log('any excluded', anyExcludedAssited);
+  storeTable(balance);
   return balance;
 }
 

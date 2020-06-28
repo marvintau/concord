@@ -49,7 +49,8 @@ function parseDesc(desc) {
     const entries = desc.split(/[【】]/g)
       .filter(str => str.includes(':'))
       .map(str => str.split(' ')[0].split(':'))
-      .map(([k, v]) => ([{部门: 'depart', 职员: 'person', 供应商: 'vendor', 客户:'customer'}[k] || 'other', v]));
+      .filter(([k]) => !['部门', '项目'].includes(k))
+      .map(([_, v]) => (['item', v]));
     return Object.fromEntries(entries);
 }
 
