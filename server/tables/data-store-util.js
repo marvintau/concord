@@ -23,8 +23,15 @@ async function fetchTable({project_id, table}) {
   return {data: result, ...digest};
 }
 
+const purge = (recs) => {
+  for (let i = 0; i < recs.length; i ++) {
+    const {_id, ...rest} = recs[i];
+    recs[i] = rest;
+  }
+}
 
 module.exports = {
   storeTable,
-  fetchTable
+  fetchTable,
+  purge
 }

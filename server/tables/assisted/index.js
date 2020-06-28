@@ -1,10 +1,7 @@
 const {storeTable, fetchTable} = require('../data-store-util');
-const {uniq, cascade, group, readSingleSheet, columnNameRemap} = require('../data-process-util');
+const {uniq, cascade, readSingleSheet, columnNameRemap} = require('../data-process-util');
 
-// const {flat, group} = require('@marvintau/chua');
-const flat = require('@marvintau/chua/src/flat');
-const trav = require('@marvintau/chua/src/trav');
-// const categorize = require('./cateogorize');
+const {flat, trav, group} = require('@marvintau/chua');
 
 let header = [
   ['会计年' , 'iyear'],
@@ -61,23 +58,38 @@ async function upload(fileBuffer, context){
     }
   }
   
-  // const flattened = flat(balance.data);
-  // console.log(flattened.slice(0, 20));
+  const balanceDict = group(flat(balance.data).filter(({cclass}) => cclass !== undefined), 'ccode');
   
-  // console.log(Object.keys(balanceDict));
+  console.log(Object.keys(balanceDict));
 
-  // let assisted = readSingleSheet(fileBuffer);
-  // assisted = columnNameRemap(assisted, header);
+  let assisted = readSingleSheet(fileBuffer);
+  assisted = columnNameRemap(assisted, header);
 
-  // let anyExcludedAssited = false
-  // for(let i = 0; i < assisted.length; i++) {
-  //   const {item_name, ccode} = assisted;
-  //   if (balanceDict[ccode] === undefined) {
-  //     anyExcludedAssited = true;
-  //   }
-    
-  // }
-  // console.log('any excluded', anyExcludedAssited);
+  // 我们在此处需要看一下如何将核算项目的余额添加到科目余额中。对于我们已经处理过的往来科目，会已经有一个
+  // 按照发生额汇总的结果，这个结果理论上和此处的核算科目所计算的发生额是一致的，我们只需要将期初期末余额
+  // 添加到对应条目即可。
+  // 
+  // 但是需要注意，核算项目之间可能会有交集，比如可能将应付款按部门进行核算，或按个人进行核算，那么部门的
+  // 余额和发生额显然是包含了个人的，因此不能简单地将核算项目看作往来科目之外的某个明细科目，加入到对应的
+  // 科目余额表中的科目里去。
+  
+  // 我们此处仍以从往来序时帐中的核算信息得到的明细科目为准，这个明细科目只包含职员/供应商/客户三类，不考虑
+  // 部门整体的核算。其它成本和费用也不参考核算信息。
+
+  let anyExcludedAssited = false
+  for(let i = 0; i < assisted.length; i++) {
+    const {item_name, ccode} = assisted[i];
+    const balanceEntry = balanceDict[ccode][0];
+    if (balanceEntry.__children !== undefined) {
+      const list = balanceEntry.__children;
+      const entry = list.find(({ccode_name}) => ccode_name === item_name);
+      if (entry !== undefined) {
+        const {mb, me} = assisted[i];
+        Object.assign(entry, {mb, me});
+      } 
+    }
+  }
+  console.log('any excluded', anyExcludedAssited);
   return balance;
 }
 

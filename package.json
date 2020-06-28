@@ -16,7 +16,7 @@
     "@babel/runtime": "^7.8.4",
     "@koa/multer": "^2.0.2",
     "@koa/router": "^8.0.8",
-    "@marvintau/chua": "^1.0.38",
+    "@marvintau/chua": "^1.0.39",
     "@marvintau/poloscope": "0.0.5",
     "@pathofdev/react-tag-input": "^1.0.7",
     "@zxing/library": "^0.16.0",

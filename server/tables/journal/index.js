@@ -49,7 +49,7 @@ async function upload(fileBuffer, context){
   let journals = readSingleSheet(fileBuffer);
       journals = columnNameRemap(journals, header);
 
-  await storeTable({project_id, table:'BALANCE', indexColumn: 'ccode_name', data: journals}, {flatten: true});
+  await storeTable({project_id, table:'BALANCE', indexColumn: 'ccode_name', data: journals});
 
   return {data: journals, indexColumn:'ccode_name'};
 }

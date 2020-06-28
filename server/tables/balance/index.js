@@ -1,4 +1,4 @@
-const {storeTable, fetchTable} = require('../data-store-util');
+const {storeTable, fetchTable, purge} = require('../data-store-util');
 
 const {uniq, cascade, readSingleSheet, columnNameRemap} = require('../data-process-util');
 
@@ -82,33 +82,20 @@ async function upload(fileBuffer, context){
   let journals = balance.data;
   journals = normalize(journals);
   journals = decompose(journals);
+  purge(journals);
 
   // console.log(journals.filter(({curr}) => curr !== undefined).length, 'currs');
 
   categorize(data, journals)
 
-  trav(data, (rec) => {
-    if (rec && rec.__children && rec.__children.includes(undefined)){
-      console.log(rec, 'containing undefined rec');
-    }
-  })
-
   const entry = {data, indexColumn:'ccode_name'};
-  await storeTable({project_id, table:'BALANCE', ...entry}, {flatten: true})
+  await storeTable({project_id, table:'BALANCE', ...entry})
 
   return entry;
 }
 
 async function retrieve({project_id}) {
   const retrieved = await fetchTable({project_id, table:'BALANCE'});
-
-  trav(retrieved.data, (rec) => {
-    if (rec && rec.__children && rec.__children.includes(undefined)){
-      console.log(rec, 'containing undefined rec');
-    }
-  })
-
-
   console.log(Object.keys(retrieved), 'retrieved balance');
   return retrieved;
 }

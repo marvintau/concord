@@ -33,6 +33,9 @@ const getColl = () => {
 }
 
 async function insertMany(recs) {
+
+  console.log('All records to be inserted: ', recs.length);
+
   const newElem = [];
   const existing = [];
   for (let i = 0; i < recs.length; i++) {
@@ -40,14 +43,12 @@ async function insertMany(recs) {
     rec._id === undefined ? (newElem.push(rec)) : (existing.push(rec));
   }
   if (newElem.length > 0){
+    console.log('NEW RECS: ', newElem.length);
     await getColl().insertMany(newElem);
   }
 
-  // for (let i = 0; i < existing.length; i++){
-  //   const {_id} = existing[i];
-  //   await getColl().updateOne({_id}, {$set: existing[i]}, {upsert: true});
-  // }
-  Promise.all(existing.map(async rec => {
+  console.log('EXISTING RECS: ', existing.length);
+  return Promise.all(existing.map(async rec => {
     const {_id} = rec;
     await getColl().updateOne({_id}, {$set: rec}, {upsert: true});
   }))
@@ -102,7 +103,7 @@ async function create(idents, records, {flatten}={}) {
     })
 
     const beforeInsertT = now();
-    await insertMany(preparedRecs);
+    await getColl().insertMany(preparedRecs);
     const afterInsertT = now();
     console.log('inserted',preparedRecs.length, 'records, using', afterInsertT - beforeInsertT, 'ms');
     return getColl().insertOne({...idents, ___NESTED:true, map})
@@ -110,7 +111,9 @@ async function create(idents, records, {flatten}={}) {
 }
 
 async function remove (idents) {
-  return getColl().deleteMany(idents);
+  const {deletedCount} = await getColl().deleteMany(idents);
+  console.log('deleted', deletedCount, 'records');
+  return deletedCount;
 }
 
 async function update (crit, vals) {
@@ -138,6 +141,11 @@ async function retrieve (idents) {
       } else {
         const child = mapped[child_id];
         const parent = mapped[parent_id];
+
+        if (child === undefined) {
+          console.log(child_id, mapped[child_id], 'undefined child')
+        }
+
         if (parent.__children === undefined) {
           parent.__children = [];
         }

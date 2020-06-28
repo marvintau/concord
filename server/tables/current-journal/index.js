@@ -117,7 +117,7 @@ async function upload(fileBuffer, context){
     }
   }
 
-  await storeTable(balance, {flatten: true});
+  await storeTable(balance);
   return balance;
 }
 
