@@ -95,7 +95,28 @@ async function retrieve({project_id}) {
   return retrieved;
 }
 
+async function update({data, project_id}) {
+
+  // 在我们准备上传真正的科目余额表时，我们已经上传了总的序时帐，以及各往来科目
+  // 的相关序时帐。
+  let balance;
+  try {
+    balance = await fetchTable({project_id, table: 'BALANCE'});
+  } catch (error){
+    console.log(error);
+    const {code} = error;
+    if (code === 'DEAD_NOT_FOUND') {
+      throw {code: 'DEAD_BALANCE_NOT_FOUND'}
+    }
+  }
+
+  balance.data = data;
+  await storeTable(balance);
+  return balance;
+}
+
 module.exports = {
   upload,
-  retrieve
+  retrieve,
+  update
 };

@@ -75,6 +75,9 @@
 .refcell-option:hover {
   opacity: 1;
 }
+.refcell-option:focus {
+  opacity: 1;
+}
 
 .none {
   background-color: var(--light);  

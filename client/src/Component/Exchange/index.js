@@ -128,7 +128,7 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
           }
   
           if (['ref-store', 'ref-cond-store'].includes(type)){
-            const {__assigned_ances, __assigned_desc, __children, __destRecs, __cands, __applyToSub} = rec;
+            const {__assigned_ances, __assigned_desc, __children, __destRecs, __cands, __apply_spec} = rec;
             if (__destRecs && __destRecs.length > 0) {
               // 说明是执行evalSheet前刚刚被分配的那个记录
               Object.assign(col, {
@@ -139,13 +139,13 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
               
               const leafRecs = flat(__children).filter(({__children:ch})=> ch === undefined || ch.length === 0);
 
-              const result = __applyToSub
+              const result = __apply_spec
                 ? `${__assigned_desc.length}/${leafRecs.length} 已分配`
                 : `${__assigned_desc.length}/${__children.length} 已分配`
               
-              const code = __assigned_desc.length === (__applyToSub ? leafRecs.length : __children.length) ? 'SUCC' : 'WARN';
+              const code = __assigned_desc.length === (__apply_spec ? leafRecs.length : __children.length) ? 'SUCC' : 'WARN';
 
-              Object.assign(col, { result, code, disabled: !__applyToSub})
+              Object.assign(col, { result, code, disabled: !__apply_spec})
 
             } else if (__assigned_ances && __assigned_ances.length > 0) {
               Object.assign(col, {

@@ -41,7 +41,8 @@ const sheetSpecs = [
       mc: {desc: '贷方', width: 1, isSortable: true, cellType:'Number'},
       me: {desc: '期末', width: 1, isSortable: true, cellType:'Number'},
       dest_ccode_name: {desc: '对方科目', width: 1},
-      __categorized_to_tb: {desc:'列入TB项目', width: 5, cellType:'Ref', attr: {defaultType:'ref-cond-store'}}
+      digest: {desc: '摘要', width: 1},
+      __categorized_to_tb: {desc:'列入TB项目', width: 4, cellType:'Ref', attr: {defaultType:'ref-cond-store'}}
     }
   },
   {
@@ -81,6 +82,16 @@ const sheetSpecs = [
   },
   {
     name: 'PAL',
+    isCascaded: true,
+    tools: [],
+    colSpecs: {
+      ccode_name: {desc: '条目名称', width: 4, isFilterable: true},
+      value: {desc:'金额', width: 8, cellType:'Ref'},
+      categorized: {desc:'列入报表项目', width: 4, cellType:'Ref'}
+    },
+  },
+  {
+    name: 'CASHFLOW',
     isCascaded: true,
     tools: [],
     colSpecs: {

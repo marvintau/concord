@@ -5,7 +5,7 @@ const {flat, trav, group} = require('@marvintau/chua');
 
 let header = [
   ['科目名称' , 'ccode_name'],
-  ['是否应用于末级科目', '__applyToSub'],
+  ['应用于', '__apply_spec'],
   ['条件', 'cond'],
   ['分配路径', 'path'],
 ]
@@ -25,16 +25,20 @@ async function upload(fileBuffer, context){
     }
   }
   
-  const balanceDict = group(flat(balance.data).filter(({cclass}) => cclass !== undefined), 'ccode_name');
-  
-  console.log(Object.keys(balanceDict));
+  const balanceEntries = flat(balance.data).filter(({cclass}) => cclass !== undefined);
+  for (let entry of balanceEntries) {
+    entry.__categorized_to_tb = undefined;
+  }
+
+  const balanceDict = group(balanceEntries, 'ccode_name');
 
   let rules = readSingleSheet(fileBuffer);
   rules = columnNameRemap(rules, header);
+  console.log(rules);
 
-  rules = rules.reduce((acc, {ccode_name, __applyToSub, cond, path}) => {
+  rules = rules.reduce((acc, {ccode_name, __apply_spec, cond, path}) => {
     if (ccode_name.trim().length > 0){
-      return [{ccode_name, type:'ref-cond-store', __applyToSub: __applyToSub === 'true', cases:[{cond, path}]}, ...acc];
+      return [{ccode_name, type:'ref-cond-store', __apply_spec, cases:[{cond, path}]}, ...acc];
     } else {
       const [last, ...rest] = acc;
       const {cases} = last;
@@ -47,12 +51,8 @@ async function upload(fileBuffer, context){
     if (balanceDict[rule.ccode_name]) {
       const [entry] = balanceDict[rule.ccode_name];
       entry.__categorized_to_tb = rule;
-
-      console.log('found', rule.ccode_name, entry, rule);
     }
   }
-
-  console.log(balance.data.find(({ccode}) => ccode === '1221'))
 
   return balance;
 }

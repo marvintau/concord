@@ -40,14 +40,6 @@ export default ({sheetName, colName, data:rec, getPathSuggValue, getPathSuggs, g
       getSuggValue: getPathSuggValue,
       saveEdit(value){
         cases[i].path = value;
-        console.log(cases, 'before assgin');
-        const {code} = assignRec(cases, rec, Sheets[sheetName].data, Sheets);
-        if (code !== undefined) {
-          rec[colName].code = code;
-        }
-
-        evalSheet(sheetName, colName);
-        console.log(rec, 'after asasigned');
       }, 
       placeholder: '分类路径'
     }
@@ -71,18 +63,21 @@ export default ({sheetName, colName, data:rec, getPathSuggValue, getPathSuggs, g
     evalSheet(sheetName, colName)
   }
 
-  const toggleApplySub = (e) => {
-    rec.__applyToSub = !rec.__applyToSub;
+  const saveApplyToSub = (e) => {
+    console.log(e.target.value);
+    rec[colName].__apply_spec = e.target.value;
   }
 
   if (!disabled){
     lines.push(<div key='add' className='refcell-line left'>
       <button key='add' style={{...buttonStyle, margin:'5px 0 0 8px'}} onClick={addCase}> + </button>
       <div className='refcell-option'>
-        <input type='checkbox' checked={rec.__applyToSub} onChange={toggleApplySub} onClick={(e) => {
-          e.stopPropagation();
-        }} />
-        <span onClick={(e) => e.stopPropagation()}>用于子项</span>
+        <input
+          placeholder='如何应用于子级项目'
+          value={rec[colName].__apply_spec}
+          onChange={saveApplyToSub}
+          onClick={(e) => {e.stopPropagation();}}
+        />
       </div>
     </div>)
   }

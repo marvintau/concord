@@ -151,23 +151,18 @@ const dirs = [
     loadPoint: '/',
     name: 'Equity',
     desc: '所有权变动表',
-    type: 'DATA',
     isHidingManual: true,
+    type: 'DATA',
+    data: ['EQUITY']
   },
   {
     loadPoint: '/',
     name: 'CashflowStatement',
-    desc: '现金流量表 (Obsoleted)',
+    desc: '现金流量表',
+    isHidingManual: true,
     type: 'DATA',
-    sheetName: 'CASHFLOW_WORKSHEET',
-    isCascaded: true,
-    tools: [],
-    colSpecs: {
-      desc: {desc: '题目', width: 5, isFilerable: true},
-      ref:  {desc: '条目', width: 7, isFilterable: true, cellType:'Ref'},
-    },
-    rowEdit: {isSync:false, insertEnabled:true, removeEnabled: true},
-  }
+    data: ['CASHFLOW']
+  },
 ];
 
 // for development stage only

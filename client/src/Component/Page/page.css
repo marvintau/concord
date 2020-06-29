@@ -42,7 +42,7 @@
 @media screen and (min-width: 960px) {
   .content-container{
     margin: 10px;
-    width: 1200px;
+    width: 90%;
   }
 }
 

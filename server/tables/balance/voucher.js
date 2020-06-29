@@ -19,6 +19,9 @@ function assignDest(rec1, rec2, {label='succ', desc='1Dr/1Cr'}={}){
       analyzed: {label, desc}
     }
   };
+
+  const getName = ({ccode_name, curr}) => ({ccode_name: curr && curr.item || ccode_name})
+
   Object.assign(rec1, getNewVal(rec2));
   Object.assign(rec2, getNewVal(rec1));
 }
