@@ -50,6 +50,10 @@ const groupSum = (group, extra={}) => {
 
 const categorize = (balance, decomposed) => {
 
+  trav(balance);
+  const pathDict = getCategoryPathDict(balance);
+  trav(balance);
+
   // 1. 将已经分解的分录按照本方科目编码分组。
   const groupedJournal = group(decomposed, 'ccode');
 
