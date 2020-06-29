@@ -77,8 +77,8 @@ const categorize = (balance, decomposed) => {
 
   for (let ccode in groupedJournal){
     const entries = groupedJournal[ccode];
-
     if (entries.some(({curr}) => curr !== undefined)) {
+
       const groupedSub = group(entries, ({curr:{item}={}}) => item || '其他明细科目');
       for (let subName in groupedSub) {
         const subEntries = groupedSub[subName];
@@ -89,7 +89,7 @@ const categorize = (balance, decomposed) => {
         });
         groupedSub[subName] = groupSum(groupedDest, extra);
       }
-      // console.log(groupedSub);
+      console.log(groupedSub);
       groupedJournal[ccode] = groupSum(groupedSub, {
         ccode_name(g, k){ return k }
       });

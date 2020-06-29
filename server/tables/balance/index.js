@@ -111,7 +111,7 @@ async function update({data, project_id}) {
   }
 
   balance.data = data;
-  await storeTable(balance);
+  // await storeTable(balance);
   return balance;
 }
 

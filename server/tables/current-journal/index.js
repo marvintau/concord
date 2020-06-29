@@ -98,27 +98,63 @@ async function upload(fileBuffer, context){
   const groupCurrentEndT = now();
   console.log((groupCurrentEndT - groupCurrentT).toString(), journals.length, 'grouped current');
 
+  let i = 0;
+
   for (let [key, currVoucher] of entriedCurrentJournals) {
     const origVoucher = groupedOverallJournals[key];
     if (!Array.isArray(origVoucher)) {
       console.log(key, currVoucher, origVoucher)
     }
+    
+    console.log(' ');
     for (let currEntry of currVoucher) {
+    
+      const currMc = currEntry.mc.toFixed(2);
+      const currMd = currEntry.md.toFixed(2);
+    
       for (let origEntry of origVoucher) {
-        if (origEntry.curr !== undefined) {
-          continue;
-        }
-        const currMc = currEntry.mc.toFixed(2);
-        const currMd = currEntry.md.toFixed(2);
+    
         const origMc = origEntry.mc.toFixed(2);
         const origMd = origEntry.md.toFixed(2);
-        if (currMc === origMc && currMd === origMd) {
-          if (currEntry.desc !== undefined){
-            origEntry.curr = parseDesc(currEntry.desc);
+        
+        if (origEntry.curr === undefined && currEntry.desc !== undefined) {
+          const currDesc = parseDesc(currEntry.desc);
+          if (currMc === origMc && currMd === origMd && origEntry.digest.includes(currDesc.item)){
+            console.log(currDesc.item, origEntry.digest);
+            origEntry.curr = currDesc;
+            break;
           }
         }
       }
     }
+
+    for (let currEntry of currVoucher) {
+    
+      const currMc = currEntry.mc.toFixed(2);
+      const currMd = currEntry.md.toFixed(2);
+      
+      for (let origEntry of origVoucher) {
+    
+        const origMc = origEntry.mc.toFixed(2);
+        const origMd = origEntry.md.toFixed(2);
+        
+        if (origEntry.curr === undefined && currEntry.desc !== undefined) {
+          const currDesc = parseDesc(currEntry.desc);
+          if (currMc === origMc && currMd === origMd) {
+            console.log(currDesc.item, origEntry.digest);
+            origEntry.curr = currDesc;
+            // console.log('did', origEntry.curr)
+            break;
+          }
+        }
+      }
+
+    }
+
+    // if (Object.values(group(currVoucher, ({md})=>md.toFixed(2))).some(g => g.length > 1)) {
+    //   console.log(origVoucher, 'multi md');
+    // }
+
   }
 
   await storeTable(balance);
