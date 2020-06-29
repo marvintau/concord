@@ -105,6 +105,9 @@ async function upload(fileBuffer, context){
     }
     for (let currEntry of currVoucher) {
       for (let origEntry of origVoucher) {
+        if (origEntry.curr !== undefined) {
+          continue;
+        }
         const currMc = currEntry.mc.toFixed(2);
         const currMd = currEntry.md.toFixed(2);
         const origMc = origEntry.mc.toFixed(2);
