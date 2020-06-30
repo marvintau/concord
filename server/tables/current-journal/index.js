@@ -70,7 +70,7 @@ async function upload(fileBuffer, context){
       throw {code: 'DEAD_BALANCE_NOT_FOUND'}
     }
   }
-  console.log(balance.data.filter(({curr}) => curr !== undefined).length, 'existing currs');
+  console.log(balance.data.filter(({__curr}) => __curr !== undefined).length, 'existing currs');
 
 
   // 此处是我们上传的往来科目序时帐。上传某个往来科目的序时帐不会影响到先前的结果。
@@ -106,7 +106,7 @@ async function upload(fileBuffer, context){
       console.log(key, currVoucher, origVoucher)
     }
     
-    console.log(' ');
+    // console.log(' ');
     for (let currEntry of currVoucher) {
     
       const currMc = currEntry.mc.toFixed(2);
@@ -141,7 +141,7 @@ async function upload(fileBuffer, context){
         if (origEntry.__curr === undefined && currEntry.desc !== undefined) {
           const currDesc = parseDesc(currEntry.desc);
           if (currMc === origMc && currMd === origMd) {
-            console.log(currDesc.item, origEntry.digest);
+            // console.log(currDesc.item, origEntry.digest);
             origEntry.__curr = currDesc;
             // console.log('did', origEntry.curr)
             break;

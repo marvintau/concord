@@ -65,7 +65,7 @@ export default ({sheetName, colName, data:rec, getPathSuggValue, getPathSuggs, g
 
   const saveApplyToSub = (e) => {
     console.log(e.target.value);
-    rec[colName].__apply_spec = e.target.value;
+    rec.__apply_spec = e.target.value;
   }
 
   if (!disabled){
@@ -74,7 +74,7 @@ export default ({sheetName, colName, data:rec, getPathSuggValue, getPathSuggs, g
       <div className='refcell-option'>
         <input
           placeholder='如何应用于子级项目'
-          value={rec[colName].__apply_spec}
+          value={rec.__apply_spec}
           onChange={saveApplyToSub}
           onClick={(e) => {e.stopPropagation();}}
         />

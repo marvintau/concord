@@ -108,7 +108,7 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
     const evalRecord = (rec) => {
       
       const evalCol = (col, colName) => {
-        if (col === undefined){
+        if (col === undefined || col === null){
           return;
         }        
         if (col.type) {

@@ -51,6 +51,7 @@ async function upload(fileBuffer, context){
     if (balanceDict[rule.ccode_name]) {
       const [entry] = balanceDict[rule.ccode_name];
       entry.__categorized_to_tb = rule;
+      entry.__apply_spec = rule.__apply_spec;
     }
   }
 

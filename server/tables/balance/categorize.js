@@ -4,6 +4,7 @@ const group = require('@marvintau/chua/src/group');
 const flat = require('@marvintau/chua/src/flat');
 const trav = require('@marvintau/chua/src/trav');
 const add = require('@marvintau/chua/src/add');
+const get = require('@marvintau/chua/src/get');
 
 const getCategoryPathDict = (cascadedCategories) => {
 
@@ -93,12 +94,15 @@ const categorize = (balance, decomposed) => {
       groupedJournal[ccode] = groupSum(groupedSub, {
         ccode_name(g, k){ return k }
       });
+      for (let rec of groupedJournal[ccode]) {
+        rec.__detailed_level = true;
+      }
     } else {
       const groupedDest = group(entries, ({dest_ccode_name}) => {
         return dest_ccode_name 
         ? (dest_ccode_name.desc || dest_ccode_name)
         : '其他对方科目'
-    });
+      });
 
       groupedJournal[ccode] = groupSum(groupedDest, extra);
     }
@@ -109,8 +113,13 @@ const categorize = (balance, decomposed) => {
   // 5. 将分组后的分录填到对应的科目目录中
   for (let [ccode, entries] of Object.entries(groupedJournal)){
     add(balance, entries, {path: pathDict[ccode]});
+    if (entries.every(({__detailed_level}) => __detailed_level === undefined)) {
+      const {record} = get(balance, {path: pathDict[ccode]});
+      record.__detailed_level = true;
+    }
   }
 
+  console.log(flat(balance).filter(({__detailed_level}) => __detailed_level), 'has detailed level');
 
   trav(balance, (rec) => {
 
