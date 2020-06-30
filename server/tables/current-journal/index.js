@@ -117,11 +117,11 @@ async function upload(fileBuffer, context){
         const origMc = origEntry.mc.toFixed(2);
         const origMd = origEntry.md.toFixed(2);
         
-        if (origEntry.curr === undefined && currEntry.desc !== undefined) {
+        if (origEntry.__curr === undefined && currEntry.desc !== undefined) {
           const currDesc = parseDesc(currEntry.desc);
           if (currMc === origMc && currMd === origMd && origEntry.digest.includes(currDesc.item)){
             console.log(currDesc.item, origEntry.digest);
-            origEntry.curr = currDesc;
+            origEntry.__curr = currDesc;
             break;
           }
         }
@@ -138,11 +138,11 @@ async function upload(fileBuffer, context){
         const origMc = origEntry.mc.toFixed(2);
         const origMd = origEntry.md.toFixed(2);
         
-        if (origEntry.curr === undefined && currEntry.desc !== undefined) {
+        if (origEntry.__curr === undefined && currEntry.desc !== undefined) {
           const currDesc = parseDesc(currEntry.desc);
           if (currMc === origMc && currMd === origMd) {
             console.log(currDesc.item, origEntry.digest);
-            origEntry.curr = currDesc;
+            origEntry.__curr = currDesc;
             // console.log('did', origEntry.curr)
             break;
           }

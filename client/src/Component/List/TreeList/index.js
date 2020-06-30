@@ -43,7 +43,7 @@ export default function({itemData, Row:OrigRow, HistRow, FilterRow, overscan}){
     if (newHist.length === 0){
       setSublist(itemData);
     } else {
-      const lastElem = history.slice(-1)[0];
+      const lastElem = newHist.slice(-1)[0];
       setSublist(lastElem.__children);
     }
     rerenderList();

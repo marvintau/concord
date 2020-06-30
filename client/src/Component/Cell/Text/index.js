@@ -1,5 +1,4 @@
-import React, {useState, useContext} from 'react';
-import Check from './check.svg';
+import React from 'react';
 
 import './text.css'
 
@@ -24,17 +23,27 @@ export default ({children, select=() => {}}) => {
   if (typeof children === "object"){
 
     const {label, path, desc} = children;
-    if (label !== undefined && desc !== undefined){
+
+    if (label !== undefined){
+      console.log(desc);
       return <div className={`text-badge ${label}`}>{desc}</div>
     } 
 
-    if (path !== undefined && desc !== undefined){
+    if (desc !== undefined) {
+
+      const className = label !== undefined 
+      ? `text-badge ${label}` 
+      : path !== undefined
+      ? 'text-path'
+      : '';
+
       const onClick = (e) => {
-        e.preventDefault();
         e.stopPropagation();
-        select(path);
+        e.preventDefault();
+        (path !== undefined) && select(path);
       }
-      return <div className={`text-path`} onClick={onClick}>{desc}</div>
+
+      return <div {...{className, onClick}}>{desc}</div>
     }
   }
 

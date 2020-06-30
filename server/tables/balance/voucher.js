@@ -9,7 +9,7 @@ function isCr({mc, md}) {
 function assignDest(rec1, rec2, {label='succ', desc='1Dr/1Cr'}={}){
 
   const getNewVal = (rec) => {
-    const {ccode, ccode_name, curr} = rec;
+    const {ccode, ccode_name, __curr:curr} = rec;
     if (curr !== undefined && Object.keys(curr).length > 0) {
       console.log(curr);
     }
