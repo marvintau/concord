@@ -136,14 +136,9 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
                 code:'SUCC'
               })
             } else if (__assigned_desc && __assigned_desc.length > 0) {           
-              
-              const leafRecs = flat(__children).filter(({__children:ch})=> ch === undefined || ch.length === 0);
 
-              const result = __apply_spec
-                ? `${__assigned_desc.length}/${leafRecs.length} 已分配`
-                : `${__assigned_desc.length}/${__children.length} 已分配`
-              
-              const code = __assigned_desc.length === (__apply_spec ? leafRecs.length : __children.length) ? 'SUCC' : 'WARN';
+              const result = `${__assigned_desc.length}/${__children.length} 已分配`
+              const code = __assigned_desc.length === __children.length ? 'SUCC' : 'WARN';
 
               Object.assign(col, { result, code, disabled: !__apply_spec})
 

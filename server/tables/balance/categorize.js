@@ -115,6 +115,7 @@ const categorize = (balance, decomposed) => {
     add(balance, entries, {path: pathDict[ccode]});
     if (entries.every(({__detailed_level}) => __detailed_level === undefined)) {
       const {record} = get(balance, {path: pathDict[ccode]});
+      console.log(record, 'before casting')
       record.__detailed_level = true;
     }
   }
