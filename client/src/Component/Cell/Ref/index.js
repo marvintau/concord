@@ -91,7 +91,7 @@ export default ({sheetName, colName, data, attr:{disabled: disabledProp, placeho
     return value.replace(/[^@*/+-<>= ]*$/, sugg.value || sugg.toString());
   }
 
-  const {type, disabled: disabledData} = data[colName];
+  const {type, disabled: disabledData} = data[colName] || {};
 
 
   if (['ref-fetch', 'ref-store', 'ref-cond-store'].includes(type)) {

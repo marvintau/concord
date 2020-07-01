@@ -34,15 +34,15 @@ async function upload(fileBuffer, context){
 
   let rules = readSingleSheet(fileBuffer);
   rules = columnNameRemap(rules, header);
-  console.log(rules);
+  // console.log(rules);
 
   rules = rules.reduce((acc, {ccode_name, __apply_spec, cond, path}) => {
-    if (ccode_name.trim().length > 0){
-      return [{ccode_name, type:'ref-cond-store', __apply_spec, cases:[{cond, path}]}, ...acc];
-    } else {
+    if (ccode_name === undefined || ccode_name.toString().trim().length === 0){
       const [last, ...rest] = acc;
       const {cases} = last;
       return [{...last, cases:[...cases, {cond, path}]}, ...rest];
+    } else {
+      return [{ccode_name, type:'ref-cond-store', __apply_spec, cases:[{cond, path}]}, ...acc];
     }
   }, [])
   rules.reverse();
@@ -55,6 +55,7 @@ async function upload(fileBuffer, context){
     }
   }
 
+  storeTable(balance);
   return balance;
 }
 

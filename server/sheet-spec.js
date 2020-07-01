@@ -70,13 +70,14 @@ const sheetSpecs = [
   {
     name: 'TRIAL_BALANCE',
     isCascaded: true,
-    tools: ['Import', 'EvalSheet', 'SaveRemote'],
+    tools: ['Import', 'EvalSheet', 'SaveRemote', 'CashflowEntryAssign'],
     colSpecs: {
       ccode_name: {desc: '条目名称', width: 1, isFilterable: true},
       mb: {desc:'期初', width: 1.5, cellType:'Ref', isSortable: true},
       md: {desc:'借方', width: 1.5, cellType:'Ref', isSortable: true},
       mc: {desc:'贷方', width: 1.5, cellType:'Ref', isSortable: true},
       me: {desc:'期末', width: 1.5, cellType:'Ref', isSortable: true},
+      dest_ccode_name: {desc: '对方科目', width: 1},
       __categorized_to_report: {desc:'列入报表项目', width: 5, cellType:'Ref', attr: {defaultType: 'ref-cond-store'}}
     },
   },

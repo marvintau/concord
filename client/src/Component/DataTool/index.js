@@ -4,6 +4,7 @@ import UploadManager from './UploadManager';
 import useCreateManager from './useCreateManager';
 import EvalSheet from './EvalSheet';
 import BatchAssign from './BatchAssign';
+import CashflowEntryAssign from './CashflowEntryAssign';
 
 export {
   ExportManager,
@@ -11,5 +12,6 @@ export {
   UploadManager,
   useCreateManager,
   EvalSheet,
-  BatchAssign
+  BatchAssign,
+  CashflowEntryAssign
 }
