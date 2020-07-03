@@ -112,8 +112,8 @@ const dirs = [
     desc: '余额表',
     type: 'DATA',
     isHidingManual: true,
-    // data: ['BALANCE', 'TRIAL_BALANCE'],
-    data: ['BALANCE'],
+    data: ['BALANCE', 'TRIAL_BALANCE'],
+    // data: ['BALANCE'],
     importedData: [
       {name: 'JOURNAL', desc:'序时帐'},
       {name: 'CURR_JOURNAL', desc:'往来-序时帐'},

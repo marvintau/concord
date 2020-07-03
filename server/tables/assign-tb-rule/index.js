@@ -27,7 +27,8 @@ async function upload(fileBuffer, context){
   
   const balanceEntries = flat(balance.data).filter(({cclass}) => cclass !== undefined);
   for (let entry of balanceEntries) {
-    entry.__categorized_to_tb = undefined;
+    entry.__categorized_to_tb = {type:'ref-cond-store', __apply_spec:'', cases:[]};
+    entry.__apply_spec = '';
   }
 
   const balanceDict = group(balanceEntries, 'ccode_name');
