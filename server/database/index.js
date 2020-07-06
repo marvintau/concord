@@ -98,7 +98,7 @@ async function create(idents, records, {flatten}={}) {
       }
     }
 
-    const preparedRecs = flattened.map(({__path, __children, ...rest}) => {
+    const preparedRecs = flattened.map(({__path, __children, __parent, ...rest}) => {
       return {...rest, ...idents}
     })
 

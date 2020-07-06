@@ -1,7 +1,7 @@
 import React, {useContext, useState} from 'react';
 import { Exchange } from '../../Exchange';
 
-import {flat, fetch, store as condAssign} from '@marvintau/chua';
+import {flat, fetch} from '@marvintau/chua';
 // import trav from '@marvintau/chua/src/trav';
 // import condAssign from '@marvintau/chua/src/store';
 
@@ -110,7 +110,7 @@ export default function({name}){
           } else {
             const destAccrual = dest[mone_mc !== 0 ? 'mc' : 'md'];
             const significantDest = getSignificantDest(dest, mone_mc ? 'md' : 'mc');
-            const upmostLevelOfSigniDest = upmostLevelDict[significantDest];
+            const upmostLevelOfSigniDest = upmostLevelDict[significantDest ? significantDest.slice(0, 4) : 'null'];
             const tb_dest_entry = twoPassRules[upmostLevelOfSigniDest];
 
             // console.log('二次判断', ccode, ccode_name, upmostLevelDict[dest_upmost_ccode], detailed_name, '货币资金对方科目的发生额最大的对方科目', significantDest, tb_dest_entry, mone, dest);
@@ -122,10 +122,10 @@ export default function({name}){
               `借方:${num(dest.md)} 贷方${num(dest.mc)} ${mone_mc !== 0 ? '贷' : '借'}方发生额为 ${num(destAccrual)} （不为空）`
             }\n\n其对方科目发生额分别为:\n${
               dest.__children.map(({md, mc, dest_ccode, dest_ccode_name}) => {
-                return `借方:${num(md)} 贷方${num(mc)} ${dest_ccode ? upmostLevelDict[dest_ccode.slice(0, 4)] : dest_ccode_name}`
+                return `借方:${num(md)} 贷方${num(mc)} ${dest_ccode ? upmostLevelDict[dest_ccode ? dest_ccode.slice(0, 4): 'null'] : dest_ccode_name}`
               }).join(`\n`)
             }\n\n${
-              `最大${mone_mc ? '借' : '贷'}方发生额的科目为 ${significantDest}`
+              `最大${mone_mc ? '借' : '贷'}方发生额的科目为 ${upmostLevelDict[significantDest && significantDest.slice(0, 4)]}`
             }\n${
               `故分配至现流表 ${tb_dest_entry}`
             }\n`)

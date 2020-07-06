@@ -18,7 +18,7 @@ export default function({name}){
     trav(sourceSheet, (rec) => {
       if (rec.__categorized_to_tb && rec.__categorized_to_tb.cases){
         // console.log(rec.__categorized_to_tb.cases, 'cases');
-        condAssign(rec.__categorized_to_tb.cases, rec, sourceSheet, Sheets)
+        condAssign(rec.__categorized_to_tb.cases, rec, Sheets)
       }
     }, 'PRE')
 

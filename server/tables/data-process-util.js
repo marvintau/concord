@@ -1,6 +1,6 @@
 const XLSX = require('xlsx');
 const QRCode = require('easyqrcodejs-nodejs');
-
+const {casc} = require('@marvintau/chua');
 
 function sort(table, key){
 
@@ -46,43 +46,45 @@ function group(table, key){
 
 function cascade(table, colKey) {
 
-  // grip使用了layerFunc，将列表分为几代（Generation）
-  const sorted = sort(table, colKey);
-  const layers = Object.values(group(sorted, (rec) => {
-    // console.log(rec, rec[colKey]);
-    return rec[colKey].length
-  }));
-  // console.log(table.length);
-  // console.log(layers.map(e => e[0][colKey].length), 'cascade');
+  return casc(table, {cascCol: colKey});
 
-  // 每相邻的两代之间两两比较，如果没有找到父辈的孩子会被弃掉。
-  let children;
-  for (children = layers.pop(); layers.length > 0; children = layers.pop()) {
-    let parents = layers.pop();
+  // // grip使用了layerFunc，将列表分为几代（Generation）
+  // const sorted = sort(table, colKey);
+  // const layers = Object.values(group(sorted, (rec) => {
+  //   // console.log(rec, rec[colKey]);
+  //   return rec[colKey].length
+  // }));
+  // // console.log(table.length);
+  // // console.log(layers.map(e => e[0][colKey].length), 'cascade');
 
-    // 如果记录没有children这个属性则清空
-    for (let i = 0; i < parents.length; i++){
-      parents[i].__children = [];
-    }
+  // // 每相邻的两代之间两两比较，如果没有找到父辈的孩子会被弃掉。
+  // let children;
+  // for (children = layers.pop(); layers.length > 0; children = layers.pop()) {
+  //   let parents = layers.pop();
+
+  //   // 如果记录没有children这个属性则清空
+  //   for (let i = 0; i < parents.length; i++){
+  //     parents[i].__children = [];
+  //   }
     
-    // 在两代中间进行匹配
-    while (children.length > 0) {
-      let child = children.pop();
-      for (let i = 0; i < parents.length; i++){
-        let parent = parents[i];
+  //   // 在两代中间进行匹配
+  //   while (children.length > 0) {
+  //     let child = children.pop();
+  //     for (let i = 0; i < parents.length; i++){
+  //       let parent = parents[i];
           
-        if (child[colKey].startsWith(parent[colKey])) try {
-          parent.__children.push(child)
-        }catch{
-          console.log(parent);
-          throw Error('found')
-        }
-      }
-    }
-    layers.push(parents);
-  }
-  // 返回祖先一代。
-  return children;
+  //       if (child[colKey].startsWith(parent[colKey])) try {
+  //         parent.__children.push(child)
+  //       }catch{
+  //         console.log(parent);
+  //         throw Error('found')
+  //       }
+  //     }
+  //   }
+  //   layers.push(parents);
+  // }
+  // // 返回祖先一代。
+  // return children;
 }
 
 function columnNameRemap(table, map, {handleNum=true}={}){
