@@ -151,7 +151,6 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
               // if(rec.__detailed_level) console.log(rec, col);
             } else if (__dest_map === undefined || __dest_map.size === 0) {
   
-              const refStoreAndPath = type === 'ref-store' && (path && path.length > 0);
               const refCondStoreAndAnyPath = type === 'ref-cond-store' && cases.some(path => path && path.length > 0);
   
               if (__cands !== undefined) {
@@ -159,15 +158,16 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
                 const code = col.code || (__cands.length > 1 ? 'FAIL_MUL_ASSIGN_COND' : 'FAIL_NO_ASSIGN_COND');
                 Object.assign(col, { code, result : '未分配'})
   
-              } else if (refStoreAndPath || refCondStoreAndAnyPath) {
+              } else if (refCondStoreAndAnyPath) {
                 Object.assign(col, {
                   result: '未分配',
                   code: 'FAIL',
                   disabled: false
                 })
               } else {
+                // console.log(rec.ccode_name, col.code);
                 Object.assign(col, {
-                  result: undefined,
+                  result: '无规则',
                   code: 'NONE',
                   disabled: false
                 })

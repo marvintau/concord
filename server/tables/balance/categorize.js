@@ -31,6 +31,7 @@ const getCategoryPathDict = (cascadedCategories) => {
 
 const groupSum = (group, extra={}) => {
   return Object.entries(group).map(([k, g]) => {
+    console.log(g, 'group sum');
     let {ccode, ccode_name} = g[0];
     let idInfo = {ccode, ccode_name};
 
@@ -45,7 +46,7 @@ const groupSum = (group, extra={}) => {
       : ex[exKey] = extra[exKey]
     }
 
-    return {...idInfo, mc, md, __children, ...ex};
+    return {...idInfo, mb: 0, mc, md, me: 0, __children, ...ex};
   })
 }
 
@@ -120,7 +121,7 @@ const categorize = (balance, decomposed) => {
     }
   }
 
-  console.log(flat(balance).filter(({__detailed_level}) => __detailed_level), 'has detailed level');
+  // console.log(flat(balance).filter(({__detailed_level}) => __detailed_level), 'has detailed level');
 
   trav(balance, (rec) => {
 

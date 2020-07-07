@@ -69,11 +69,11 @@ export default ({
     onKeyUp(e){
       if (e.nativeEvent.key === 'Enter'){
         console.log(suggestions.length, 'Enter pressed')
-        if (suggestions.length === 0){
+        // if (suggestions.length === 0){
           e.preventDefault();
           e.stopPropagation();
           saveEdit(value);
-        }
+        // }
       }
     },
     onClick(e){

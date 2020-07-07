@@ -17,8 +17,8 @@ export default function({name}){
 
     trav(sourceSheet, (rec) => {
       if (rec.__categorized_to_tb && rec.__categorized_to_tb.cases.length > 0){
-        console.log(rec.ccode_name, rec.__categorized_to_tb.cases, 'cases');
-        condAssign(rec.__categorized_to_tb.cases, rec, Sheets)
+        const code = condAssign(rec.__categorized_to_tb.cases, rec, Sheets);
+        rec.__categorized_to_tb.code = code;
       }
     }, 'PRE')
 
