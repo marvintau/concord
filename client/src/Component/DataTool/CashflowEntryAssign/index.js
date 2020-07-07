@@ -5,8 +5,8 @@ import {flat, fetch} from '@marvintau/chua';
 // import trav from '@marvintau/chua/src/trav';
 // import condAssign from '@marvintau/chua/src/store';
 
-import {onePassRulesIncome, onePassRulesOutgoing} from './one-pass-check';
-import {twoPassRules} from './two-pass-check';
+import {onePassRulesMD, onePassRulesMC} from './one-pass-check';
+// import {twoPassRules} from './two-pass-check';
 
 const getSignificantDest = (dest, sortBy) => {
   const {__children:ch} = dest;
@@ -16,7 +16,7 @@ const getSignificantDest = (dest, sortBy) => {
   } else {
     const copy = ch.slice();
     copy.sort(({[sortBy]:accA}, {[sortBy]:accB}) => accA - accB);
-    const {dest_ccode} = ch[0];
+    const {dest_ccode} = copy[0];
     return dest_ccode;
   }
 }
@@ -62,9 +62,9 @@ export default function({name}){
       // 1. 分辨是借货币资金还是贷货币资金。借货币资金意味着钱进入到货币资金账户，贷则意味着支出。借方和贷方发生
       //    将分别使用不同的规则。
       const {ccode, ccode_name, dest_ccode, dest_ccode_name, mc:mone_mc, md:mone_md} = mone;
-      const onePassRules = mone_mc > 0 && mone_md === 0
-      ? onePassRulesIncome
-      : onePassRulesOutgoing;
+      const onePassRules = mone_mc
+      ? onePassRulesMC
+      : onePassRulesMD;
 
       if (!dest_ccode_name) {
         console.log(ccode, ccode_name, 'undefined dest');
@@ -96,22 +96,44 @@ export default function({name}){
 
           // 判断此科目的发生额（如果借货币资金，则看此科目的贷方发生，vice versa）
           if (dest[mone_mc ? 'mc' : 'md'] === 0){
+
+            const tb_dest_entry = {
+              预付账款:{
+                md: '购买商品、接受劳务支付的现金',
+                mc: '购买商品、接受劳务支付的现金',
+              },
+              应付账款:{
+                md: '收到其他与筹资活动有关的现金',
+                mc: '购买商品、接受劳务支付的现金',
+              },
+              其他应收款: {
+                md: '收到其他与筹资活动有关的现金',
+                mc: '支付其他与投资活动有关的现金',
+              },
+              其他应付款: {
+                md: '收到其他与筹资活动有关的现金',
+                mc: '支付其他与投资活动有关的现金',
+              }
+            }
+
+
             // console.log('二次判断', ccode, ccode_name, upmostLevelDict[dest_upmost_ccode], detailed_name, '货币资金对方科目的发生额为空', mone, dest);
             console.log(`二次判断\n${
               `${ccode}:${ccode_name}`
             }\n${
               `借方:${num(mone_md)} 贷方${num(mone_mc)} 对方科目: ${upmostLevelDict[dest_upmost_ccode]} 明细: ${detailed_name}`
             }\n\n对方科目发生额汇总:\n${
-              `借方:${num(dest.md)} 贷方${num(dest.mc)} ${mone_mc !== 0 ? '贷' : '借'}方发生额为空`
+              `借方:${num(dest.md)} 贷方${num(dest.mc)} ${mone_mc ? '贷' : '借'}方发生额为空`
             }\n\n${
-              `故分配至现流表 ...`
+              `故分配至现流表 ${tb_dest_entry[tb_entry_of_upmost_name][mone_mc ? 'mc' : 'md']}`
             }\n`);
   
           } else {
-            const destAccrual = dest[mone_mc !== 0 ? 'mc' : 'md'];
+            const destAccrual = dest[mone_mc ? 'md' : 'mc'];
             const significantDest = getSignificantDest(dest, mone_mc ? 'md' : 'mc');
             const upmostLevelOfSigniDest = upmostLevelDict[significantDest ? significantDest.slice(0, 4) : 'null'];
-            const tb_dest_entry = twoPassRules[upmostLevelOfSigniDest];
+            const tb_entry_of_upmost_name = balanceTBMap[upmostLevelOfSigniDest];
+            const tb_dest_entry = onePassRules[tb_entry_of_upmost_name];
 
             // console.log('二次判断', ccode, ccode_name, upmostLevelDict[dest_upmost_ccode], detailed_name, '货币资金对方科目的发生额最大的对方科目', significantDest, tb_dest_entry, mone, dest);
             console.log(`二次判断\n${
@@ -119,13 +141,13 @@ export default function({name}){
             }\n${
               `借方:${num(mone_md)} 贷方${num(mone_mc)} 对方科目: ${upmostLevelDict[dest_upmost_ccode]} 明细: ${detailed_name}`
             }\n\n对方科目发生额汇总:\n${
-              `借方:${num(dest.md)} 贷方${num(dest.mc)} ${mone_mc !== 0 ? '贷' : '借'}方发生额为 ${num(destAccrual)} （不为空）`
+              `借方:${num(dest.md)} 贷方${num(dest.mc)} ${mone_mc ? '贷' : '借'}方发生额为 ${num(destAccrual)} （不为空）`
             }\n\n其对方科目发生额分别为:\n${
               dest.__children.map(({md, mc, dest_ccode, dest_ccode_name}) => {
                 return `借方:${num(md)} 贷方${num(mc)} ${dest_ccode ? upmostLevelDict[dest_ccode ? dest_ccode.slice(0, 4): 'null'] : dest_ccode_name}`
               }).join(`\n`)
             }\n\n${
-              `最大${mone_mc ? '借' : '贷'}方发生额的科目为 ${upmostLevelDict[significantDest && significantDest.slice(0, 4)]}`
+              `最大${mone_mc ? '贷' : '借'}方发生额的科目为 ${upmostLevelDict[significantDest && significantDest.slice(0, 4)]}`
             }\n${
               `故分配至现流表 ${tb_dest_entry}`
             }\n`)
@@ -171,7 +193,7 @@ export default function({name}){
           console.log(`一次判断\n${
             `${ccode}:${ccode_name}`
           }\n${
-            `借方:${num(mone_md)} 贷方${num(mone_mc)} 对方科目: ${dest_ccode_name}:${dest_ccode_name}`
+            `借方:${num(mone_md)} 贷方${num(mone_mc)} 对方科目: ${dest_ccode_name} 属于${dest_upmost_name}`
           }\n${
             `故分配至现流表 ${tb_dest_entry}`
           }\n`);

@@ -41,8 +41,7 @@
 
 @media screen and (min-width: 960px) {
   .content-container{
-    margin: 10px;
-    width: 90%;
+    /* margin: 10px; */
   }
 }
 

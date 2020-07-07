@@ -128,8 +128,8 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
           }
   
           if (['ref-store', 'ref-cond-store'].includes(type)){
-            const {__assigned_ances, __assigned_desc, __children, __destRecs, __cands, __apply_spec} = rec;
-            if (__destRecs && __destRecs.length > 0) {
+            const {__assigned_ances, __assigned_desc, __children, __dest_map, __cands, __apply_spec} = rec;
+            if (__dest_map && __dest_map.size > 0) {
               // 说明是执行evalSheet前刚刚被分配的那个记录
               Object.assign(col, {
                 result: '已分配',
@@ -148,7 +148,8 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
                 code: 'INFO',
                 disabled: true
               })
-            } else if (__destRecs === undefined || __destRecs.length === 0) {
+              // if(rec.__detailed_level) console.log(rec, col);
+            } else if (__dest_map === undefined || __dest_map.size === 0) {
   
               const refStoreAndPath = type === 'ref-store' && (path && path.length > 0);
               const refCondStoreAndAnyPath = type === 'ref-cond-store' && cases.some(path => path && path.length > 0);

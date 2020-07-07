@@ -1,4 +1,4 @@
-export const onePassRulesIncome = {
+export const onePassRulesMD = {
 '拆出资金':'收到其他与投资活动有关的现金',
 '以公允价值计量且其变动计入当期损益的金融资产':'收到其他与投资活动有关的现金',
 '交易性金融资产':'收到其他与投资活动有关的现金',
@@ -144,7 +144,7 @@ export const onePassRulesIncome = {
 '所得税费用':'支付的各项税费',
 }
 
-export const onePassRulesOutgoing = {
+export const onePassRulesMC = {
 '其他货币资金':'支付其他与筹资活动有关的现金',
 '拆出资金':'支付其他与投资活动有关的现金',
 '以公允价值计量且其变动计入当期损益的金融资产':'支付其他与投资活动有关的现金',

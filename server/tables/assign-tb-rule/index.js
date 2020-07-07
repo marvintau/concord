@@ -31,7 +31,7 @@ async function upload(fileBuffer, context){
     entry.__apply_spec = '';
   }
 
-  const balanceDict = group(balanceEntries, 'ccode_name');
+  const balanceDict = group(balanceEntries, ({ccode_name}) => ccode_name.toString().trim().replace(/\s*/g, ''));
 
   let rules = readSingleSheet(fileBuffer);
   rules = columnNameRemap(rules, header);
@@ -50,9 +50,11 @@ async function upload(fileBuffer, context){
 
   for (let rule of rules) {
     if (balanceDict[rule.ccode_name]) {
-      const [entry] = balanceDict[rule.ccode_name];
-      entry.__categorized_to_tb = rule;
-      entry.__apply_spec = rule.__apply_spec;
+      const entries = balanceDict[rule.ccode_name];
+      for (let entry of entries){
+        entry.__categorized_to_tb = rule;
+        entry.__apply_spec = rule.__apply_spec;
+      }
     }
   }
 

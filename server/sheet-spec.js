@@ -40,8 +40,8 @@ const sheetSpecs = [
       md: {desc: '借方', width: 1, isSortable: true, cellType:'Number'},
       mc: {desc: '贷方', width: 1, isSortable: true, cellType:'Number'},
       me: {desc: '期末', width: 1, isSortable: true, cellType:'Number'},
-      dest_ccode_name: {desc: '对方科目', width: 1},
-      digest: {desc: '摘要', width: 1},
+      dest_ccode_name: {desc: '对方科目', width: 0.5},
+      digest: {desc: '摘要', width: 0.5},
       __categorized_to_tb: {desc:'列入TB项目', width: 4, cellType:'Ref', attr: {defaultType:'ref-cond-store'}}
     }
   },
