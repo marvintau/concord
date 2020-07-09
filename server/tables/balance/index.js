@@ -91,7 +91,7 @@ async function upload(fileBuffer, context){
 
 async function retrieve({project_id}) {
   const retrieved = await fetchTable({project_id, table:'BALANCE'});
-  console.log(Object.keys(retrieved), 'retrieved balance');
+  // console.log(Object.keys(retrieved), 'retrieved balance');
   return retrieved;
 }
 

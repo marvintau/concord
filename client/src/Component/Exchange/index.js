@@ -113,7 +113,7 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
         }        
         if (col.type) {
         
-          const {type, path, expr, cases} = col;
+          const {type, path, expr} = col;
           if (type === 'ref-fetch'){
   
             if (expr.startsWith('=')){
@@ -127,53 +127,6 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
             // console.log(result, code);
           }
   
-          if (['ref-store', 'ref-cond-store'].includes(type)){
-            const {__assigned_ances, __assigned_desc, __children, __dest_map, __cands, __apply_spec} = rec;
-            if (__dest_map && __dest_map.size > 0) {
-              // 说明是执行evalSheet前刚刚被分配的那个记录
-              Object.assign(col, {
-                result: '已分配',
-                code:'SUCC'
-              })
-            } else if (__assigned_desc && __assigned_desc.length > 0) {           
-
-              const result = `${__assigned_desc.length}/${__children.length} 已分配`
-              const code = __assigned_desc.length === __children.length ? 'SUCC' : 'WARN';
-
-              Object.assign(col, { result, code, disabled: !__apply_spec})
-
-            } else if (__assigned_ances && __assigned_ances.length > 0) {
-              Object.assign(col, {
-                result: '⇧已分配',
-                code: 'INFO',
-                disabled: true
-              })
-              // if(rec.__detailed_level) console.log(rec, col);
-            } else if (__dest_map === undefined || __dest_map.size === 0) {
-  
-              const refCondStoreAndAnyPath = type === 'ref-cond-store' && cases.some(path => path && path.length > 0);
-  
-              if (__cands !== undefined) {
-
-                const code = col.code || (__cands.length > 1 ? 'FAIL_MUL_ASSIGN_COND' : 'FAIL_NO_ASSIGN_COND');
-                Object.assign(col, { code, result : '未分配'})
-  
-              } else if (refCondStoreAndAnyPath) {
-                Object.assign(col, {
-                  result: '未分配',
-                  code: 'FAIL',
-                  disabled: false
-                })
-              } else {
-                // console.log(rec.ccode_name, col.code);
-                Object.assign(col, {
-                  result: '无规则',
-                  code: 'NONE',
-                  disabled: false
-                })
-              }
-            }
-          }
         }
       }
 

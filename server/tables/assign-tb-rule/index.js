@@ -5,7 +5,7 @@ const {flat, trav, group} = require('@marvintau/chua');
 
 let header = [
   ['科目名称' , 'ccode_name'],
-  ['应用于', '__apply_spec'],
+  ['应用于', 'apply_spec'],
   ['条件', 'cond'],
   ['分配路径', 'path'],
 ]
@@ -27,8 +27,7 @@ async function upload(fileBuffer, context){
   
   const balanceEntries = flat(balance.data).filter(({cclass}) => cclass !== undefined);
   for (let entry of balanceEntries) {
-    entry.__categorized_to_tb = {type:'ref-cond-store', __apply_spec:'', cases:[]};
-    entry.__apply_spec = '';
+    entry.categorized_to_tb = {type:'ref-cond-store', applySpec:'', cases:[]};
   }
 
   const balanceDict = group(balanceEntries, ({ccode_name}) => ccode_name.toString().trim().replace(/\s*/g, ''));
@@ -37,13 +36,13 @@ async function upload(fileBuffer, context){
   rules = columnNameRemap(rules, header);
   // console.log(rules);
 
-  rules = rules.reduce((acc, {ccode_name, __apply_spec, cond, path}) => {
+  rules = rules.reduce((acc, {ccode_name, apply_spec, cond, path}) => {
     if (ccode_name === undefined || ccode_name.toString().trim().length === 0){
       const [last, ...rest] = acc;
       const {cases} = last;
       return [{...last, cases:[...cases, {cond, path}]}, ...rest];
     } else {
-      return [{ccode_name, type:'ref-cond-store', __apply_spec, cases:[{cond, path}]}, ...acc];
+      return [{ccode_name, type:'ref-cond-store', applySpec:apply_spec, cases:[{cond, path}]}, ...acc];
     }
   }, [])
   rules.reverse();
@@ -52,8 +51,7 @@ async function upload(fileBuffer, context){
     if (balanceDict[rule.ccode_name]) {
       const entries = balanceDict[rule.ccode_name];
       for (let entry of entries){
-        entry.__categorized_to_tb = rule;
-        entry.__apply_spec = rule.__apply_spec;
+        entry.categorized_to_tb = rule;
       }
     }
   }

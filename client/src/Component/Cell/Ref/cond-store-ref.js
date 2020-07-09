@@ -1,8 +1,6 @@
-import React, {useContext, useState,useRef} from 'react';
+import React, {useContext} from 'react';
 import SuggInput from './sugg-input';
 import RefBadge from './ref-badge';
-
-import {store as assignRec} from '@marvintau/chua';
 
 import { Exchange } from '../../Exchange';
 
@@ -65,7 +63,7 @@ export default ({sheetName, colName, data:rec, getPathSuggValue, getPathSuggs, g
 
   const saveApplyToSub = (e) => {
     console.log(e.target.value);
-    rec.__apply_spec = e.target.value;
+    rec[colName].applySpec = e.target.value;
   }
 
   if (!disabled){
@@ -74,7 +72,7 @@ export default ({sheetName, colName, data:rec, getPathSuggValue, getPathSuggs, g
       <div className='refcell-option'>
         <input
           placeholder='如何应用于子级项目'
-          value={rec.__apply_spec || ''}
+          value={rec[colName].applySpec || ''}
           onChange={saveApplyToSub}
           onClick={(e) => {e.stopPropagation();}}
         />

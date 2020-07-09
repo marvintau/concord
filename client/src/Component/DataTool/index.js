@@ -3,7 +3,8 @@ import GenerateTemplate from './GenerateTemplate';
 import UploadManager from './UploadManager';
 import useCreateManager from './useCreateManager';
 import EvalSheet from './EvalSheet';
-import BatchAssign from './BatchAssign';
+import BatchAssignTB from './BatchAssignTB';
+import BatchAssignCashflow from './BatchAssignCashflow';
 import CashflowEntryAssign from './CashflowEntryAssign';
 
 export {
@@ -12,6 +13,7 @@ export {
   UploadManager,
   useCreateManager,
   EvalSheet,
-  BatchAssign,
+  BatchAssignTB,
+  BatchAssignCashflow,
   CashflowEntryAssign
 }

@@ -9,7 +9,8 @@ import {
   useCreateManager ,
   ExportManager,
   EvalSheet,
-  BatchAssign,
+  BatchAssignTB,
+  BatchAssignCashflow,
   CashflowEntryAssign,
 } from '../DataTool';
   
@@ -127,7 +128,7 @@ export default ({sheet, sheetName, status, desc, colSpecs, rowEdit, isCascaded, 
   }
 
   let toolElems = [];
-  console.log(tools, 'tools');
+  // console.log(tools, 'tools');
   for (let tool of tools){
     if (tool === 'Import'){
       let props = {name:sheetName, refresh:updateSheets, setStatus, context:{...currPage, ...currArgs}};
@@ -136,8 +137,11 @@ export default ({sheet, sheetName, status, desc, colSpecs, rowEdit, isCascaded, 
     if (tool === 'EvalSheet'){
       toolElems.push(<EvalSheet key={tool} title={`刷新 ${desc} 数据`} name={sheetName} />);
     }
-    if (tool === 'BatchAssign'){
-      toolElems.push(<BatchAssign key={tool} name={sheetName} />);
+    if (tool === 'BatchAssignTB'){
+      toolElems.push(<BatchAssignTB key={tool} name={sheetName} />);
+    }
+    if (tool === 'BatchAssignCashflow'){
+      toolElems.push(<BatchAssignCashflow key={tool} name={sheetName} />);
     }
     if (tool === 'CashflowEntryAssign') {
       console.log('cashflow entry assgin')

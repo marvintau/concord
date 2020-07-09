@@ -31,7 +31,7 @@ const getCategoryPathDict = (cascadedCategories) => {
 
 const groupSum = (group, extra={}) => {
   return Object.entries(group).map(([k, g]) => {
-    console.log(g, 'group sum');
+    // console.log(g, 'group sum');
     let {ccode, ccode_name} = g[0];
     let idInfo = {ccode, ccode_name};
 
@@ -66,7 +66,7 @@ const categorize = (balance, decomposed) => {
       const {dest_ccode:dc, dest_ccode_name:dcn} = first;
       return dc ? `对方科目为 ${dcn && dcn.desc || dcn} - ${dc}` : '未归类';
     },
-    __categorized:{cond:'', cases:[], type:'ref-cond-store'}
+    categorized_to_tb:{cases:[], type:'ref-cond-store', applySpec:''}
   }
 
   // 2. 对于每个分组，如果分组内的分录有curr属性，即意味着它是之前处理过的
@@ -116,7 +116,7 @@ const categorize = (balance, decomposed) => {
     add(balance, entries, {path: pathDict[ccode]});
     if (entries.every(({__detailed_level}) => __detailed_level === undefined)) {
       const {record} = get(balance, {path: pathDict[ccode]});
-      console.log(record, 'before casting')
+      // console.log(record, 'before casting')
       record.__detailed_level = true;
     }
   }

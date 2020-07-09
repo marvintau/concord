@@ -32,7 +32,7 @@ const sheetSpecs = [
   {
     name: 'BALANCE',
     isCascaded: true,
-    tools: ['Import', 'EvalSheet', 'SaveRemote', 'BatchAssign'],
+    tools: ['Import', 'EvalSheet', 'SaveRemote', 'BatchAssignTB'],
     colSpecs: {
       ccode: {desc: '编码', width: 1, isFilterable: true},
       ccode_name: {desc: '科目名称', width: 2, isFilterable: true},
@@ -42,7 +42,7 @@ const sheetSpecs = [
       me: {desc: '期末', width: 1, isSortable: true, cellType:'Number'},
       dest_ccode_name: {desc: '对方科目', width: 0.5},
       digest: {desc: '摘要', width: 0.5},
-      __categorized_to_tb: {desc:'列入TB项目', width: 4, cellType:'Ref', attr: {defaultType:'ref-cond-store'}}
+      categorized_to_tb: {desc:'列入TB项目', width: 4, cellType:'Ref', attr: {defaultType:'ref-cond-store'}}
     }
   },
   {
@@ -70,16 +70,15 @@ const sheetSpecs = [
   {
     name: 'TRIAL_BALANCE',
     isCascaded: true,
-    tools: ['Import', 'EvalSheet', 'SaveRemote', 'CashflowEntryAssign'],
+    tools: ['Import', 'EvalSheet', 'SaveRemote', 'CashflowEntryAssign', 'BatchAssignCashflow'],
     colSpecs: {
-      ccode_name: {desc: '条目名称', width: 1, isFilterable: true},
+      ccode_name: {desc: '条目名称', width: 1.5, isFilterable: true},
       mb: {desc:'期初', width: 1, cellType:'Ref', isSortable: true},
       md: {desc:'借方', width: 1, cellType:'Ref', isSortable: true},
       mc: {desc:'贷方', width: 1, cellType:'Ref', isSortable: true},
       me: {desc:'期末', width: 1, cellType:'Ref', isSortable: true},
-      dest_ccode_name: {desc: '对方科目', width: 1},
-      digest: {desc: '摘要', width: 1},
-      __categorized_to_report: {desc:'列入报表项目', width: 5, cellType:'Ref', attr: {defaultType: 'ref-cond-store'}}
+      dest_ccode_name: {desc: '对方科目', width: 2},
+      categorized:{desc:'列入报表', width:4.5, cellType:'Ref'}
     },
   },
   {
@@ -95,11 +94,12 @@ const sheetSpecs = [
   {
     name: 'CASHFLOW',
     isCascaded: true,
-    tools: [],
+    tools: ['EvalSheet'],
     colSpecs: {
       ccode_name: {desc: '条目名称', width: 4, isFilterable: true},
-      value: {desc:'金额', width: 8, cellType:'Ref'},
-      categorized: {desc:'列入报表项目', width: 4, cellType:'Ref'}
+      md: {desc:'借方', width: 1.5, cellType:'Ref', isSortable: true},
+      mc: {desc:'贷方', width: 1.5, cellType:'Ref', isSortable: true},
+      dest_ccode_name: {desc: '对方科目', width: 5},
     },
   },
   {

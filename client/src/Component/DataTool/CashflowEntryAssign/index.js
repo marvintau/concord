@@ -1,12 +1,9 @@
 import React, {useContext, useState} from 'react';
 import { Exchange } from '../../Exchange';
 
-import {flat, fetch} from '@marvintau/chua';
-// import trav from '@marvintau/chua/src/trav';
-// import condAssign from '@marvintau/chua/src/store';
+import {get, flat, fetch, trav} from '@marvintau/chua';
 
-import {onePassRulesMD, onePassRulesMC} from './one-pass-check';
-// import {twoPassRules} from './two-pass-check';
+import {onePassRulesMD, onePassRulesMC, onePassOmit} from './one-pass-check';
 
 const getSignificantDest = (dest, sortBy) => {
   const {__children:ch} = dest;
@@ -31,10 +28,30 @@ export default function({name}){
 
   const onClick = () => {
 
+    evalSheet('CASHFLOW');
+    const leafPathMapEntries = flat(Sheets['CASHFLOW'].data).map(({ccode_name, __path:path}) => {
+      const {list} = get(Sheets['CASHFLOW'].data, {path, withList: true});
+      return [ccode_name, `CASHFLOW:${list.map(({ccode_name}) => ccode_name).join('/')}`]
+    })
+    const leafPathMap = Object.fromEntries(leafPathMapEntries);
+    // console.log(leafPathMap);
+
     evalSheet(name);
 
     const {record} = fetch('TRIAL_BALANCE:货币资金', Sheets);
-    const detailed = flat(record.__children)
+    const mones = flat(record.__children);
+
+    for (let mone of mones) {
+      if (mone.categorized === undefined) {
+        mone.categorized = {
+          type:'ref-cond-store',
+          cases:[],
+          applySpec:''
+        }
+      }
+    }
+
+    const detailed = mones
       .filter(({__detailed_level}) => __detailed_level)
       .map(({__children}) => __children)
       .flat();
@@ -48,7 +65,7 @@ export default function({name}){
     const upmostLevelDict = Object.fromEntries(upmostLevelEntries);
     console.log(upmostLevelDict, 'upmost');
 
-    const balanceTBMap = Object.fromEntries(Sheets['BALANCE'].data.map(({ccode_name, __categorized_to_tb:cate={cases:[]}})=> {
+    const balanceTBMap = Object.fromEntries(Sheets['BALANCE'].data.map(({ccode_name, categorized_to_tb:cate={cases:[]}})=> {
 
       const {path='undef'} = cate && cate.cases.length > 0 ? cate.cases[0] : {};
       const [_, tbEntry] = path.split(':');
@@ -57,11 +74,11 @@ export default function({name}){
     // console.log(balanceTBMap);
 
     // 对于每一个货币资金对应的对方科目
-    for (let mone of detailed) {
+    for (let moneRec of detailed) {
 
       // 1. 分辨是借货币资金还是贷货币资金。借货币资金意味着钱进入到货币资金账户，贷则意味着支出。借方和贷方发生
       //    将分别使用不同的规则。
-      const {ccode, ccode_name, dest_ccode, dest_ccode_name, mc:mone_mc, md:mone_md} = mone;
+      const {ccode, ccode_name, dest_ccode, dest_ccode_name, mc:mone_mc, md:mone_md} = moneRec;
       const onePassRules = mone_mc
       ? onePassRulesMC
       : onePassRulesMD;
@@ -116,8 +133,6 @@ export default function({name}){
               }
             }
 
-
-            // console.log('二次判断', ccode, ccode_name, upmostLevelDict[dest_upmost_ccode], detailed_name, '货币资金对方科目的发生额为空', mone, dest);
             console.log(`二次判断\n${
               `${ccode}:${ccode_name}`
             }\n${
@@ -127,7 +142,14 @@ export default function({name}){
             }\n\n${
               `故分配至现流表 ${tb_dest_entry[tb_entry_of_upmost_name][mone_mc ? 'mc' : 'md']}`
             }\n`);
-  
+
+            const cashflow_dest_entry = tb_dest_entry[tb_entry_of_upmost_name][mone_mc ? 'mc' : 'md'];
+            const cashflow_dest_path = leafPathMap[cashflow_dest_entry];
+            moneRec.categorized = {type:'ref-cond-store', cases:[{path:cashflow_dest_path}]};
+            // console.log(RefSheets);
+            // const result = condAssign([{path:`CASHFLOW:${cashflow_dest_entry}`}], moneRec, RefSheets);
+            // console.log(result, '二次判断 result');
+
           } else {
             const destAccrual = dest[mone_mc ? 'md' : 'mc'];
             const significantDest = getSignificantDest(dest, mone_mc ? 'md' : 'mc');
@@ -135,7 +157,6 @@ export default function({name}){
             const tb_entry_of_upmost_name = balanceTBMap[upmostLevelOfSigniDest];
             const tb_dest_entry = onePassRules[tb_entry_of_upmost_name];
 
-            // console.log('二次判断', ccode, ccode_name, upmostLevelDict[dest_upmost_ccode], detailed_name, '货币资金对方科目的发生额最大的对方科目', significantDest, tb_dest_entry, mone, dest);
             console.log(`二次判断\n${
               `${ccode}:${ccode_name}`
             }\n${
@@ -151,6 +172,11 @@ export default function({name}){
             }\n${
               `故分配至现流表 ${tb_dest_entry}`
             }\n`)
+
+            const cashflow_dest_entry = onePassRules[tb_entry_of_upmost_name];
+            const cashflow_dest_path = leafPathMap[cashflow_dest_entry];
+            moneRec.categorized = {type:'ref-cond-store', cases:[{path:cashflow_dest_path}]};
+
           }
 
         // 否则则进行一次判断。注意，当我们进行明细科目划分时，会遇到这样的情况，就是
@@ -163,7 +189,8 @@ export default function({name}){
             `${ccode}:${ccode_name}`
           }\n${
             `借方:${num(mone_md)} 贷方${num(mone_mc)}`
-          }\n`);
+          }\n
+          明细科目的一次判断`);
         }
 
       // 3. 如果不是明细科目，那么我们首先判断对方科目是否识别。在首先针对序时帐进行发
@@ -182,22 +209,36 @@ export default function({name}){
           }\n${
             `借方:${num(mone_md)} 贷方${num(mone_mc)} 无法识别的对方科目 ${dest_ccode_name} 手工分配`
           }\n`);
-          // console.log('一次判断', ccode, ccode_name, dest_ccode_name, '无法识别的对方科目')
         } else {
           // 对于可以识别的对方科目，则获取对方科目所在的一级科目所在的TB条目
           const dest_upmost_name = upmostLevelDict[dest_ccode.slice(0, 4)];
-          // const {record} = fetch(`BALANCE:${dest_upmost_name}`, Sheets);
-          const tb_entry_of_upmost_name = balanceTBMap[dest_upmost_name];
-          const tb_dest_entry = onePassRules[tb_entry_of_upmost_name];
-          // console.log('一次判断', ccode, ccode_name, tb_entry_of_upmost_name, tb_dest_entry);
-          console.log(`一次判断\n${
-            `${ccode}:${ccode_name}`
-          }\n${
-            `借方:${num(mone_md)} 贷方${num(mone_mc)} 对方科目: ${dest_ccode_name} 属于${dest_upmost_name}`
-          }\n${
-            `故分配至现流表 ${tb_dest_entry}`
-          }\n`);
 
+          if (onePassOmit.includes(dest_upmost_name)) {
+            console.log(`一次判断\n${
+              `${ccode}:${ccode_name}`
+            }\n${
+              `借方:${num(mone_md)} 贷方${num(mone_mc)} 对方科目: ${dest_ccode_name} 属于${dest_upmost_name}`
+            }\n${
+              `按规则忽略`
+            }\n`);
+  
+          } else {
+
+            const tb_entry_of_upmost_name = balanceTBMap[dest_upmost_name];
+            const tb_dest_entry = onePassRules[tb_entry_of_upmost_name];
+
+            console.log(`一次判断\n${
+              `${ccode}:${ccode_name}`
+            }\n${
+              `借方:${num(mone_md)} 贷方${num(mone_mc)} 对方科目: ${dest_ccode_name} 属于${dest_upmost_name}`
+            }\n${
+              `故分配至现流表 ${tb_dest_entry}`
+            }\n`);
+
+            const cashflow_dest_entry = onePassRules[tb_entry_of_upmost_name];
+            const cashflow_dest_path = leafPathMap[cashflow_dest_entry];
+            moneRec.categorized = {type:'ref-cond-store', cases:[{path:cashflow_dest_path}]};
+          }
         }
       }
     }
@@ -205,6 +246,6 @@ export default function({name}){
   }
 
   return <div className="upload-wrapper">
-      <button className="button upload" onClick={onClick}>现流表第一方法</button>
+      <button className="button upload" onClick={onClick}>自动生成现流表分配路径</button>
   </div>
 }

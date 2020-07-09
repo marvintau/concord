@@ -101,7 +101,6 @@ const dirs = [
     name: 'Finance',
     desc: '财务与报表管理',
     type: 'TEXT',
-    // children: ['AccrualAnalysis', 'Balance', 'TrialBalance', 'FinancialPositionStatement', 'ProfitAndLoss', 'Cashflow', 'Equity', 'CashflowStatement'],
     children: ['Balance', 'TrialBalance', 'FinancialPositionStatement', 'ProfitAndLoss', 'Equity', 'CashflowStatement'],
   },
  
@@ -113,7 +112,6 @@ const dirs = [
     type: 'DATA',
     isHidingManual: true,
     data: ['BALANCE', 'TRIAL_BALANCE'],
-    // data: ['BALANCE'],
     importedData: [
       {name: 'JOURNAL', desc:'序时帐'},
       {name: 'CURR_JOURNAL', desc:'往来-序时帐'},
@@ -135,7 +133,7 @@ const dirs = [
     name: 'TrialBalance',
     desc: '试算平衡表',
     type: 'DATA',
-    data: ['TRIAL_BALANCE', 'SOFP', 'PAL'],
+    data: ['TRIAL_BALANCE', 'SOFP', 'PAL', 'CASHFLOW'],
     isHidingManual: true,
   },
   {

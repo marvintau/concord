@@ -71,6 +71,21 @@ async function upload(fileBuffer, context){
       }
       // console.log(sheet);
     }
+
+    if (tableName === 'CASHFLOW') {
+      console.log('handling casahflow');
+      for (let rec of sheet) {
+        rec.md = {type:'ref-fetch', expr:rec.md || '', disp:'res'}
+        rec.mc = {type:'ref-fetch', expr:rec.mc || '', disp:'res'}
+      }
+    }
+
+    if ('ccode_name' in sheet[0]){
+      // console.log('marshalling ccode_name');
+      for (let rec of sheet) {
+        rec.ccode_name = rec.ccode_name.trim();
+      }
+    }
     
     if ('ccode' in sheet[0]) {
       sheet = cascade(sheet, 'ccode');
