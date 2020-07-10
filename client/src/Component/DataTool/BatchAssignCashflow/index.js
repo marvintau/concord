@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import { Exchange } from '../../Exchange';
 
-import {trav, fetch, store as condAssign} from '@marvintau/chua';
+import {trav, fetch, store as condAssign} from '@marvintau/jpl';
 
 const updateResult = (col) => {
 
@@ -45,13 +45,13 @@ const updateResult = (col) => {
     }
   }
 }
-export default function({name}){
+export default function({sheetName}){
 
   const {Sheets, evalSheet} = useContext(Exchange);
 
   const onClick = () => {
 
-    evalSheet(name);
+    evalSheet(sheetName);
 
     const {record:{__children:sourceSheet}} = fetch('TRIAL_BALANCE:货币资金', Sheets);
 
@@ -68,10 +68,10 @@ export default function({name}){
       }
     })
 
-    evalSheet(name);
+    evalSheet(sheetName);
   }
 
-  return <div className="upload-wrapper">
+  return [<div className="upload-wrapper">
       <button className="button upload" onClick={onClick}>分配至现流表</button>
-  </div>
+  </div>]
 }

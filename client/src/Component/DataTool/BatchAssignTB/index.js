@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import { Exchange } from '../../Exchange';
 
-import {trav, store as condAssign} from '@marvintau/chua';
+import {trav, store as condAssign} from '@marvintau/jpl';
 
 const updateResult = (col) => {
 
@@ -45,15 +45,15 @@ const updateResult = (col) => {
     }
   }
 }
-export default function({name}){
+export default function({sheetName}){
 
   const {Sheets, evalSheet} = useContext(Exchange);
 
   const onClick = () => {
 
-    evalSheet(name);
+    evalSheet(sheetName);
 
-    const sourceSheet = Sheets[name].data;
+    const sourceSheet = Sheets[sheetName].data;
 
     trav(sourceSheet, (rec) => {
       if(rec.categorized_to_tb === undefined) {
@@ -77,10 +77,10 @@ export default function({name}){
       updateResult(rec.categorized_to_tb);
     })
 
-    evalSheet(name);
+    evalSheet(sheetName);
   }
 
-  return <div className="upload-wrapper">
+  return [<div className="upload-wrapper">
       <button className="button upload" onClick={onClick}>批量分类</button>
-  </div>
+  </div>]
 }

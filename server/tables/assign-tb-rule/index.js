@@ -1,7 +1,7 @@
 const {storeTable, fetchTable} = require('../data-store-util');
 const {readSingleSheet, columnNameRemap} = require('../data-process-util');
 
-const {flat, trav, group} = require('@marvintau/chua');
+const {flat, trav, group} = require('@marvintau/jpl');
 
 let header = [
   ['科目名称' , 'ccode_name'],

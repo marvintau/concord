@@ -1,7 +1,7 @@
 import React, {useContext, useState} from 'react';
 import { Exchange } from '../../Exchange';
 
-import {get, flat, fetch, trav} from '@marvintau/chua';
+import {get, flat, fetch, trav} from '@marvintau/jpl';
 
 import {onePassRulesMD, onePassRulesMC, onePassOmit} from './one-pass-check';
 
@@ -245,7 +245,7 @@ export default function({name}){
 
   }
 
-  return <div className="upload-wrapper">
+  return [<div className="upload-wrapper" key='cashflow-assign-button'>
       <button className="button upload" onClick={onClick}>自动生成现流表分配路径</button>
-  </div>
+  </div>]
 }

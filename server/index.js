@@ -11,7 +11,7 @@ const Send = require('koa-send');
 const Router = require('@koa/router');
 const Multer = require('@koa/multer');
 
-const exportExcel = require('./xlsx-export');
+// const exportExcel = require('./xlsx-export');
 const generateDocs = require('./generate-docs');
 
 const DataTables = require('./tables');
@@ -74,12 +74,12 @@ router.post('/push/:data_name', async ctx => {
   }
 })
 
-router.post('/export/:data_name', async ctx => {
-  const {data_name} = ctx.params;
-  const {currArgs} = ctx.request.body;
-  const exported = await exportExcel(data_name, currArgs);
-  ctx.body = exported;
-})
+// router.post('/export/:data_name', async ctx => {
+//   const {data_name} = ctx.params;
+//   const {currArgs} = ctx.request.body;
+//   const exported = await exportExcel(data_name, currArgs);
+//   ctx.body = exported;
+// })
 
 router.post('/generate-letters', async ctx => {
   const {project_id, project_name} = ctx.request.body;

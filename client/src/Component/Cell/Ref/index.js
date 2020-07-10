@@ -4,7 +4,7 @@ import FetchRef from './fetch-ref';
 import CondStoreRef from './cond-store-ref';
 
 import {Exchange} from '../../Exchange';
-import {fetch as fetchRec} from '@marvintau/chua';
+import {fetch as fetchRec} from '@marvintau/jpl';
 
 import Text from '../Text';
 import Number from '../Number';

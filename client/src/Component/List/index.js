@@ -3,18 +3,7 @@ import React, {useContext, useState, useEffect} from 'react';
 import {Spinner} from 'reactstrap';
 import TreeList from './TreeList';
 
-import { 
-  UploadManager ,
-  GenerateTemplate ,
-  useCreateManager ,
-  ExportManager,
-  EvalSheet,
-  BatchAssignTB,
-  BatchAssignCashflow,
-  CashflowEntryAssign,
-} from '../DataTool';
-  
-
+import DataTool from '../DataTool';
 
 import Header from './Header';
 import {Exchange} from '../Exchange';
@@ -24,6 +13,8 @@ import CreateRow from './Row';
 import CreateFilterRow from './FilterRow';
 
 import './list.css';
+
+console.log(DataTool, 'dataTool');
 
 const LoadIndicator = ({status}) => {
   const text = {
@@ -81,11 +72,11 @@ function attachColumnsWithWidth(colSpecs) {
   }))
 }
 
-export default ({sheet, sheetName, status, desc, colSpecs, rowEdit, isCascaded, tools}) => {
+export default ({sheet, sheetName, status, colSpecs, rowEdit, isCascaded, tools}) => {
 
   const {updateSheets, setStatus, pull, push} = useContext(Exchange);
   const {currPage, currArgs} = useContext(DepRouterContext);
-  const {toggleCreate, isCreating, createManager} = useCreateManager(sheetName, colSpecs);
+  // const {toggleCreate, isCreating, createManager} = useCreateManager(sheetName, colSpecs);
 
   // const {isCascaded, tools} = currPage;
   const [folded, setFold] = useState(true);
@@ -127,57 +118,33 @@ export default ({sheet, sheetName, status, desc, colSpecs, rowEdit, isCascaded, 
     push(sheetName, {type:'DATA', data: sheet.data, ...currArgs});
   }
 
-  let toolElems = [];
-  // console.log(tools, 'tools');
-  for (let tool of tools){
-    if (tool === 'Import'){
-      let props = {name:sheetName, refresh:updateSheets, setStatus, context:{...currPage, ...currArgs}};
-      toolElems.push(<UploadManager key={tool} desc={desc} {...props} />);
-    }
-    if (tool === 'EvalSheet'){
-      toolElems.push(<EvalSheet key={tool} title={`刷新 ${desc} 数据`} name={sheetName} />);
-    }
-    if (tool === 'BatchAssignTB'){
-      toolElems.push(<BatchAssignTB key={tool} name={sheetName} />);
-    }
-    if (tool === 'BatchAssignCashflow'){
-      toolElems.push(<BatchAssignCashflow key={tool} name={sheetName} />);
-    }
-    if (tool === 'CashflowEntryAssign') {
-      console.log('cashflow entry assgin')
-      toolElems.push(<CashflowEntryAssign key={tool} name={sheetName} />);
-    }
-    if (tool === 'HeaderCreate'){
-      toolElems.push(<button key={tool}
-        className='button'
-        onClick={() => toggleCreate()}
-      >{`${isCreating ? '取消' : ''}创建${desc}条目`}
-      </button>)
-    }
-    if (tool === 'SaveRemote'){
-      toolElems.push(<button key="saveRemote"
-        className='button warning'
-        onClick={() => save()}
-      >保存至服务器</button>)
-    }
-    if (tool === 'ExportExcel'){
-      toolElems.push(<ExportManager key={tool} {...{name:sheetName, colSpecs, ...currPage, ...currArgs}}/>);
-    }
-    if (tool === 'GenerateTemplate') {
-      toolElems.push(<GenerateTemplate key={tool} {...currArgs} />)
-    }
+  let toolButtonElems = [];
+  let toolForms = [];
+  let toolArgs = {
+    sheetName,
+    colSpecs,
+    setStatus,
+    context:{...currPage, ...currArgs},
+    refresh: updateSheets
+  }
+  for (let name of tools){
+
+    // console.log(name, DataTool[name], 'check')
+    const [button, elem] = DataTool[name](toolArgs);
+    toolButtonElems.push(button);
+    toolForms.push(elem);
+
   }
 
   return <div className="list-wrapper">
     <div className="upload-file-bar">
       {isCascaded && <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>}
-      {toolElems}
+      {toolButtonElems}
     </div>
     <div>
-      {createManager}
+      {toolForms}
     </div>
     <Header {...{setColWidth, colSpecs, hidden: !status.startsWith('DONE')}} />
     {content}
   </div>
-  // return content
 }

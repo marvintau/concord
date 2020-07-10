@@ -3,7 +3,7 @@ const {init, remove, retrieve, create} = require('./database');
 const sheetSpecs = [
   {
     name: 'PROJECT',
-    tools: ['HeaderCreate'],
+    tools: ['useCreate'],
     colSpecs: {
       year: {desc: '年度', width: 2, isFilterable: true},
       companyName: {desc: '项目（企业）名称', width: 10, isFilterable: true},
@@ -12,14 +12,14 @@ const sheetSpecs = [
   },
   {
     name: 'CATEGORY_NAME_ALIASES',
-    tools: ['Import', 'HeaderCreate', 'SaveRemote'],
+    tools: ['useImport', 'useCreate', 'SaveRemote'],
     colSpecs: {
       alias: {desc: '科目别名', width: 12, cellType:'Labels'},
     }
   },
   {
     name: 'CONFIRMATION_MANAGEMENT',
-    tools: ['Import', 'GenerateTemplate'],
+    tools: ['useImport', 'GenerateTemplate'],
     qrLink:true,
     colSpecs: {
       ID: {desc: '编号', width: 2, isFilterable: true},
@@ -32,7 +32,7 @@ const sheetSpecs = [
   {
     name: 'BALANCE',
     isCascaded: true,
-    tools: ['Import', 'EvalSheet', 'SaveRemote', 'BatchAssignTB'],
+    tools: ['useImport', 'EvalSheet', 'BatchAssignTB'],
     colSpecs: {
       ccode: {desc: '编码', width: 1, isFilterable: true},
       ccode_name: {desc: '科目名称', width: 2, isFilterable: true},
@@ -47,7 +47,7 @@ const sheetSpecs = [
   },
   {
     name: 'CONFIRMATION_TEMPLATE',
-    tools: ['HeaderCreate'],
+    tools: ['useCreate'],
     colSpecs: {
       tempName: {desc: '模版名称', width: 4, isFilerable: true},
       tempType: {desc: '模版类型', width: 4, isFilerable: true},
@@ -58,7 +58,7 @@ const sheetSpecs = [
   {
     name: 'SOFP',
     isCascaded: true,
-    tools: ['Import', 'EvalSheet'],
+    tools: ['useImport', 'EvalSheet'],
     colSpecs: {
       ccode_name: {desc: '条目', width: 3, isFilterable: true},
       mb: {desc: '期初', width: 2, isFilterable: true, cellType:'Ref'},
@@ -70,7 +70,7 @@ const sheetSpecs = [
   {
     name: 'TRIAL_BALANCE',
     isCascaded: true,
-    tools: ['Import', 'EvalSheet', 'SaveRemote', 'CashflowEntryAssign', 'BatchAssignCashflow'],
+    tools: ['useImport', 'EvalSheet', 'CashflowEntryAssign', 'BatchAssignCashflow'],
     colSpecs: {
       ccode_name: {desc: '条目名称', width: 1.5, isFilterable: true},
       mb: {desc:'期初', width: 1, cellType:'Ref', isSortable: true},

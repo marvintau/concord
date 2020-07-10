@@ -2,7 +2,7 @@ const {storeTable, fetchTable, purge} = require('../data-store-util');
 
 const {uniq, cascade, readSingleSheet, columnNameRemap} = require('../data-process-util');
 
-const trav = require('@marvintau/chua/src/trav');
+const {trav} = require('@marvintau/jpl');
 
 const {normalize, decompose} = require('./voucher');
 const {categorize} = require('./categorize');

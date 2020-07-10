@@ -4,7 +4,7 @@ import RefBadge from './ref-badge';
 
 import {Exchange} from '../../Exchange';
 
-import {fetch as fetchRec} from '@marvintau/chua';
+import {fetch as fetchRec} from '@marvintau/jpl';
 
 import './refcell.css'
 

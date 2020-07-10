@@ -1,5 +1,6 @@
 .upload-wrapper {
   display: flex;
+  margin: 5px;
 }
 
 .input-button {

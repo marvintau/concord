@@ -1,6 +1,6 @@
 import React, {useState, createContext} from 'react'; 
 import Agnt from 'superagent';
-import {add, del, set, trav, expr as evalExpr, fetch as fetchRec, flat} from '@marvintau/chua';
+import {add, del, set, trav, expr as evalExpr, fetch as fetchRec, flat} from '@marvintau/jpl';
 
 export const Exchange = createContext({
   Sheets: {},

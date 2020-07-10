@@ -5,7 +5,7 @@ import {DepRouterContext} from '../../DepRouter';
 
 import './create-manager.css'
 
-export default (sheetName, colSpecs) => {
+export default ({sheetName, colSpecs}) => {
 
   const [isCreating, setCreating] = useState(false);
 
@@ -48,11 +48,17 @@ export default (sheetName, colSpecs) => {
 
   elems.push(<button className="button" key="submit!" onClick={submit}>创建</button>)
 
-  const createManager = isCreating ? <form className='create-form' ref={formElem}>{elems}</form> : <></>;
+  const createManager = isCreating
+  ? <form key='create-form' className='create-form' ref={formElem}>{elems}</form>
+  : <div key='create-form'></div>;
 
   const toggleCreate = () => {
     setCreating(!isCreating);
   }
 
-  return {toggleCreate, isCreating, createManager};
+  const createManagerButton = <button className='button' key='create-button' onClick={() => toggleCreate()}>
+    {`${isCreating ? '取消' : ''}创建条目`}
+  </button>
+
+  return [createManagerButton, createManager];
 }

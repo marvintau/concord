@@ -1,7 +1,5 @@
 import React, {useContext, useState, useEffect} from 'react';
 import {BrowserView, MobileOnlyView} from 'react-device-detect';
-import { TabContent, TabPane, Nav, NavItem, NavLink} from 'reactstrap';
-import classnames from 'classnames';
 
 import QRCode from 'qrcode.react';
 
@@ -31,12 +29,6 @@ const BrowserPage = () => {
   const {currPage, currArgs} = useContext(DepRouterContext);
   const {Sheets, status} = useContext(Exchange);
   
-  // const [, forceUpdate] = useState();
-  // useEffect(() => {
-  //   console.log(status, 'changed')
-  //   forceUpdate();
-  // }, [status])
-
   const {type, name, children, qrLink, manual, isHidingManual} = currPage;
 
   const manualPage = <ReactMarkdown
@@ -77,7 +69,6 @@ const BrowserPage = () => {
     const {name: sheetName, ...restListProps} = data[0]
 
     console.log(`Navigated to page: [${pageName}]`);
-    console.log('data:', Sheets[sheetName], sheetName);
 
     return <div className="content-container">
       <List {...{sheet: Sheets[sheetName], sheetName, desc, status, ...restListProps}} />

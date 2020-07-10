@@ -1,8 +1,5 @@
 const now = require('performance-now');
-
-const {trav, flat} = require('@marvintau/chua');
-// const trav = require('@marvintau/chua/src/trav')
-// const flat = require('@marvintau/chua/src/flat')
+const {trav, flat} = require('@marvintau/jpl');
 
 const mongo = require('mongodb').MongoClient;
 

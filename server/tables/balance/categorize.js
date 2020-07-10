@@ -1,10 +1,6 @@
 const now = require('performance-now');
 
-const group = require('@marvintau/chua/src/group');
-const flat = require('@marvintau/chua/src/flat');
-const trav = require('@marvintau/chua/src/trav');
-const add = require('@marvintau/chua/src/add');
-const get = require('@marvintau/chua/src/get');
+const {group, flat, trav, add, get} = require('@marvintau/jpl');
 
 const getCategoryPathDict = (cascadedCategories) => {
 
