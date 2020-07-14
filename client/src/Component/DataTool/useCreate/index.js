@@ -1,7 +1,6 @@
 import React, {useRef, useContext, useState} from 'react';
 
 import {Exchange} from '../../Exchange';
-import {DepRouterContext} from '../../DepRouter';
 
 import './create-manager.css'
 
@@ -9,8 +8,7 @@ export default ({hidden, sheetName, colSpecs}) => {
 
   const [isCreating, setCreating] = useState(false);
 
-  const {push, pull} = useContext(Exchange);
-  const {currPage} = useContext(DepRouterContext);
+  const {push} = useContext(Exchange);
 
   const formElem = useRef(null);
 
@@ -39,8 +37,8 @@ export default ({hidden, sheetName, colSpecs}) => {
       console.log('creating record to', sheetName);
 
       push(sheetName, {type: 'ADD_REC', rec: {...rec, table: sheetName}});
-      // pull([sheetName], currPage, true);
       setCreating(false);
+
     } else {
       formElem.current.classList.add('was-validated');
     }

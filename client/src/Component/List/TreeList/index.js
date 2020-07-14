@@ -17,7 +17,7 @@ const LoadIndicator = ({status}) => {
 };
 
 const ErrorIndicator = ({status}) => {
-  console.log(status, 'error indicator' )
+  // console.log(status, 'error indicator' )
   const text = {
     'DEAD_LOAD' : '网络错误，请刷新重试，或联系开发人员',
     'DEAD_INFO' : '未指定数据和远程地址。请联系开发人员',
@@ -41,7 +41,7 @@ const ErrorIndicator = ({status}) => {
 
 export default function({itemData, Row:OrigRow, HistRow, FilterRow, overscan, status}){
 
-  console.log('before first useState called');
+  // console.log('before first useState called');
 
   const [history, setHistory] = useState([]);
   const [sublist, setSublist] = useState(itemData);
@@ -124,7 +124,7 @@ export default function({itemData, Row:OrigRow, HistRow, FilterRow, overscan, st
     <OrigRow {...{ref, data, style, select}} />
   )
 
-  console.log(status, 'before rendering list')
+  // console.log(status, 'before rendering list')
   if (status.startsWith('DEAD')){
     return <ErrorIndicator {...{status}} />
   } else if (['PUSH', 'PULL'].includes(status)){

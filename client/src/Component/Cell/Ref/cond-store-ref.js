@@ -12,7 +12,7 @@ const buttonStyle = {
 
 export default ({sheetName, colName, data:rec, getPathSuggValue, getPathSuggs, getExprSuggs, getExprSuggValue}) => {
 
-  const {Sheets, evalSheet} = useContext(Exchange);
+  const {evalSheet} = useContext(Exchange);
 
   const {cases, result, disabled} = rec[colName];
   

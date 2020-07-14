@@ -31,7 +31,7 @@ export default ({result, code}) => {
     setExplained(!explained)
   }
 
-  const className = `refcell-badge ${code && code.slice(0, 4).toLowerCase() || 'NONE' }`;
+  const className = `refcell-badge ${code ? code.slice(0, 4).toLowerCase() : 'NONE' }`;
 
   return <div {...{className, onClick}}>
     {content}

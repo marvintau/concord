@@ -9,20 +9,21 @@ import './page.css';
 import './docu.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-const qrLinkContent = (name, dict) => {
+// const qrLinkContent = (name, dict) => {
 
-  const {protocol, host} = window.location;
-  const linkString = Object.entries(dict).map(([k, v]) => `${k}=${v}`).join('&');
-  const encoded = encodeURI(`${protocol}//${host}/${name}?${linkString}`);
-  console.log(encoded, 'qrContent');
-  return encoded;
-}
+//   const {protocol, host} = window.location;
+//   const linkString = Object.entries(dict).map(([k, v]) => `${k}=${v}`).join('&');
+//   const encoded = encodeURI(`${protocol}//${host}/${name}?${linkString}`);
+//   console.log(encoded, 'qrContent');
+//   return encoded;
+// }
 
 const BrowserPage = () => {
-  const {currPage, currArgs} = useContext(DepRouterContext);
+  const {currPage} = useContext(DepRouterContext);
   const {Sheets, status} = useContext(Exchange);
   
-  const {type, name, children, qrLink, manual, isHidingManual} = currPage;
+  // const {type, name, children, qrLink, manual, isHidingManual} = currPage;
+  const {type, children, manual, isHidingManual} = currPage;
 
   const manualPage = <ReactMarkdown
     source={manual}
@@ -57,9 +58,9 @@ const BrowserPage = () => {
 
     return <div className="content-container">
       <List {...{sheet: Sheets[sheetName], sheetName, desc, status, ...restListProps}} />
-      {/* {!isHidingManual && <div className="page-right-side">
+      {!isHidingManual && <div className="page-right-side">
         {manualPage}
-      </div>} */}
+      </div>}
     </div>
   }
 
