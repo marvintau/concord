@@ -17,7 +17,6 @@
     "@koa/multer": "^2.0.2",
     "@koa/router": "^8.0.8",
     "@marvintau/jpl": "^0.1.2",
-    "@marvintau/poloscope": "0.0.5",
     "@pathofdev/react-tag-input": "^1.0.7",
     "@zxing/library": "^0.16.0",
     "archiver-promise": "^1.0.0",
@@ -54,6 +53,7 @@
     "@babel/plugin-transform-runtime": "^7.8.3",
     "babel-plugin-transform-runtime": "^6.23.0",
     "concurrently": "^5.1.0",
+    "eslint-plugin-react-hooks": "^4.0.8",
     "node-dev": "^4.0.0"
   },
   "babel": {

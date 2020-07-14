@@ -28,7 +28,7 @@ function Button({stage, progress, select}) {
     }
 }
 
-export default function({sheetName, context={}, setStatus, refresh}){
+export default function({hidden, sheetName, context={}, setStatus, refresh}){
     
     const [isUploading, setIsUuploading] = useState(false);
     const [stage, setStage] = useState('READY');
@@ -89,9 +89,11 @@ export default function({sheetName, context={}, setStatus, refresh}){
       </div>
     : <div key='import-form'></div>;
 
-    const uploadButton = <button className='button' onClick={toggleUploading} key='import-button'>
-        {`${isUploading ? '取消导入' : '导入数据'}`}
-    </button>
+    const uploadButton = hidden
+    ? <div></div>
+    : <button className='button' onClick={toggleUploading} key='import-button'>
+          {`${isUploading ? '取消导入' : '导入数据'}`}
+      </button>
 
     return [uploadButton, uploadForm]
 }

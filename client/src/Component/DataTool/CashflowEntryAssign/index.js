@@ -1,7 +1,7 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext} from 'react';
 import { Exchange } from '../../Exchange';
 
-import {get, flat, fetch, trav} from '@marvintau/jpl';
+import {get, flat, fetch} from '@marvintau/jpl';
 
 import {onePassRulesMD, onePassRulesMC, onePassOmit} from './one-pass-check';
 
@@ -22,7 +22,7 @@ function num(n) {
   return n.toFixed(2).padStart(14);
 }
 
-export default function({name}){
+export default function({hidden, sheetName}){
 
   const {Sheets, evalSheet} = useContext(Exchange);
 
@@ -36,7 +36,7 @@ export default function({name}){
     const leafPathMap = Object.fromEntries(leafPathMapEntries);
     // console.log(leafPathMap);
 
-    evalSheet(name);
+    evalSheet(sheetName);
 
     const {record} = fetch('TRIAL_BALANCE:货币资金', Sheets);
     const mones = flat(record.__children);
@@ -245,7 +245,11 @@ export default function({name}){
 
   }
 
-  return [<div className="upload-wrapper" key='cashflow-assign-button'>
-      <button className="button upload" onClick={onClick}>自动生成现流表分配路径</button>
-  </div>]
+  const elem = hidden
+  ? <div></div>
+  : <div className="upload-wrapper" key='cashflow-assign-button'>
+        <button className="button upload" onClick={onClick}>自动生成现流表分配路径</button>
+    </div>
+
+  return [elem]
 }

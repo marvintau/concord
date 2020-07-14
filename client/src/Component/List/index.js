@@ -1,6 +1,5 @@
 import React, {useContext, useState, useEffect} from 'react';
 
-import {Spinner} from 'reactstrap';
 import TreeList from './TreeList';
 
 import DataTool from '../DataTool';
@@ -13,42 +12,6 @@ import CreateRow from './Row';
 import CreateFilterRow from './FilterRow';
 
 import './list.css';
-
-console.log(DataTool, 'dataTool');
-
-const LoadIndicator = ({status}) => {
-  const text = {
-    'PUSH': '更新',
-    'PULL': '载入'
-  }[status];
-  return <div className="nodata-indicator">
-    <Spinner color="info" />
-    <div style={{marginTop:'20px'}}>正在{text}数据...</div>
-  </div>
-};
-
-const ErrorIndicator = ({status}) => {
-  console.log(status, 'error indicator' )
-  const text = {
-    'DEAD_LOAD' : '网络错误，请刷新重试，或联系开发人员',
-    'DEAD_INFO' : '未指定数据和远程地址。请联系开发人员',
-    'DEAD_NOT_FOUND' : '没有找到数据，可能是您还没上传',
-    'DEAD_NOT_IMPL_PULL': '数据存在，但是没有实现表示数据的方法，请联系开发人员',
-    'DEAD_NOT_IMPL_PUSH': '服务器没有实现更新数据的方法，请联系开发人员',
-    'DEAD_NOT_IMPL_UPLOAD': '服务器没有实现上传数据的处理方法，请联系开发人员',
-    'DEAD_NOT_IMPL' : '服务器上没有对应数据的处理方法，请联系开发人员',
-    'DEAD_PROC_ERROR' : '处理数据时发生了错误，请联系开发人员',
-    'DEAD_BALANCE_NOT_FOUND': '需要您先上传科目余额表',
-    'DEAD_UNKNOWN_UPLOAD_ERROR': '上传时发生了错误',
-    'DEAD_UNKNOWN_FETCH_ERROR': '获取数据时发生了错误',
-    'DEAD_UNKNOWN_PUSH_ERROR': '更新数据库时发生了错误',
-    'DEAD_INVALID_NUMERIC_FORMAT': '不支持的数字格式。通常发生在您上传的Excel中，应该是数字的单元格中包含了文本'
-  }[status];
-  return <div className="nodata-indicator">
-    <div className="bad-icon" />
-    <div style={{marginTop:'20px'}}>{text}</div>
-  </div>
-}
 
 const flatten = (data) => {
   const stack = [...data];
@@ -98,39 +61,31 @@ export default ({sheet, sheetName, status, colSpecs, rowEdit, isCascaded, tools}
     setCols({...cols, [key]: col})
   }
 
-  let content;
-  if (status.startsWith('DEAD')){
-    content = <ErrorIndicator {...{status}} />
-  } else if (['PUSH', 'PULL'].includes(status)){
-    content = <LoadIndicator {...{status}} />
-  } else if (status.startsWith('DONE')){
-    const {data} = sheet;
+  const data = sheet ? sheet.data : [];
 
-    const Row = CreateRow(cols, rowEdit, sheetName);
-    const FilterRow = CreateFilterRow(cols)
-    const HistRow = CreateRow(cols, rowEdit, sheetName, {editable: false, push, pull})
-
-    content = <TreeList {...{Row, FilterRow, HistRow, itemData: (!isCascaded || !folded) ? flatten(data) : data}} />;
-
-  }
-
-  const save = () => {
-    push(sheetName, {type:'DATA', data: sheet.data, ...currArgs});
+  const treeListProps = {
+    Row: CreateRow(cols, rowEdit, sheetName),
+    FilterRow: CreateFilterRow(cols),
+    HistRow: CreateRow(cols, rowEdit, sheetName, {editable: false, push, pull}),
+    itemData: (!isCascaded || !folded) ? flatten(data) : data,
+    status
   }
 
   let toolButtonElems = [];
   let toolForms = [];
-  let toolArgs = {
-    sheetName,
-    colSpecs,
-    setStatus,
-    context:{...currPage, ...currArgs},
-    refresh: updateSheets
-  }
-  for (let name of tools){
 
-    // console.log(name, DataTool[name], 'check')
-    const [button, elem] = DataTool[name](toolArgs);
+  for (let [toolName, tool] of Object.entries(DataTool)){
+
+    let toolArgs = {
+      hidden: !tools.includes(toolName),
+      sheetName,
+      colSpecs,
+      setStatus,
+      context:{...currPage, ...currArgs},
+      refresh: updateSheets
+    }
+  
+    const [button, elem] = tool(toolArgs);
     toolButtonElems.push(button);
     toolForms.push(elem);
 
@@ -138,13 +93,13 @@ export default ({sheet, sheetName, status, colSpecs, rowEdit, isCascaded, tools}
 
   return <div className="list-wrapper">
     <div className="upload-file-bar">
-      {isCascaded && <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>}
+      <button className='button' onClick={() => setFold(!folded)}>{folded ? '展开' : '收拢'}</button>
       {toolButtonElems}
     </div>
     <div>
       {toolForms}
     </div>
     <Header {...{setColWidth, colSpecs, hidden: !status.startsWith('DONE')}} />
-    {content}
+    <TreeList {...treeListProps} />
   </div>
 }

@@ -1,7 +1,7 @@
-import React, {useRef, useState, useContext} from 'react';
+import React, {useContext} from 'react';
 import { Exchange } from '../../Exchange';
 
-export default function({title="刷新数据表", sheetName}){
+export default function({title="刷新数据表", hidden, sheetName}){
 
   const {evalSheet} = useContext(Exchange);
 
@@ -10,7 +10,10 @@ export default function({title="刷新数据表", sheetName}){
     evalSheet(sheetName);
   }
 
-  return [<div className="upload-wrapper" key='eval-button'>
+  const elem = hidden
+  ? <div></div>
+  : <div className="upload-wrapper" key='eval-button'>
       <button className="button upload" onClick={onClick}>{title}</button>
-  </div>]
+    </div>
+  return [elem]
 }

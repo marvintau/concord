@@ -9,7 +9,7 @@ import CashflowEntryAssign from './CashflowEntryAssign';
 
 export default {
   useExport,
-  GenerateTemplate,
+  // GenerateTemplate,
   useImport,
   useCreate,
   EvalSheet,

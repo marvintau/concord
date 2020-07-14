@@ -10,7 +10,7 @@ function s2ab(s) {
   return buf;    
 }
 
-export default ({name, desc, companyName}) => {
+export default ({hidden, name, desc, companyName}) => {
 
   const [status, setStatus] = useState('DONE');
 
@@ -37,5 +37,9 @@ export default ({name, desc, companyName}) => {
     setStatus('PULL');
   }
 
-  return <button className="button" onClick={() => getExport()}>导出至Excel工作表</button>
+  const elem = hidden
+  ? <div></div>
+  : <button className="button" onClick={() => getExport()}>导出至Excel工作表</button>
+
+  return [elem]
 }

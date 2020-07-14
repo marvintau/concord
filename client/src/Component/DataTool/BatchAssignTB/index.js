@@ -45,7 +45,7 @@ const updateResult = (col) => {
     }
   }
 }
-export default function({sheetName}){
+export default function({hidden, sheetName}){
 
   const {Sheets, evalSheet} = useContext(Exchange);
 
@@ -80,7 +80,11 @@ export default function({sheetName}){
     evalSheet(sheetName);
   }
 
-  return [<div className="upload-wrapper">
+  const elem = hidden
+  ? <div></div>
+  : <div key="wrapper" className="upload-wrapper">
       <button className="button upload" onClick={onClick}>批量分类</button>
-  </div>]
+    </div>
+
+  return [elem]
 }
