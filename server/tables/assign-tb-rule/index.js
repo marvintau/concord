@@ -30,7 +30,9 @@ async function upload(fileBuffer, context){
     entry.categorized_to_tb = {type:'ref-cond-store', applySpec:'', cases:[]};
   }
 
-  const balanceDict = group(balanceEntries, ({ccode_name}) => ccode_name.toString().trim().replace(/\s*/g, ''));
+  const balanceDict = group(balanceEntries, ({ccode_name}) => {
+    return ccode_name.toString().trim().replace(/\s*/g, '')
+  });
 
   let rules = readSingleSheet(fileBuffer);
   rules = columnNameRemap(rules, header);

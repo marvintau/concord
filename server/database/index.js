@@ -53,7 +53,7 @@ async function insertMany(recs) {
 
 
 // 保存大型的数据表文档
-// 由于MongoDB的BSON文档有16MB的限制，当我们要存储一个较大企业的序时帐时很可能会不够用。
+// 由于MongoDB的BSON文档有16MB的限制，当我们要存储一个较大企业的序时账时很可能会不够用。
 // 因此保存数据时，我们将nested record扁平化，每个记录作为独立的document进行储存，同时
 // 生成一个索引表，帮助我们在retrieve的时候能够较快地恢复其原有结构。
 // 

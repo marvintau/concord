@@ -68,6 +68,8 @@ export default ({sheet, sheetName, status, colSpecs, rowEdit, isCascaded, tools}
     FilterRow: CreateFilterRow(cols),
     HistRow: CreateRow(cols, rowEdit, sheetName, {editable: false, push, pull}),
     itemData: (!isCascaded || !folded) ? flatten(data) : data,
+    overscan: 40,
+    initialItemHeight: 20,
     status
   }
 

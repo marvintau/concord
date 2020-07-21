@@ -41,7 +41,7 @@ const SideNavigationBar = ({directories, isHidden, children}) => {
   let subElems = [];
   if(currSubs !== undefined){
     subElems = currSubs.map((e, i) => {
-      return <ListGroupItem key={i} onClick={() => fore(e)} style={{cursor:'pointer'}}>
+      return <ListGroupItem key={i} onClick={() => fore(e)} style={{cursor:'pointer', whiteSpace:'pre'}}>
         {directories[e].desc}
       </ListGroupItem>
     })

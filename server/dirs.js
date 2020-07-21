@@ -101,7 +101,7 @@ const dirs = [
     name: 'Finance',
     desc: '财务与报表管理',
     type: 'TEXT',
-    children: ['Balance', 'TrialBalance', 'FinancialPositionStatement', 'ProfitAndLoss', 'Equity', 'CashflowStatement'],
+    children: ['Balance', 'TrialBalance', 'FinancialPositionStatement', 'ProfitAndLoss', 'Equity', 'CashflowWorksheetMonetary', 'CashflowStatement'],
   },
  
 
@@ -113,8 +113,8 @@ const dirs = [
     isHidingManual: true,
     data: ['BALANCE', 'TRIAL_BALANCE'],
     importedData: [
-      {name: 'JOURNAL', desc:'序时帐'},
-      {name: 'CURR_JOURNAL', desc:'往来-序时帐'},
+      {name: 'JOURNAL', desc:'序时账'},
+      {name: 'CURR_JOURNAL', desc:'往来-序时账'},
       {name: 'BALANCE', desc:'科目余额'},
       {name: 'ASSISTED', desc:'辅助核算'},
       {name: 'TB_RULES', desc:'TB分配规则'},
@@ -152,6 +152,14 @@ const dirs = [
     isHidingManual: true,
     type: 'DATA',
     data: ['EQUITY']
+  },
+  {
+    loadPoint: '/',
+    name: 'CashflowWorksheetMonetary',
+    desc: '现金流量表底稿\n货币资金方法',
+    isHidingManual: true,
+    type: 'DATA',
+    data: ['CASHFLOW_WORKSHEET_MONETARY', 'CASHFLOW']
   },
   {
     loadPoint: '/',

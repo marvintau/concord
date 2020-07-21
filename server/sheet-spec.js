@@ -46,6 +46,19 @@ const sheetSpecs = [
     }
   },
   {
+    name: 'CASHFLOW_WORKSHEET_MONETARY',
+    isCascaded: true,
+    tools: ['EvalSheet', 'BatchAssignTB', 'CashflowEntryAssign', 'BatchAssignCashflow'],
+    colSpecs: {
+      ccode_name: {desc: '科目名称', width: 1, isFilterable: true},
+      md: {desc: '借方', width: 1, isSortable: true, cellType:'Number'},
+      mc: {desc: '贷方', width: 1, isSortable: true, cellType:'Number'},
+      dest_ccode_name: {desc: '对方科目', width: 2},
+      digest: {desc: '摘要', width: 2},
+      categorized: {desc:'列入TB项目', width: 5, cellType:'Ref', attr: {defaultType:'ref-cond-store'}}
+    }
+  },
+  {
     name: 'CONFIRMATION_TEMPLATE',
     tools: ['useCreate'],
     colSpecs: {
@@ -70,7 +83,7 @@ const sheetSpecs = [
   {
     name: 'TRIAL_BALANCE',
     isCascaded: true,
-    tools: ['useImport', 'EvalSheet', 'CashflowEntryAssign', 'BatchAssignCashflow'],
+    tools: ['useImport', 'EvalSheet'],
     colSpecs: {
       ccode_name: {desc: '条目名称', width: 1.5, isFilterable: true},
       mb: {desc:'期初', width: 1, cellType:'Ref', isSortable: true},
@@ -96,10 +109,12 @@ const sheetSpecs = [
     isCascaded: true,
     tools: ['EvalSheet'],
     colSpecs: {
-      ccode_name: {desc: '条目名称', width: 4, isFilterable: true},
+      ccode_name: {desc: '条目名称', width: 2.5, isFilterable: true},
+      accrual: {desc:'金额', width: 1.5, cellType:'Ref', isSortable: true},
       md: {desc:'借方', width: 1.5, cellType:'Ref', isSortable: true},
       mc: {desc:'贷方', width: 1.5, cellType:'Ref', isSortable: true},
-      dest_ccode_name: {desc: '对方科目', width: 5},
+      dest_ccode_name: {desc: '对方科目', width: 2.5},
+      digest: {desc: '摘要', width: 2.5},
     },
   },
   {

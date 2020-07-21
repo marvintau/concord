@@ -10,17 +10,16 @@ function assignDest(rec1, rec2, {label='succ', desc='1Dr/1Cr'}={}){
 
   const getNewVal = (rec) => {
     const {ccode, ccode_name, __curr:curr} = rec;
-    // if (curr !== undefined && Object.keys(curr).length > 0) {
-    //   console.log(curr);
-    // }
+
+    const topLevelCode = ccode.toString().slice(0, 4);
+    const desc = curr && curr.item ? `${topLevelCode}:${curr.item}` : ccode_name;
+
     return {
       dest_ccode: ccode,
-      dest_ccode_name: {desc: curr && curr.item ? `${ccode.toString().slice(0, 4)}:${curr.item}` : ccode_name},
+      dest_ccode_name: {desc},
       analyzed: {label, desc}
     }
   };
-
-  const getName = ({ccode_name, curr}) => ({ccode_name: curr && curr.item || ccode_name})
 
   Object.assign(rec1, getNewVal(rec2));
   Object.assign(rec2, getNewVal(rec1));
@@ -33,7 +32,8 @@ function clear(groupEntries){
 }
 
 function handleSingleDrMultiCr(groupEntries, {label='succ', desc='1Dr/nCr'}={}) {
-  const dr = groupEntries.shift();
+  const drIndex = groupEntries.findIndex(isDr);
+  const [dr] = groupEntries.splice(drIndex, 1);
   const brokenDrs = groupEntries.map(({mc}) => ({...dr, md: mc}));
   for (let i = 0; i < groupEntries.length; i++){
     assignDest(groupEntries[i], brokenDrs[i], {label, desc});
@@ -42,7 +42,8 @@ function handleSingleDrMultiCr(groupEntries, {label='succ', desc='1Dr/nCr'}={}) 
 }
 
 function handleMultiDrSingleCr(groupEntries, {label='succ', desc='nDr/1Cr'}={}) {
-  const cr = groupEntries.pop();
+  const crIndex = groupEntries.findIndex(isCr);
+  const [cr] = groupEntries.splice(crIndex, 1);
   const brokenCrs = groupEntries.map(({md}) => ({...cr, mc: md}));
   for (let i = 0; i < groupEntries.length; i++){
     assignDest(groupEntries[i], brokenCrs[i], {label, desc});
@@ -116,19 +117,23 @@ function handleMultiDrMultiCr(groupEntries){
 
 // normalize
 // 在这里主要做三件事：
-// 1. 某些借贷方发生额在导出时是null或undefined，将其设为0
+// 1. 某些借贷方发生额在导出时是null或undefined，将其设为0。同时对于红
+//    字冲销的负数发生额进行调整。负数借方发生额调整为正数贷方，vice
+//    versa
 // 2. 在导出时如果顺序错误的，将其纠正过来。按照期间-凭证编号-行号排序
 // 3. 由于在后续的操作中，我们不再需要完整的凭证数据结构，因此我们将
 //    期间-凭证编号-凭证行号-摘要
 //    化为同一个数据结构，从而得到每一行所在凭证的完整信息，关于凭证信息
-//    可以之后再从序时帐中查询。
+//    可以之后再从序时账中查询。
 const normalize = (data) => {
   for (let i = 0; i < data.length; i++){
-    if (isDr(data[i]) && (data[i].mc === undefined)){
-      data[i].mc = 0;
+    if (isDr(data[i])){
+      const {md} = data[i];
+      Object.assign(data[i], md < 0 ? {mc:-md, md: 0} : {md, mc: 0});
     }
-    if (isCr(data[i]) && (data[i].md === undefined)){
-      data[i].md = 0;
+    if (isCr(data[i])){
+      const {mc} = data[i];
+      Object.assign(data[i], mc < 0 ? {md:-mc, mc: 0} : {mc, md: 0});
     }
   }
 
@@ -150,14 +155,22 @@ const normalize = (data) => {
 
 // then we are going to do something tricky here. We walk through the whole
 // journal, and check the multi-credit/debit issue.
+// 接下来进行一些比较微妙的调整。我们将遍历整个序时帐，并且解决单个凭证中多借
+// 多贷的问题
 // 
 // 1) For the two consecutive record (entry), that the first is debit, followed by a credit,
 //    then this is the normal / correct case
+//    对于两个相邻的分录（一般算作一条分录），如果第一行是借，第二行是贷，那么它是最一般的一借
+//    一贷格式。
 // 2) for multiple records, that multiple debit record followed by a credit, then break the
 //    credit into several records, with accrual corresponds to the debit.
+//    对于多借一贷的情形，将最后的一条贷分录拆分为多个发生额与借方对应的记录
 // 3) for single debit followed by multiple credit, break the debit into several records that
 //    correspond to credits.
-// 4) for multiple-credit-multiple-debit, skip.
+//    一借多贷与上述同理
+// 4) for multiple-credit-multiple-debit, first attempt to break it into the 3 cases mentioned
+//    above. If not breakable, or MC/MD with different value, then mark and skip.
+//    
 
 const decompose = (data) => {
   const groups = [];

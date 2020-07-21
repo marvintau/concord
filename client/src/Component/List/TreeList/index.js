@@ -39,7 +39,7 @@ const ErrorIndicator = ({status}) => {
   </div>
 }
 
-export default function({itemData, Row:OrigRow, HistRow, FilterRow, overscan, status}){
+export default function({itemData, Row:OrigRow, HistRow, FilterRow, overscan, initialItemHeight, status}){
 
   // console.log('before first useState called');
 
@@ -132,7 +132,7 @@ export default function({itemData, Row:OrigRow, HistRow, FilterRow, overscan, st
   } else if (status.startsWith('DONE')){
     return <AutoSizer disableWidth={true}>
     {
-      ({height}) => <List {...{key:updateKey, itemData:displayed, Row, height, overscan}}>
+      ({height}) => <List {...{key:updateKey, itemData:displayed, Row, height, overscan, initialItemHeight}}>
         {history.map((data, i) => <HistRow key={i} {...{data, select:() => pop(i)}} />)}
         <FilterRow filterCol={filter} sortCol={sort} />
       </List>

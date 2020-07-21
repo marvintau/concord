@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import { Exchange } from '../../Exchange';
 
-import {trav, store as condAssign} from '@marvintau/jpl';
+import {flat, trav, store as condAssign, fetch} from '@marvintau/jpl';
 
 const updateResult = (col) => {
 
@@ -45,15 +45,15 @@ const updateResult = (col) => {
     }
   }
 }
-export default function({hidden, sheetName}){
+export default function({hidden}){
 
   const {Sheets, evalSheet} = useContext(Exchange);
 
   const onClick = () => {
 
-    evalSheet(sheetName);
+    evalSheet('BALANCE');
 
-    const sourceSheet = Sheets[sheetName].data;
+    const sourceSheet = Sheets['BALANCE'].data;
 
     trav(sourceSheet, (rec) => {
       if(rec.categorized_to_tb === undefined) {
@@ -66,6 +66,14 @@ export default function({hidden, sheetName}){
     })
 
     trav(sourceSheet, (rec) => {
+      if (rec.__children) {
+        for (let child of rec.__children) {
+          child.__parent = rec;
+        }
+      }
+    }, 'POST')
+
+    trav(sourceSheet, (rec) => {
       if (rec.categorized_to_tb.cases.length > 0){
         const code = condAssign(rec, 'categorized_to_tb', Sheets);
         rec.categorized_to_tb.code = code;
@@ -73,16 +81,23 @@ export default function({hidden, sheetName}){
     }, 'PRE')
 
     trav(sourceSheet, (rec) => {
-      // console.log(rec.ccode_name);
       updateResult(rec.categorized_to_tb);
     })
 
-    evalSheet(sheetName);
+    evalSheet('BALANCE');
+
+    const {record:{__children:monetary}} = fetch('TRIAL_BALANCE:货币资金', Sheets);
+    Sheets['CASHFLOW_WORKSHEET_MONETARY'] = {
+      data: flat(monetary).filter(({analyzed}) => analyzed !== undefined)
+    };
+
+    evalSheet('CASHFLOW_WORKSHEET_MONETARY');
+
   }
 
   const elem = hidden
-  ? <div></div>
-  : <div key="wrapper" className="upload-wrapper">
+  ? <div key="batch-assign-tb"></div>
+  : <div key="batch-assign-tb" className="upload-wrapper">
       <button className="button upload" onClick={onClick}>批量分类</button>
     </div>
 

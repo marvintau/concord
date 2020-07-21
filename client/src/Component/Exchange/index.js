@@ -111,22 +111,12 @@ export const ExchangeProvider = ({defaultColumnAliases, children}) => {
         if (col === undefined || col === null){
           return;
         }        
-        if (col.type) {
         
-          const {type, path, expr} = col;
-          if (type === 'ref-fetch'){
-  
-            if (expr.startsWith('=')){
-              const {result, code} = evalExpr(expr, {Sheets, vars:rec, colKey:colName});
-              Object.assign(col, {result, code});
-            } else {
-              const {record} = fetchRec(path, Sheets);
-              const {result, code} = evalExpr(expr, {Sheets, vars:record});
-              Object.assign(col, {result, code});
-            }
-            // console.log(result, code);
-          }
-  
+        const {type, expr} = col;
+        if (type === 'ref-fetch'){
+          const {result, code} = evalExpr(expr, {Sheets, vars:rec, colKey:colName});
+          console.log(rec.ccode_name, expr, result);
+          Object.assign(col, {result, code});
         }
       }
 

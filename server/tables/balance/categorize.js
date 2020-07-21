@@ -1,6 +1,7 @@
 const now = require('performance-now');
 
-const {group, flat, trav, add, get} = require('@marvintau/jpl');
+const {group, flat, trav, get} = require('@marvintau/jpl');
+const add = require('@marvintau/jpl/src/add');
 
 const getCategoryPathDict = (cascadedCategories) => {
 
@@ -70,9 +71,6 @@ const categorize = (balance, decomposed) => {
   //    再对明细科目按照其对方科目发生额进行分类，否则，则直接按对方科目发
   //    生额分类
 
-  const beforeCascadeT = now();
-  let groupTimes = 0, groupedRecords = 0;
-
   for (let ccode in groupedJournal){
     const entries = groupedJournal[ccode];
     if (entries.some(({__curr}) => __curr !== undefined)) {
@@ -104,12 +102,10 @@ const categorize = (balance, decomposed) => {
       groupedJournal[ccode] = groupSum(groupedDest, extra);
     }
   }
-  const endCascadeT = now();
-  console.log(endCascadeT - beforeCascadeT, 'total grouping time');
 
   // 5. 将分组后的分录填到对应的科目目录中
   for (let [ccode, entries] of Object.entries(groupedJournal)){
-    add(balance, entries, {path: pathDict[ccode]});
+    add(balance, entries, {path: pathDict[ccode], withParent: false});
     if (entries.every(({__detailed_level}) => __detailed_level === undefined)) {
       const {record} = get(balance, {path: pathDict[ccode]});
       // console.log(record, 'before casting')

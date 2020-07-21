@@ -2,10 +2,10 @@ const {storeTable, fetchTable, purge} = require('../data-store-util');
 
 const {uniq, cascade, readSingleSheet, columnNameRemap} = require('../data-process-util');
 
-const {trav} = require('@marvintau/jpl');
-
 const {normalize, decompose} = require('./voucher');
 const {categorize} = require('./categorize');
+
+const {flat} = require('@marvintau/jpl');
 
 let header = [
   ['会计年' , 'iyear'],
@@ -48,8 +48,8 @@ async function upload(fileBuffer, context){
 
   const {project_id} = context;
 
-  // 在我们准备上传真正的科目余额表时，我们已经上传了总的序时帐，以及各往来科目
-  // 的相关序时帐。
+  // 在我们准备上传真正的科目余额表时，我们已经上传了总的序时账，以及各往来科目
+  // 的相关序时账。
   let balance;
   try {
     balance = await fetchTable({project_id, table: 'BALANCE'});
@@ -62,7 +62,7 @@ async function upload(fileBuffer, context){
   }
 
   // 而这才是我们刚上传的，真正的余额表数据。我们只是将余额表改造为级联数据。
-  // 在处理序时帐时，形成对方科目路径需要处理好的余额表数据，而序时帐数据处
+  // 在处理序时账时，形成对方科目路径需要处理好的余额表数据，而序时账数据处
   // 理后的结果也要重新写入此处的余额表数据中。
   let data = readSingleSheet(fileBuffer);
   // console.log(data, 'processed');
@@ -73,15 +73,14 @@ async function upload(fileBuffer, context){
 
   // 接下来一系列操作都针对journals，并且中间结果不需要存入balance.data，所以这个引用
   // 暂时没用了。normalize和decompose的说明详见源码，经过这一步，我们得到了拥有计算过的
-  // （而非原始序时帐所标明的）对方科目。
+  // （而非原始序时账所标明的）对方科目。
   let journals = balance.data;
   journals = normalize(journals);
   journals = decompose(journals);
   purge(journals);
 
-  // console.log(journals.filter(({curr}) => curr !== undefined).length, 'currs');
-
   categorize(data, journals)
+  console.log(flat(data).some(({__parent}) => __parent !== undefined), 'PARENT FOUND');
 
   const entry = {data, indexColumn:'ccode_name'};
   await storeTable({project_id, table:'BALANCE', ...entry})
@@ -91,14 +90,13 @@ async function upload(fileBuffer, context){
 
 async function retrieve({project_id}) {
   const retrieved = await fetchTable({project_id, table:'BALANCE'});
-  // console.log(Object.keys(retrieved), 'retrieved balance');
   return retrieved;
 }
 
 async function update({data, project_id}) {
 
-  // 在我们准备上传真正的科目余额表时，我们已经上传了总的序时帐，以及各往来科目
-  // 的相关序时帐。
+  // 在我们准备上传真正的科目余额表时，我们已经上传了总的序时账，以及各往来科目
+  // 的相关序时账。
   let balance;
   try {
     balance = await fetchTable({project_id, table: 'BALANCE'});
@@ -111,7 +109,7 @@ async function update({data, project_id}) {
   }
 
   balance.data = data;
-  // await storeTable(balance);
+  await storeTable(balance);
   return balance;
 }
 

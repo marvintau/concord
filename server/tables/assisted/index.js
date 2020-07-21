@@ -1,7 +1,7 @@
 const {storeTable, fetchTable} = require('../data-store-util');
-const {uniq, cascade, readSingleSheet, columnNameRemap} = require('../data-process-util');
+const {readSingleSheet, columnNameRemap} = require('../data-process-util');
 
-const {flat, trav, group} = require('@marvintau/jpl');
+const {flat, group} = require('@marvintau/jpl');
 
 let header = [
   ['会计年' , 'iyear'],
@@ -73,7 +73,7 @@ async function upload(fileBuffer, context){
   // 余额和发生额显然是包含了个人的，因此不能简单地将核算项目看作往来科目之外的某个明细科目，加入到对应的
   // 科目余额表中的科目里去。
   
-  // 我们此处仍以从往来序时帐中的核算信息得到的明细科目为准，这个明细科目只包含职员/供应商/客户三类，不考虑
+  // 我们此处仍以从往来序时账中的核算信息得到的明细科目为准，这个明细科目只包含职员/供应商/客户三类，不考虑
   // 部门整体的核算。其它成本和费用也不参考核算信息。
 
   let anyExcludedAssited = false

@@ -1,6 +1,6 @@
 const XLSX = require('xlsx');
 const QRCode = require('easyqrcodejs-nodejs');
-const {casc} = require('@marvintau/jpl');
+const casc = require('@marvintau/jpl/src/casc');
 
 function sort(table, key){
 
@@ -30,7 +30,7 @@ function group(table, key){
   let group = {};
 
   const labelFunc = key.constructor === Function
-  ? (rec) => key(rec) 
+  ? (rec) => key(rec)
   : (rec) => rec[key]
 
   for (let i = 0; i < table.length; i++){
@@ -45,13 +45,12 @@ function group(table, key){
 }
 
 function cascade(table, colKey) {
-
-  return casc(table, {cascCol: colKey});
-
+  console.log('CASCADING');
+  return casc(table, {cascCol: colKey, withParent:false});
 }
 
 function columnNameRemap(table, map, {handleNum=true}={}){
-  
+
   for (let p = 0; p < table.length; p++){
     let rec = table[p],
       newRec = {};
@@ -62,7 +61,7 @@ function columnNameRemap(table, map, {handleNum=true}={}){
 
     !(newRec.iperiod) && (newRec.iperiod = 0);
     (newRec.ccode) && (newRec.ccode = newRec.ccode.toString());
-    
+
     table[p] = newRec;
 
     // 处理发生额按"金额-方向"形式给出的值
@@ -91,7 +90,7 @@ function columnNameRemap(table, map, {handleNum=true}={}){
         newRec.mc = parseFloat(mc.replace(/[\s,]/g, ''));
         console.log(newRec.mc, 'new mc');
       }
-  
+
       if (isNaN(newRec.mc) || isNaN(newRec.md)){
         throw {message: `found NaN value mc: ${newRec.mc} md: ${newRec.md} @ ${newRec.ccode_name}`, code:'DEAD_INVALID_NUMERIC_FORMAT'};
       }
@@ -114,27 +113,27 @@ function columnNameRemap(table, map, {handleNum=true}={}){
 // Suitable for data
 function readSingleSheet(buffer, {withHeader=true, startFrom}={}){
   const table = XLSX.read(buffer, {type:'buffer'});
-  const firstSheet = table.Sheets[table.SheetNames[0]];  
+  const firstSheet = table.Sheets[table.SheetNames[0]];
   return XLSX.utils.sheet_to_json(firstSheet, {header: withHeader ? undefined : 1, range: startFrom});
 }
 
 
 // Use when there are multiple sheets, and you know the exact names of them.
 // Suitable for template, or other sheets with definite format.
-function readSheets(buffer, sheetNames=[], withHeader=true){
+function readSheets(buffer, {sheetNames, withHeader=true}={}){
   const table = XLSX.read(buffer, {type:'buffer'});
 
   const sheets = {};
 
-  for (let sheetName of sheetNames){
-
+  let sn = sheetNames || table.SheetNames;
+  // console.log('sheetnames', sn);
+  for (let sheetName of sn){
     const sheet = table.Sheets[sheetName];
-
     if (withHeader) {
       sheets[sheetName] = XLSX.utils.sheet_to_json(sheet);
     } else {
       sheets[sheetName] = XLSX.utils.sheet_to_json(sheet, {header: 1});
-    }  
+    }
   }
 
   return sheets;
@@ -153,11 +152,11 @@ async function exportSingleSheet(data){
     let xlsSheet = XLSX.utils.json_to_sheet([{'提示':'尚不支持您想要导出的数据类型呢亲'}]);
     xlsBook.Sheets['导出'] = xlsSheet;
   }
-  
+
   let xlsOutput = XLSX.write(xlsBook, {bookType:'xlsx', type: 'binary'});
-  
+
   return xlsOutput;
-}  
+}
 
 
 function readSingleText(buffer) {

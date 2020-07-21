@@ -1,7 +1,7 @@
 const now = require('performance-now');
 
 const {fetchTable, storeTable} = require('../data-store-util');
-const {readSingleSheet, columnNameRemap, group} = require('../data-process-util');
+const {readSheets, columnNameRemap, group} = require('../data-process-util');
 
 let header = [
   ['会计年' , 'iyear'],
@@ -58,8 +58,8 @@ async function upload(fileBuffer, context){
 
   const {project_id} = context;
 
-  // 当我们上传往来科目序时帐时，尽管此处我们使用的名称是"balance"（是最终
-  // 的形式），但当前的内容应该是我们首次上传的序时帐。
+  // 当我们上传往来科目序时账时，尽管此处我们使用的名称是"balance"（是最终
+  // 的形式），但当前的内容应该是我们首次上传的序时账。
   let balance;
   try {
     balance = await fetchTable({project_id, table: 'BALANCE'});
@@ -73,32 +73,33 @@ async function upload(fileBuffer, context){
   console.log(balance.data.filter(({__curr}) => __curr !== undefined).length, 'existing currs');
 
 
-  // 此处是我们上传的往来科目序时帐。上传某个往来科目的序时帐不会影响到先前的结果。
-  // 上传的序时帐按照鼎信诺单个科目导出的格式，我们需要去除每月小结，及其它不属于
+  // 此处是我们上传的往来科目序时账。上传某个往来科目的序时账不会影响到先前的结果。
+  // 上传的序时账按照鼎信诺单个科目导出的格式，我们需要去除每月小结，及其它不属于
   // 会计分录的行。
 
-  let journals = readSingleSheet(fileBuffer, {startFrom:1});
-  journals = columnNameRemap(journals, header);
-  journals = journals.filter(({ccode_name}) => {
-    return ccode_name !== undefined && ccode_name !== null && ccode_name.toString().trim().length !== 0;
-  })
+  let journals = [];
+  let journalFilesMap = readSheets(fileBuffer, {});
+  for (let journalFileName in journalFilesMap) {
+    let journal = journalFilesMap[journalFileName];
+    journal = columnNameRemap(journal, header);
+    console.log(journal.slice(0, 5));
+    journal = journal.filter(({ccode_name}) => {
+      return ccode_name !== undefined && ccode_name !== null && ccode_name.toString().trim().length !== 0;
+    })
+    console.log('sheet length', journal.length)
+    journals = journals.concat(journal);
+  }
 
-  // 接下来我们将总的序时帐和单个科目序时帐进行融合。我们按照会计月-凭证编号将序时帐
-  // 进行划分。然后，我们扫描一遍全部的往来科目序时帐凭证，然后将凭证中每一条分录，
-  // 写入到总的序时帐中。
+  console.log('length of current journals', journals.length);
 
-  const groupT = now();
+  // 接下来我们将总的序时账和单个科目序时账进行融合。我们按照会计月-凭证编号将序时账
+  // 进行划分。然后，我们扫描一遍全部的往来科目序时账凭证，然后将凭证中每一条分录，
+  // 写入到总的序时账中。
+
   const groupedOverallJournals = group(balance.data, ({iperiod, voucher_id}) => `${iperiod}-${voucher_id}`);
-  const groupEndT = now();
-  console.log((groupEndT - groupT).toString(), balance.data.length, 'grouped original');
-
-  const groupCurrentT = now();
   const groupedCurrentJournals = group(journals, ({iperiod, voucher_id}) => `${iperiod}-${voucher_id}`);
   const entriedCurrentJournals = Object.entries(groupedCurrentJournals);
-  const groupCurrentEndT = now();
-  console.log((groupCurrentEndT - groupCurrentT).toString(), journals.length, 'grouped current');
 
-  let i = 0;
 
   for (let [key, currVoucher] of entriedCurrentJournals) {
     const origVoucher = groupedOverallJournals[key];
@@ -141,19 +142,12 @@ async function upload(fileBuffer, context){
         if (origEntry.__curr === undefined && currEntry.desc !== undefined) {
           const currDesc = parseDesc(currEntry.desc);
           if (currMc === origMc && currMd === origMd) {
-            // console.log(currDesc.item, origEntry.digest);
             origEntry.__curr = currDesc;
-            // console.log('did', origEntry.curr)
             break;
           }
         }
       }
-
     }
-
-    // if (Object.values(group(currVoucher, ({md})=>md.toFixed(2))).some(g => g.length > 1)) {
-    //   console.log(origVoucher, 'multi md');
-    // }
 
   }
 

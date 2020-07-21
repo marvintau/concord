@@ -38,8 +38,8 @@ export default ({hidden, name, desc, companyName}) => {
   }
 
   const elem = hidden
-  ? <div></div>
-  : <button className="button" onClick={() => getExport()}>导出至Excel工作表</button>
+  ? <div key="export"></div>
+  : <button key="export" className="button" onClick={() => getExport()}>导出至Excel工作表</button>
 
   return [elem]
 }

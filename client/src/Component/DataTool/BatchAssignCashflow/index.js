@@ -1,7 +1,10 @@
 import React, {useContext} from 'react';
 import { Exchange } from '../../Exchange';
 
-import {trav, fetch, store as condAssign} from '@marvintau/jpl';
+// import {trav, fetch, store as condAssign} from '@marvintau/jpl';
+import trav from '@marvintau/jpl/src/trav';
+import fetch from '@marvintau/jpl/src/fetch';
+import condAssign from '@marvintau/jpl/src/store';
 
 const updateResult = (col) => {
 
@@ -53,7 +56,8 @@ export default function({hidden, sheetName}){
 
     evalSheet(sheetName);
 
-    const {record:{__children:sourceSheet}} = fetch('TRIAL_BALANCE:货币资金', Sheets);
+    const sourceSheet = Sheets['CASHFLOW_WORKSHEET_MONETARY'].data;
+    console.log(sourceSheet);
 
     trav(sourceSheet, (rec) => {
       if (rec.categorized && rec.categorized.cases.length > 0){
@@ -72,10 +76,10 @@ export default function({hidden, sheetName}){
   }
 
   const elem = hidden
-  ? <div></div>
-  : <div className="upload-wrapper">
+  ? <div key="batch-assign-cashflow"></div>
+  : <div key="batch-assign-cashflow" className="upload-wrapper">
       <button className="button upload" onClick={onClick}>分配至现流表</button>
     </div>
 
-  return []
+  return [elem]
 }

@@ -55,8 +55,8 @@ export default ({hidden, sheetName, colSpecs}) => {
   }
 
   const createManagerButton = hidden
-  ? <div></div>
-  : <button className='button' key='create-button' onClick={() => toggleCreate()}>
+  ? <div key="use-create"></div>
+  : <button key="use-create" className='button' key='create-button' onClick={() => toggleCreate()}>
       {`${isCreating ? '取消' : ''}创建条目`}
     </button>
 

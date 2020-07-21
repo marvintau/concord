@@ -90,8 +90,8 @@ export default function({hidden, sheetName, context={}, setStatus, refresh}){
     : <div key='import-form'></div>;
 
     const uploadButton = hidden
-    ? <div></div>
-    : <button className='button' onClick={toggleUploading} key='import-button'>
+    ? <div key="import-button"></div>
+    : <button key="import-button" className='button' onClick={toggleUploading} key='import-button'>
           {`${isUploading ? '取消导入' : '导入数据'}`}
       </button>
 

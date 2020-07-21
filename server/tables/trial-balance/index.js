@@ -24,6 +24,7 @@ let header = [
   ['未分配利润', 'undistributed'],
   ['股东权益合计', 'amount'],
   
+  ['金额', 'accrual'],
   ['期初余额', 'mb'],
   ['期末余额', 'me'],
   ['借方发生', 'md'],
@@ -34,13 +35,13 @@ async function upload(fileBuffer, context){
 
   const {project_id} = context;
 
-  const sheets = readSheets(fileBuffer, [
+  const sheets = readSheets(fileBuffer, {sheetNames: [
     'TB-试算平衡条目',
     'SOFP-资产负债表条目',
     'PAL-损益表条目',
     'CASH-现金流量表条目',
     'EQUITY-所有者权益表条目'
-  ]);
+  ]});
 
   // console.log(sheets, 'sheets');
 
@@ -63,7 +64,6 @@ async function upload(fileBuffer, context){
     if (tableName === 'TRIAL_BALANCE') {
 
       for (let rec of sheet) {
-
         rec.mb = {type:'ref-fetch', expr:rec.mb, disp:'res'}
         rec.md = {type:'ref-fetch', expr:rec.md, disp:'res'}
         rec.mc = {type:'ref-fetch', expr:rec.mc, disp:'res'}
@@ -75,6 +75,11 @@ async function upload(fileBuffer, context){
     if (tableName === 'CASHFLOW') {
       console.log('handling casahflow');
       for (let rec of sheet) {
+        
+        if(rec.accrual !== undefined){
+          rec.accrual = {type:'ref-fetch', expr:rec.accrual, disp:'res'};
+        }
+
         rec.md = {type:'ref-fetch', expr:rec.md || '', disp:'res'}
         rec.mc = {type:'ref-fetch', expr:rec.mc || '', disp:'res'}
       }
