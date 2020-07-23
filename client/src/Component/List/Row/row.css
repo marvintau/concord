@@ -15,6 +15,11 @@
   flex-shrink: 0;
   align-items: center;
 }
+.list-col > * {
+  overflow-x: scroll;
+  /* text-overflow: ellipsis; */
+  white-space: pre;
+}
 
 .sticky {
   position: sticky !important;

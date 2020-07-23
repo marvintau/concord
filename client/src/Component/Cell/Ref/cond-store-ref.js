@@ -95,12 +95,12 @@ export default ({sheetName, colName, data:rec, getPathSuggValue, getPathSuggs, g
   } else {
     const lines = cases.map(({cond, path}, i, a) => {
       const condElem = <div style={{minWidth: 100, marginRight:3}}>{cond && a.length > 1 ? `如 ${cond}` : ''}</div>;
-      const pathElem = <div>{a.length > 1 ? '则' : ''}分配至 {path}</div>;
+      const pathElem = <div style={{overflow: 'visible', whiteSpace:'pre'}}>{a.length > 1 ? '则' : ''}分配至 {path}</div>;
       return <div key={i} style={{display:'flex', fiexDirection:'column'}}>{condElem}{pathElem}</div>
     })
 
     return<div className='refcell-line'>
-      <div style={{width: '100%', overflowY:'scroll'}}>{lines}</div>
+      <div style={{width: '100%', overflowX:'scroll'}}>{lines}</div>
       <button  className="button upload" style={{width: 120}} onClick={toggleEdit}> 编辑 </button>
       <RefBadge {...{result, code: rec[colName].code}} />
     </div>

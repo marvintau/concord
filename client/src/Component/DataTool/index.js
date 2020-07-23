@@ -5,7 +5,8 @@ import useCreate from './useCreate';
 import EvalSheet from './EvalSheet';
 import BatchAssignTB from './BatchAssignTB';
 import BatchAssignCashflow from './BatchAssignCashflow';
-import CashflowEntryAssign from './CashflowEntryAssign';
+import GenerateCashflowEntryAssign from './GenerateCashflowEntryAssign';
+import GenerateTBEntryAssign from './GenerateTBEntryAssign';
 
 export default {
   useExport,
@@ -15,5 +16,6 @@ export default {
   EvalSheet,
   BatchAssignTB,
   BatchAssignCashflow,
-  CashflowEntryAssign
+  GenerateCashflowEntryAssign,
+  GenerateTBEntryAssign
 }

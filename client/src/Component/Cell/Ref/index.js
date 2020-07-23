@@ -94,7 +94,7 @@ export default ({sheetName, colName, data, attr:{disabled: disabledProp, placeho
   const {type, disabled: disabledData} = data[colName] || {};
 
 
-  if (['ref-fetch', 'ref-store', 'ref-cond-store'].includes(type)) {
+  if (['ref-fetch', 'ref-cond-store'].includes(type)) {
 
     const disabled = disabledProp || disabledData;
 

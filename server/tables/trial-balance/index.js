@@ -80,6 +80,12 @@ async function upload(fileBuffer, context){
           rec.accrual = {type:'ref-fetch', expr:rec.accrual, disp:'res'};
         }
 
+        if (rec.mb && rec.mb.includes(':')){
+          const [path, expr] = rec.mb.split('::');
+          console.log(path, expr, 'mb')
+          rec.mb = {type:'ref-fetch', expr, path, disp:'res'}
+        }
+
         rec.md = {type:'ref-fetch', expr:rec.md || '', disp:'res'}
         rec.mc = {type:'ref-fetch', expr:rec.mc || '', disp:'res'}
       }

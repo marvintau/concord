@@ -48,7 +48,7 @@ const sheetSpecs = [
   {
     name: 'CASHFLOW_WORKSHEET_MONETARY',
     isCascaded: true,
-    tools: ['EvalSheet', 'BatchAssignTB', 'CashflowEntryAssign', 'BatchAssignCashflow'],
+    tools: ['EvalSheet', 'BatchAssignTB', 'GenerateCashflowEntryAssign', 'BatchAssignCashflow'],
     colSpecs: {
       ccode_name: {desc: '科目名称', width: 1, isFilterable: true},
       md: {desc: '借方', width: 1, isSortable: true, cellType:'Number'},
@@ -83,7 +83,7 @@ const sheetSpecs = [
   {
     name: 'TRIAL_BALANCE',
     isCascaded: true,
-    tools: ['useImport', 'EvalSheet'],
+    tools: ['useImport', 'EvalSheet', 'GenerateTBEntryAssign'],
     colSpecs: {
       ccode_name: {desc: '条目名称', width: 1.5, isFilterable: true},
       mb: {desc:'期初', width: 1, cellType:'Ref', isSortable: true},
